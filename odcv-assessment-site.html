@@ -1,0 +1,1858 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>R-Zero: O-DCV Assessment Process</title>
+    <style>
+        :root {
+            --primary: #0072CE;
+            --secondary: #39B54A;
+            --light-gray: #f8f9fa;
+            --light-blue: #e6f2ff;
+            --dark-gray: #343a40;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --border-color: #dee2e6;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #fff;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .app-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .logo {
+            max-width: 200px;
+            margin-bottom: 1rem;
+        }
+        
+        .app-title {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        
+        .app-subtitle {
+            color: var(--dark-gray);
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto 1.5rem;
+        }
+        
+        /* Progress Indicator with clickable steps */
+        .progress-nav {
+            display: flex;
+            justify-content: space-between;
+            margin: 2rem 0;
+            position: relative;
+        }
+        
+        .progress-nav::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background-color: #ccc;
+            z-index: 1;
+        }
+        
+        .progress-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+            width: 33.333%;
+            cursor: pointer;
+            padding: 1rem;
+            transition: all 0.2s;
+        }
+        
+        .progress-step:hover .step-number {
+            transform: scale(1.1);
+            box-shadow: 0 0 10px rgba(0, 114, 206, 0.3);
+        }
+        
+        .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: white;
+            border: 2px solid #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .step-label {
+            font-weight: 500;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        
+        /* Completed step styling */
+        .progress-step.completed .step-number {
+            background-color: var(--secondary);
+            border-color: var(--secondary);
+            color: white;
+        }
+        
+        .progress-step.completed .step-label {
+            color: var(--secondary);
+        }
+        
+        /* Active step styling */
+        .progress-step.active .step-number {
+            background-color: var(--primary);
+            border-color: var(--primary);
+            color: white;
+            transform: scale(1.1);
+        }
+        
+        .progress-step.active .step-label {
+            color: var(--primary);
+            font-weight: bold;
+        }
+        
+        /* Progress line styling */
+        .progress-step.completed::after {
+            background-color: var(--secondary);
+        }
+        
+        .progress-step.active::after {
+            background-color: var(--primary);
+        }
+        
+        /* Main content area */
+        .content-area {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+        
+        .stage-content {
+            display: none; /* Hide all stages initially */
+            padding: 2rem;
+        }
+        
+        .stage-content.active {
+            display: block; /* Show only active stage */
+        }
+        
+        /* Form styling */
+        .form-section {
+            background-color: var(--light-gray);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .form-section:last-child {
+            margin-bottom: 0;
+        }
+        
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.75rem;
+        }
+        
+        .section-title {
+            color: var(--primary);
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+        
+        .section-tools {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .form-row {
+            margin-bottom: 1.25rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .form-help {
+            display: block;
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 0.25rem;
+        }
+        
+        .required::after {
+            content: "*";
+            color: var(--danger);
+            margin-left: 0.25rem;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 114, 206, 0.2);
+        }
+        
+        /* Radio and checkbox styling */
+        .radio-group, .checkbox-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 0.5rem;
+        }
+        
+        .radio-option, .checkbox-option {
+            display: flex;
+            align-items: center;
+            background-color: white;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 0.5rem 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .radio-option:hover, .checkbox-option:hover {
+            background-color: var(--light-blue);
+            border-color: var(--primary);
+        }
+        
+        .radio-option input, .checkbox-option input {
+            margin-right: 0.5rem;
+        }
+        
+        /* Conditional fields */
+        .conditional-field {
+            margin-top: 0.75rem;
+            padding-left: 1rem;
+            border-left: 3px solid var(--light-blue);
+            display: none;
+        }
+        
+        .conditional-field.show {
+            display: block;
+        }
+        
+        /* Tab navigation styling */
+        .tab-navigation {
+            display: flex;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid #dee2e6;
+            flex-wrap: wrap;
+        }
+        
+        .tab-button {
+            padding: 0.75rem 1.5rem;
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .tab-button.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+            font-weight: 500;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* Button styling */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            gap: 0.5rem;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #005bb5;
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary);
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #2c9e3a;
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background-color: var(--light-blue);
+        }
+        
+        /* Navigation footer */
+        .nav-footer {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+        }
+        
+        /* Info boxes */
+        .info-box {
+            background-color: var(--light-blue);
+            border-left: 4px solid var(--primary);
+            padding: 1.25rem;
+            margin: 1.5rem 0;
+            border-radius: 4px;
+        }
+        
+        .info-box p {
+            margin: 0 0 0.5rem;
+        }
+        
+        .info-box ul {
+            margin: 0.5rem 0 0 1.5rem;
+        }
+        
+        .info-box li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .info-box li:last-child {
+            margin-bottom: 0;
+        }
+        
+        .warning-box {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        
+        /* Responsive grid layouts */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+        
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+        
+        @media (max-width: 768px) {
+            .grid-2, .grid-3 {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                padding: 1rem;
+            }
+            
+            .app-title {
+                font-size: 1.8rem;
+            }
+            
+            .progress-step {
+                padding: 0.5rem;
+            }
+            
+            .step-number {
+                width: 32px;
+                height: 32px;
+                font-size: 0.9rem;
+            }
+            
+            .step-label {
+                font-size: 0.8rem;
+            }
+
+            .tab-button {
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+            }
+        }
+        
+        /* Notification toast */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--success);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 4px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            z-index: 1000;
+            transform: translateY(150%);
+            transition: transform 0.3s ease-out;
+        }
+        
+        .toast.show {
+            transform: translateY(0);
+        }
+        
+        .toast-icon {
+            font-size: 1.5rem;
+        }
+        
+        .toast-message {
+            font-weight: 500;
+        }
+
+        /* Photo gallery */
+        .photo-gallery {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .photo-item {
+            position: relative;
+            height: 0;
+            padding-bottom: 100%;
+            border-radius: 4px;
+            overflow: hidden;
+            background-color: #f2f2f2;
+        }
+        
+        .photo-item img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .photo-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 2px dashed #ced4da;
+            cursor: pointer;
+        }
+        
+        .photo-placeholder:hover {
+            border-color: var(--primary);
+            background-color: rgba(0, 114, 206, 0.05);
+        }
+        
+        .photo-icon {
+            font-size: 2rem;
+            color: #6c757d;
+            margin-bottom: 0.5rem;
+        }
+        
+        .photo-actions {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .photo-action {
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.8);
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1rem;
+            color: #343a40;
+        }
+        
+        .photo-action:hover {
+            background-color: white;
+        }
+
+        /* Table styling */
+        .table-responsive {
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 0.75rem;
+            border: 1px solid #dee2e6;
+        }
+        
+        th {
+            text-align: left;
+            background-color: #f2f2f2;
+            font-weight: 500;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        /* Form cards */
+        .form-card {
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            background-color: white;
+        }
+        
+        .form-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 0.5rem;
+        }
+        
+        .form-card-title {
+            font-weight: 500;
+            margin: 0;
+        }
+        
+        .form-card-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="app-header">
+            <img src="https://via.placeholder.com/200x60?text=R-Zero" alt="R-Zero Logo" class="logo">
+            <h1 class="app-title">O-DCV Assessment Process</h1>
+            <p class="app-subtitle">Complete each step of the assessment process to evaluate, plan, and implement the O-DCV system for your building.</p>
+        </div>
+        
+        <!-- Progress Navigation -->
+        <div class="progress-nav">
+            <div class="progress-step active" data-step="initial-screening">
+                <div class="step-number">1</div>
+                <div class="step-label">Initial Screening</div>
+            </div>
+            <div class="progress-step" data-step="technical-discovery">
+                <div class="step-number">2</div>
+                <div class="step-label">Technical Discovery</div>
+            </div>
+            <div class="progress-step" data-step="site-assessment">
+                <div class="step-number">3</div>
+                <div class="step-label">Site Assessment</div>
+            </div>
+        </div>
+        
+        <div class="content-area">
+            <form id="assessmentForm">
+                <!-- Initial Screening Content -->
+                <div id="initial-screening" class="stage-content active">
+                    <div class="info-box">
+                        <p><strong>Initial Screening</strong></p>
+                        <p>This quick assessment will help us determine if your building is a good candidate for our Occupancy-Based Demand Control Ventilation solution.</p>
+                    </div>
+                    
+                    <div class="form-section">
+                        <div class="section-header">
+                            <h2 class="section-title">Basic Information</h2>
+                        </div>
+                        
+                        <div class="grid-2">
+                            <div class="form-row">
+                                <label for="contactName" class="form-label required">Contact Name</label>
+                                <input type="text" id="contactName" name="contactName" class="form-control" required>
+                            </div>
+                            
+                            <div class="form-row">
+                                <label for="contactEmail" class="form-label required">Email Address</label>
+                                <input type="email" id="contactEmail" name="contactEmail" class="form-control" required>
+                            </div>
+                        </div>
+                        
+                        <div class="grid-2">
+                            <div class="form-row">
+                                <label for="buildingName" class="form-label required">Building Name</label>
+                                <input type="text" id="buildingName" name="buildingName" class="form-control" required>
+                            </div>
+                            
+                            <div class="form-row">
+                                <label for="squareFootage" class="form-label required">Approximate Square Footage</label>
+                                <input type="number" id="squareFootage" name="squareFootage" class="form-control" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <label class="form-label required">Building Type</label>
+                            <div class="radio-group">
+                                <label class="radio-option">
+                                    <input type="radio" name="buildingType" value="office" required> Office
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="buildingType" value="education" required> Education
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="buildingType" value="healthcare" required> Healthcare
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="buildingType" value="retail" required> Retail
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="buildingType" value="other" required> Other
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="buildingType" value="unknown" required> Unknown
+                                </label>
+                            </div>
+                            <div id="otherBuildingTypeField" class="conditional-field">
+                                <label for="otherBuildingType">Please specify building type:</label>
+                                <input type="text" id="otherBuildingType" name="otherBuildingType" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <div class="section-header">
+                            <h2 class="section-title">HVAC System Requirements</h2>
+                        </div>
+                        
+                        <div class="form-row">
+                            <label class="form-label required">Does your building have a Variable Air Volume (VAV) system?</label>
+                            <div class="radio-group">
+                                <label class="radio-option">
+                                    <input type="radio" name="hasVAV" value="yes" required> Yes
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="hasVAV" value="no" required> No
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="hasVAV" value="partial" required> Partial
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="hasVAV" value="other" required> Other
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="hasVAV" value="unknown" required> Unknown
+                                </label>
+                            </div>
+                            <div id="otherVAVSystemField" class="conditional-field">
+                                <label for="otherVAVSystem">Please specify system type:</label>
+                                <input type="text" id="otherVAVSystem" name="otherVAVSystem" class="form-control">
+                            </div>
+                            <small class="form-help">VAV systems vary airflow to different zones based on heating/cooling needs</small>
+                        </div>
+                        
+                        <div class="form-row">
+                            <label class="form-label required">Do your fans have Variable Frequency Drives (VFDs)?</label>
+                            <div class="radio-group">
+                                <label class="radio-option">
+                                    <input type="radio" name="hasVFD" value="yes" required> Yes
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="hasVFD" value="no" required> No
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="hasVFD" value="partial" required> Some Units
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="hasVFD" value="other" required> Other
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="hasVFD" value="unknown" required> Unknown
+                                </label>
+                            </div>
+                            <div id="otherVFDField" class="conditional-field">
+                                <label for="otherVFDSystem">Please specify:</label>
+                                <input type="text" id="otherVFDSystem" name="otherVFDSystem" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <div class="section-header">
+                            <h2 class="section-title">Building Management System</h2>
+                        </div>
+                        
+                        <div class="form-row">
+                            <label class="form-label required">Does your building have a digital Building Management System (BMS)?</label>
+                            <div class="radio-group">
+                                <label class="radio-option">
+                                    <input type="radio" name="hasBMS" value="yes" required> Yes
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="hasBMS" value="no" required> No
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="hasBMS" value="partial" required> Partial
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="hasBMS" value="other" required> Other
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="hasBMS" value="unknown" required> Unknown
+                                </label>
+                            </div>
+                            <div id="otherBMSField" class="conditional-field">
+                                <label for="otherBMSSystem">Please specify:</label>
+                                <input type="text" id="otherBMSSystem" name="otherBMSSystem" class="form-control">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row" id="bmsProtocolRow">
+                            <label class="form-label">Protocol used</label>
+                            <div class="radio-group">
+                                <label class="radio-option">
+                                    <input type="radio" name="bmsProtocol" value="bacnetIP"> BACnet/IP
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="bmsProtocol" value="bacnetMSTP"> BACnet MSTP
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="bmsProtocol" value="modbus"> Modbus
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="bmsProtocol" value="lonworks"> Lonworks
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="bmsProtocol" value="other"> Other
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="bmsProtocol" value="none"> None
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="bmsProtocol" value="unknown"> Unknown
+                                </label>
+                            </div>
+                            <div id="otherProtocolField" class="conditional-field">
+                                <label for="otherProtocol">Please specify protocol:</label>
+                                <input type="text" id="otherProtocol" name="otherProtocol" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="nav-footer">
+                        <button type="button" class="btn btn-outline" id="saveScreeningBtn">Save Progress</button>
+                        <button type="button" class="btn btn-primary" id="toDiscoveryBtn">Continue to Technical Discovery</button>
+                    </div>
+                </div>
+                
+                <!-- Technical Discovery Content -->
+                <div id="technical-discovery" class="stage-content">
+                    <div class="info-box">
+                        <p><strong>Technical Discovery</strong></p>
+                        <p>This form collects detailed technical information about your building's HVAC system to help us design the right O-DCV solution for your needs.</p>
+                    </div>
+                    
+                    <!-- Tab Navigation -->
+                    <div class="tab-navigation">
+                        <button class="tab-button active" data-tab="building-info">Building Info</button>
+                        <button class="tab-button" data-tab="hvac-system">HVAC System</button>
+                        <button class="tab-button" data-tab="control-system">Control System</button>
+                        <button class="tab-button" data-tab="data-points">Data Points</button>
+                        <button class="tab-button" data-tab="network">Network</button>
+                    </div>
+                    
+                    <!-- Tab Content: Building Info -->
+                    <div id="building-info" class="tab-content active">
+                        <div class="form-section">
+                            <div class="section-header">
+                                <h2 class="section-title">Building Information</h2>
+                            </div>
+                            
+                            <div class="grid-2">
+                                <div class="form-row">
+                                    <label for="discoveryBuildingName" class="form-label required">Building Name</label>
+                                    <input type="text" id="discoveryBuildingName" name="discoveryBuildingName" class="form-control" required>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <label for="buildingAddress" class="form-label required">Building Address</label>
+                                    <input type="text" id="buildingAddress" name="buildingAddress" class="form-control" required>
+                                </div>
+                            </div>
+                            
+                            <div class="grid-3">
+                                <div class="form-row">
+                                    <label for="buildingFloors" class="form-label required">Number of Floors</label>
+                                    <input type="number" id="buildingFloors" name="buildingFloors" class="form-control" required>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <label for="pilotArea" class="form-label required">Target Areas for Pilot</label>
+                                    <input type="text" id="pilotArea" name="pilotArea" class="form-control" required>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <label for="pilotSqFt" class="form-label required">Pilot Area Square Footage</label>
+                                    <input type="number" id="pilotSqFt" name="pilotSqFt" class="form-control" required>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <label for="buildingUsage" class="form-label required">Primary Building Usage</label>
+                                <select id="buildingUsage" name="buildingUsage" class="form-control" required>
+                                    <option value="">Please select...</option>
+                                    <option value="office">Office</option>
+                                    <option value="education">Education</option>
+                                    <option value="healthcare">Healthcare</option>
+                                    <option value="retail">Retail</option>
+                                    <option value="hospitality">Hospitality</option>
+                                    <option value="residential">Residential</option>
+                                    <option value="industrial">Industrial</option>
+                                    <option value="mixed">Mixed Use</option>
+                                    <option value="other">Other</option>
+                                    <option value="unknown">Unknown</option>
+                                </select>
+                                <div id="otherBuildingUsageField" class="conditional-field">
+                                    <label for="otherBuildingUsage">Please specify building usage:</label>
+                                    <input type="text" id="otherBuildingUsage" name="otherBuildingUsage" class="form-control">
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <label for="operatingHours" class="form-label">Typical Operating Hours</label>
+                                <textarea id="operatingHours" name="operatingHours" class="form-control" rows="2" placeholder="Example: Monday-Friday 7am-6pm, Saturday 9am-1pm"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Tab Content: HVAC System -->
+                    <div id="hvac-system" class="tab-content">
+                        <div class="form-section">
+                            <div class="section-header">
+                                <h2 class="section-title">Air Handling Units (AHUs)</h2>
+                            </div>
+                            
+                            <div class="form-row">
+                                <label for="ahuCount" class="form-label required">Number of AHUs Serving Pilot Area</label>
+                                <input type="number" id="ahuCount" name="ahuCount" class="form-control" min="1" required>
+                            </div>
+                            
+                            <div class="form-row">
+                                <label for="ahuModels" class="form-label">AHU Makes and Models</label>
+                                <textarea id="ahuModels" name="ahuModels" class="form-control" rows="3" placeholder="Example: AHU-1: Trane Model XYZ, AHU-2: Carrier Model ABC"></textarea>
+                            </div>
+                            
+                            <div class="form-row">
+                                <label class="form-label required">Do AHUs have Variable Frequency Drives (VFDs)?</label>
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="discoveryHasVFDs" value="yes" required> Yes
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="discoveryHasVFDs" value="no" required> No
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="discoveryHasVFDs" value="partial" required> Some Units Only
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="discoveryHasVFDs" value="other" required> Other
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="discoveryHasVFDs" value="unknown" required> Unknown
+                                    </label>
+                                </div>
+                                <div id="discoveryOtherVFDsField" class="conditional-field">
+                                    <label for="discoveryOtherVFDs">Please specify:</label>
+                                    <input type="text" id="discoveryOtherVFDs" name="discoveryOtherVFDs" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-section">
+                            <div class="section-header">
+                                <h2 class="section-title">Terminal Units</h2>
+                            </div>
+                            
+                            <div class="form-row">
+                                <label class="form-label required">Terminal unit types</label>
+                                <div class="checkbox-group">
+                                    <label class="checkbox-option">
+                                        <input type="checkbox" name="terminalUnitTypes" value="vav" required> VAV Boxes
+                                    </label>
+                                    <label class="checkbox-option">
+                                        <input type="checkbox" name="terminalUnitTypes" value="fanPowered"> Fan Powered Boxes
+                                    </label>
+                                    <label class="checkbox-option">
+                                        <input type="checkbox" name="terminalUnitTypes" value="cav"> CAV Boxes
+                                    </label>
+                                    <label class="checkbox-option">
+                                        <input type="checkbox" name="terminalUnitTypes" value="other"> Other
+                                    </label>
+                                    <label class="checkbox-option">
+                                        <input type="checkbox" name="terminalUnitTypes" value="none"> None
+                                    </label>
+                                    <label class="checkbox-option">
+                                        <input type="checkbox" name="terminalUnitTypes" value="unknown"> Unknown
+                                    </label>
+                                </div>
+                                <div id="otherTerminalUnitField" class="conditional-field">
+                                    <label for="otherTerminalUnit">Please specify terminal unit type:</label>
+                                    <input type="text" id="otherTerminalUnit" name="otherTerminalUnit" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Tab Content: Control System -->
+                    <div id="control-system" class="tab-content">
+                        <div class="form-section">
+                            <div class="section-header">
+                                <h2 class="section-title">Building Management System</h2>
+                            </div>
+                            
+                            <div class="form-row">
+                                <label for="bmsManufacturer" class="form-label required">BMS Manufacturer and Version</label>
+                                <input type="text" id="bmsManufacturer" name="bmsManufacturer" class="form-control" required placeholder="Example: Johnson Controls Metasys 10.1">
+                            </div>
+                            
+                            <div class="form-row">
+                                <label class="form-label required">Protocol used</label>
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="discoveryBmsProtocol" value="bacnetIP" required> BACnet/IP
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="discoveryBmsProtocol" value="bacnetMSTP" required> BACnet MSTP
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="discoveryBmsProtocol" value="modbus" required> Modbus
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="discoveryBmsProtocol" value="lonworks" required> Lonworks
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="discoveryBmsProtocol" value="other" required> Other
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="discoveryBmsProtocol" value="none" required> None
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="discoveryBmsProtocol" value="unknown" required> Unknown
+                                    </label>
+                                </div>
+                                <div id="discoveryOtherProtocolField" class="conditional-field">
+                                    <label for="discoveryOtherProtocol">Please specify protocol:</label>
+                                    <input type="text" id="discoveryOtherProtocol" name="discoveryOtherProtocol" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Tab Content: Data Points -->
+                    <div id="data-points" class="tab-content">
+                        <div class="form-section">
+                            <div class="section-header">
+                                <h2 class="section-title">Available Data Points</h2>
+                            </div>
+                            
+                            <p>Please indicate which data points are available in your BMS. This helps us determine what additional sensors may be needed.</p>
+                            
+                            <div class="table-responsive">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Data Point</th>
+                                            <th>Available</th>
+                                            <th>Notes</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><strong>AHU Level</strong></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Supply air temperature</td>
+                                            <td>
+                                                <div class="radio-group">
+                                                    <label class="radio-option">
+                                                        <input type="radio" name="satAvailable" value="yes"> Yes
+                                                    </label>
+                                                    <label class="radio-option">
+                                                        <input type="radio" name="satAvailable" value="no"> No
+                                                    </label>
+                                                    <label class="radio-option">
+                                                        <input type="radio" name="satAvailable" value="unknown"> Unknown
+                                                    </label>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <input type="text" name="satNotes" class="form-control">
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Return air temperature</td>
+                                            <td>
+                                                <div class="radio-group">
+                                                    <label class="radio-option">
+                                                        <input type="radio" name="ratAvailable" value="yes"> Yes
+                                                    </label>
+                                                    <label class="radio-option">
+                                                        <input type="radio" name="ratAvailable" value="no"> No
+                                                    </label>
+                                                    <label class="radio-option">
+                                                        <input type="radio" name="ratAvailable" value="unknown"> Unknown
+                                                    </label>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <input type="text" name="ratNotes" class="form-control">
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Outdoor air temperature</td>
+                                            <td>
+                                                <div class="radio-group">
+                                                    <label class="radio-option">
+                                                        <input type="radio" name="oatAvailable" value="yes"> Yes
+                                                    </label>
+                                                    <label class="radio-option">
+                                                        <input type="radio" name="oatAvailable" value="no"> No
+                                                    </label>
+                                                    <label class="radio-option">
+                                                        <input type="radio" name="oatAvailable" value="unknown"> Unknown
+                                                    </label>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <input type="text" name="oatNotes" class="form-control">
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Tab Content: Network -->
+                    <div id="network" class="tab-content">
+                        <div class="form-section">
+                            <div class="section-header">
+                                <h2 class="section-title">IT and Connectivity</h2>
+                            </div>
+                            
+                            <div class="form-row">
+                                <label class="form-label required">Is there WiFi available?</label>
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="hasWifi" value="yes" required> Yes
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="hasWifi" value="no" required> No
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="hasWifi" value="limited" required> Limited Coverage
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="hasWifi" value="other" required> Other
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="hasWifi" value="unknown" required> Unknown
+                                    </label>
+                                </div>
+                                <div id="otherWifiField" class="conditional-field">
+                                    <label for="otherWifi">Please specify:</label>
+                                    <input type="text" id="otherWifi" name="otherWifi" class="form-control">
+                                </div>
+                            </div>
+                            
+                            <div class="form-row" id="wifiFrequencyRow">
+                                <label class="form-label">If yes, is it 2.4GHz?</label>
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="wifi24GHz" value="yes"> Yes
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="wifi24GHz" value="no"> No (5GHz only)
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="wifi24GHz" value="both"> Both frequencies available
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="wifi24GHz" value="unknown"> Unknown
+                                    </label>
+                                </div>
+                                <small class="form-help">R-Zero devices require 2.4GHz WiFi</small>
+                            </div>
+                            
+                            <div class="form-row">
+                                <label class="form-label">Are there any IT security restrictions for connecting new devices?</label>
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="hasITRestrictions" value="yes"> Yes
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="hasITRestrictions" value="no"> No
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="hasITRestrictions" value="unknown"> Unknown
+                                    </label>
+                                </div>
+                                <div id="itRestrictionsField" class="conditional-field">
+                                    <label for="itRestrictionDetails">Please provide details if known:</label>
+                                    <textarea id="itRestrictionDetails" name="itRestrictionDetails" class="form-control" rows="2"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="nav-footer">
+                        <div>
+                            <button type="button" class="btn btn-outline" id="backToScreeningBtn">Back to Screening</button>
+                            <button type="button" class="btn btn-outline" id="saveDiscoveryBtn">Save Progress</button>
+                        </div>
+                        <button type="button" class="btn btn-primary" id="toSiteAssessmentBtn">Continue to Site Assessment</button>
+                    </div>
+                </div>
+                
+                <!-- Site Assessment Content -->
+                <div id="site-assessment" class="stage-content">
+                    <div class="info-box">
+                        <p><strong>Tips for the site survey:</strong></p>
+                        <ul>
+                            <li>Use this application to capture all relevant information during your site visit</li>
+                            <li>Take photos of all equipment, installation locations, and any special conditions</li>
+                            <li>You can save your progress and continue later if needed</li>
+                            <li>The survey can work offline and will sync when connection is restored</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="form-section">
+                        <div class="section-header">
+                            <h2 class="section-title">Survey Information</h2>
+                        </div>
+                        
+                        <div class="grid-2">
+                            <div class="form-row">
+                                <label for="surveyBuildingName" class="form-label required">Building Name</label>
+                                <input type="text" id="surveyBuildingName" name="surveyBuildingName" class="form-control" required>
+                            </div>
+                            
+                            <div class="form-row">
+                                <label for="surveyDate" class="form-label required">Survey Date</label>
+                                <input type="date" id="surveyDate" name="surveyDate" class="form-control" required>
+                            </div>
+                            
+                            <div class="form-row">
+                                <label for="conductedBy" class="form-label required">Conducted By</label>
+                                <input type="text" id="conductedBy" name="conductedBy" class="form-control" required>
+                            </div>
+                            
+                            <div class="form-row">
+                                <label for="clientContact" class="form-label required">Client Contact Present</label>
+                                <input type="text" id="clientContact" name="clientContact" class="form-control" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <div class="section-header">
+                            <h2 class="section-title">Equipment Verification</h2>
+                            <div class="section-tools">
+                                <button type="button" class="btn btn-outline" id="addAhuBtn">
+                                    <span>+</span>
+                                    <span>Add AHU</span>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div id="ahu-container">
+                            <!-- AHU verification template -->
+                            <div class="form-card ahu-item">
+                                <div class="form-card-header">
+                                    <h4 class="form-card-title">AHU-1</h4>
+                                    <div class="form-card-actions">
+                                        <button type="button" class="btn btn-outline remove-ahu">×</button>
+                                    </div>
+                                </div>
+                                <div class="grid-2">
+                                    <div>
+                                        <input type="text" placeholder="Location" class="form-control" name="ahuLocation_1" style="margin-bottom: 0.5rem;">
+                                        <select class="form-control" name="ahuCondition_1">
+                                            <option value="">Select Condition...</option>
+                                            <option value="excellent">Excellent</option>
+                                            <option value="good">Good</option>
+                                            <option value="fair">Fair</option>
+                                            <option value="poor">Poor</option>
+                                            <option value="unknown">Unknown</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <textarea class="form-control" rows="3" placeholder="Notes" name="ahuNotes_1"></textarea>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <label class="form-label">Photos</label>
+                                    <div class="photo-gallery">
+                                        <div class="photo-item">
+                                            <div class="photo-placeholder">
+                                                <div class="photo-icon">📷</div>
+                                                <span>Add Photo</span>
+                                            </div>
+                                            <input type="file" name="ahuPhoto_1_1" style="display: none;" accept="image/*" capture>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <div class="section-header">
+                            <h2 class="section-title">Network Connectivity Testing</h2>
+                        </div>
+                        
+                        <div class="form-row">
+                            <label class="form-label">Test Locations</label>
+                            <div id="test-locations">
+                                <div class="grid-3" style="margin-bottom: 1rem;">
+                                    <div><strong>Location</strong></div>
+                                    <div><strong>WiFi Signal</strong></div>
+                                    <div><strong>Test Results</strong></div>
+                                </div>
+                                
+                                <div class="grid-3" style="margin-bottom: 0.5rem;">
+                                    <div>
+                                        <input type="text" class="form-control" name="testLocation_1" placeholder="Room/Area 1">
+                                    </div>
+                                    <div>
+                                        <select class="form-control" name="testWiFiStrength_1">
+                                            <option value="">Select...</option>
+                                            <option value="strong">Strong</option>
+                                            <option value="medium">Medium</option>
+                                            <option value="weak">Weak</option>
+                                            <option value="none">None</option>
+                                            <option value="unknown">Unknown</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <select class="form-control" name="testResults_1">
+                                            <option value="">Select...</option>
+                                            <option value="pass">Pass</option>
+                                            <option value="fail">Fail</option>
+                                            <option value="partial">Partial</option>
+                                            <option value="unknown">Unknown</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button type="button" class="btn btn-outline" style="margin-top: 1rem;" id="addLocationBtn">
+                                <span>+</span>
+                                <span>Add Test Location</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <div class="section-header">
+                            <h2 class="section-title">Site Survey Summary</h2>
+                        </div>
+                        
+                        <div class="form-row">
+                            <label class="form-label">Overall Assessment</label>
+                            <div class="grid-2">
+                                <div>
+                                    <label>HVAC System Compatibility</label>
+                                    <select class="form-control" name="hvacCompatibility">
+                                        <option value="">Select...</option>
+                                        <option value="excellent">Excellent</option>
+                                        <option value="good">Good</option>
+                                        <option value="fair">Fair</option>
+                                        <option value="poor">Poor</option>
+                                        <option value="unknown">Unknown</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label>BMS Capabilities</label>
+                                    <select class="form-control" name="bmsCapabilities">
+                                        <option value="">Select...</option>
+                                        <option value="excellent">Excellent</option>
+                                        <option value="good">Good</option>
+                                        <option value="fair">Fair</option>
+                                        <option value="poor">Poor</option>
+                                        <option value="unknown">Unknown</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label>Installation Feasibility</label>
+                                    <select class="form-control" name="installationFeasibility">
+                                        <option value="">Select...</option>
+                                        <option value="excellent">Excellent</option>
+                                        <option value="good">Good</option>
+                                        <option value="fair">Fair</option>
+                                        <option value="poor">Poor</option>
+                                        <option value="unknown">Unknown</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label>Overall Project Viability</label>
+                                    <select class="form-control" name="projectViability">
+                                        <option value="">Select...</option>
+                                        <option value="excellent">Excellent</option>
+                                        <option value="good">Good</option>
+                                        <option value="fair">Fair</option>
+                                        <option value="poor">Poor</option>
+                                        <option value="unknown">Unknown</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <label for="additionalNotes" class="form-label">Additional Notes</label>
+                            <textarea id="additionalNotes" name="additionalNotes" class="form-control" rows="4" placeholder="Any additional observations, concerns, or opportunities"></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="nav-footer">
+                        <div>
+                            <button type="button" class="btn btn-outline" id="backToDiscoveryBtn">Back to Discovery</button>
+                            <button type="button" class="btn btn-outline" id="saveSurveyBtn">Save Progress</button>
+                        </div>
+                        <button type="submit" class="btn btn-primary" id="submitAssessmentBtn">Submit Assessment</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <div class="toast-icon">✓</div>
+        <div class="toast-message">Successfully saved progress</div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Form data object to store all form inputs
+            let formData = {};
+            
+            // Load saved data if it exists
+            const savedData = localStorage.getItem('odcvAssessmentData');
+            if (savedData) {
+                formData = JSON.parse(savedData);
+                populateFormFields();
+            }
+            
+            // Navigation between sections
+            const progressSteps = document.querySelectorAll('.progress-step');
+            const stageContents = document.querySelectorAll('.stage-content');
+            
+            // Function to navigate to a specific step
+            function navigateToStep(stepId) {
+                // Hide all content sections
+                stageContents.forEach(content => {
+                    content.classList.remove('active');
+                });
+                
+                // Update active step indicators
+                progressSteps.forEach(step => {
+                    step.classList.remove('active');
+                    if (step.dataset.step === stepId) {
+                        step.classList.add('active');
+                    }
+                });
+                
+                // Show selected content
+                document.getElementById(stepId).classList.add('active');
+                
+                // If moving to Technical Discovery, show the first tab
+                if (stepId === 'technical-discovery') {
+                    // Make the first tab active
+                    const tabButtons = document.querySelectorAll('.tab-button');
+                    const tabContents = document.querySelectorAll('.tab-content');
+                    
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    
+                    document.querySelector('.tab-button[data-tab="building-info"]').classList.add('active');
+                    document.getElementById('building-info').classList.add('active');
+                }
+                
+                // Scroll to top of content
+                window.scrollTo({
+                    top: document.querySelector('.content-area').offsetTop - 20,
+                    behavior: 'smooth'
+                });
+            }
+            
+            // Add click event listeners to all progress steps
+            progressSteps.forEach(step => {
+                step.addEventListener('click', function() {
+                    saveFormData(); // Save current progress
+                    navigateToStep(this.dataset.step);
+                });
+            });
+            
+            // Next/Previous button navigation
+            document.getElementById('toDiscoveryBtn').addEventListener('click', function() {
+                saveFormData();
+                navigateToStep('technical-discovery');
+                progressSteps[0].classList.add('completed');
+            });
+            
+            document.getElementById('backToScreeningBtn').addEventListener('click', function() {
+                saveFormData();
+                navigateToStep('initial-screening');
+            });
+            
+            document.getElementById('toSiteAssessmentBtn').addEventListener('click', function() {
+                saveFormData();
+                navigateToStep('site-assessment');
+                progressSteps[1].classList.add('completed');
+            });
+            
+            document.getElementById('backToDiscoveryBtn').addEventListener('click', function() {
+                saveFormData();
+                navigateToStep('technical-discovery');
+            });
+            
+            // Tab navigation in Technical Discovery
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-tab');
+                    
+                    // Hide all tab contents
+                    tabContents.forEach(content => {
+                        content.classList.remove('active');
+                    });
+                    
+                    // Deactivate all tab buttons
+                    tabButtons.forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    
+                    // Activate the selected tab and content
+                    document.getElementById(tabId).classList.add('active');
+                    this.classList.add('active');
+                });
+            });
+            
+            // Save progress functionality
+            const saveButtons = document.querySelectorAll('#saveScreeningBtn, #saveDiscoveryBtn, #saveSurveyBtn');
+            saveButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    saveFormData();
+                    showToast('Progress saved successfully');
+                });
+            });
+            
+            // Submit functionality
+            document.getElementById('assessmentForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                saveFormData();
+                
+                // Collect final form data to send to spreadsheet
+                const finalData = new FormData();
+                for (const key in formData) {
+                    finalData.append(key, formData[key]);
+                }
+                
+                // Set up FormData entries for file uploads
+                const fileInputs = document.querySelectorAll('input[type="file"]');
+                fileInputs.forEach(input => {
+                    if (input.files.length > 0) {
+                        finalData.append(input.name, input.files[0]);
+                    }
+                });
+                
+                // In a real implementation, this would send data to a server
+                // For this demo, we'll just show a success message
+                setTimeout(() => {
+                    showToast('Assessment submitted successfully!');
+                    // Normally you would redirect or show a success page
+                    
+                    // For demonstration purposes, let's reset localStorage
+                    localStorage.removeItem('odcvAssessmentData');
+                    
+                    // Show success notification
+                    alert('Form submitted successfully! In a real implementation, this data would be sent to a Google Sheet.');
+                }, 500);
+            });
+            
+            // Add AHU button
+            document.getElementById('addAhuBtn').addEventListener('click', function() {
+                const ahuContainer = document.getElementById('ahu-container');
+                const ahuCount = ahuContainer.children.length + 1;
+                
+                // Clone the first AHU item
+                const ahuTemplate = ahuContainer.firstElementChild.cloneNode(true);
+                
+                // Update title to reflect new AHU number
+                ahuTemplate.querySelector('.form-card-title').textContent = `AHU-${ahuCount}`;
+                
+                // Update field names with new index
+                const inputs = ahuTemplate.querySelectorAll('input, textarea, select');
+                inputs.forEach(input => {
+                    if (input.name && input.name.includes('_1')) {
+                        input.name = input.name.replace('_1', `_${ahuCount}`);
+                        input.value = ''; // Clear values
+                    }
+                });
+                
+                // Setup remove button
+                const removeBtn = ahuTemplate.querySelector('.remove-ahu');
+                removeBtn.addEventListener('click', function() {
+                    ahuTemplate.remove();
+                });
+                
+                // Add to container
+                ahuContainer.appendChild(ahuTemplate);
+                
+                // Setup photo placeholders for the new AHU
+                setupPhotoPlaceholders(ahuTemplate);
+            });
+            
+            // Add Test Location button
+            document.getElementById('addLocationBtn').addEventListener('click', function() {
+                const locationsContainer = document.getElementById('test-locations');
+                const headerRow = locationsContainer.querySelector('.grid-3:first-child');
+                const testLocations = locationsContainer.querySelectorAll('.grid-3:not(:first-child)');
+                const locationCount = testLocations.length + 1;
+                
+                // Clone the first test location row (excluding header)
+                const locationTemplate = testLocations[0].cloneNode(true);
+                
+                // Update field names with new index
+                const inputs = locationTemplate.querySelectorAll('input, select');
+                inputs.forEach(input => {
+                    if (input.name && input.name.includes('_1')) {
+                        input.name = input.name.replace('_1', `_${locationCount}`);
+                        input.value = ''; // Clear values
+                    }
+                    
+                    if (input.placeholder && input.placeholder.includes('1')) {
+                        input.placeholder = input.placeholder.replace('1', locationCount);
+                    }
+                });
+                
+                // Add to container
+                locationsContainer.appendChild(locationTemplate);
+            });
+            
+            // Setup photo placeholders
+            function setupPhotoPlaceholders(container = document) {
+                const photoPlaceholders = container.querySelectorAll('.photo-placeholder');
+                
+                photoPlaceholders.forEach(placeholder => {
+                    const photoItem = placeholder.closest('.photo-item');
+                    const fileInput = photoItem.querySelector('input[type="file"]');
+                    
+                    // Clear existing event listeners
+                    const newPlaceholder = placeholder.cloneNode(true);
+                    placeholder.parentNode.replaceChild(newPlaceholder, placeholder);
+                    
+                    // Add click event
+                    newPlaceholder.addEventListener('click', function() {
+                        fileInput.click();
+                    });
+                    
+                    // Add file input change handler
+                    fileInput.addEventListener('change', function(e) {
+                        if (this.files && this.files[0]) {
+                            const reader = new FileReader();
+                            
+                            reader.onload = function(e) {
+                                // Create image
+                                const img = document.createElement('img');
+                                img.src = e.target.result;
+                                
+                                // Create actions
+                                const actions = document.createElement('div');
+                                actions.className = 'photo-actions';
+                                
+                                const deleteBtn = document.createElement('button');
+                                deleteBtn.className = 'photo-action';
+                                deleteBtn.innerHTML = '×';
+                                deleteBtn.addEventListener('click', function(e) {
+                                    e.stopPropagation();
+                                    img.remove();
+                                    actions.remove();
+                                    newPlaceholder.style.display = 'flex';
+                                    fileInput.value = '';
+                                });
+                                
+                                actions.appendChild(deleteBtn);
+                                
+                                // Hide placeholder, add image and actions
+                                newPlaceholder.style.display = 'none';
+                                photoItem.appendChild(img);
+                                photoItem.appendChild(actions);
+                            };
+                            
+                            reader.readAsDataURL(this.files[0]);
+                        }
+                    });
+                });
+            }
+            
+            // Setup initial photo placeholders
+            setupPhotoPlaceholders();
+            
+            // Setup conditional fields for "Other" options
+            function setupConditionalFields(radioName, targetId) {
+                const radioButtons = document.querySelectorAll(`input[name="${radioName}"]`);
+                const conditionalField = document.getElementById(targetId);
+                
+                if (radioButtons.length && conditionalField) {
+                    radioButtons.forEach(radio => {
+                        radio.addEventListener('change', function() {
+                            conditionalField.classList.toggle('show', this.value === 'other');
+                        });
+                    });
+                    
+                    // Check initial state
+                    const checkedRadio = document.querySelector(`input[name="${radioName}"]:checked`);
+                    if (checkedRadio && checkedRadio.value === 'other') {
+                        conditionalField.classList.add('show');
+                    }
+                }
+            }
+            
+            // Setup all conditional fields
+            setupConditionalFields('buildingType', 'otherBuildingTypeField');
+            setupConditionalFields('hasVAV', 'otherVAVSystemField');
+            setupConditionalFields('hasVFD', 'otherVFDField');
+            setupConditionalFields('hasBMS', 'otherBMSField');
+            setupConditionalFields('bmsProtocol', 'otherProtocolField');
+            setupConditionalFields('buildingUsage', 'otherBuildingUsageField');
+            setupConditionalFields('discoveryHasVFDs', 'discoveryOtherVFDsField');
+            setupConditionalFields('terminalUnitTypes', 'otherTerminalUnitField');
+            setupConditionalFields('discoveryBmsProtocol', 'discoveryOtherProtocolField');
+            setupConditionalFields('hasWifi', 'otherWifiField');
+            setupConditionalFields('hasITRestrictions', 'itRestrictionsField');
+            
+            // Setup visibility for conditional rows
+            const hasBMSRadios = document.querySelectorAll('input[name="hasBMS"]');
+            const bmsProtocolRow = document.getElementById('bmsProtocolRow');
+            
+            if (hasBMSRadios.length && bmsProtocolRow) {
+                hasBMSRadios.forEach(radio => {
+                    radio.addEventListener('change', function() {
+                        const showRow = (this.value === 'yes' || this.value === 'partial');
+                        bmsProtocolRow.style.display = showRow ? 'block' : 'none';
+                    });
+                });
+                
+                // Check initial state
+                const checkedRadio = document.querySelector('input[name="hasBMS"]:checked');
+                if (checkedRadio) {
+                    const showRow = (checkedRadio.value === 'yes' || checkedRadio.value === 'partial');
+                    bmsProtocolRow.style.display = showRow ? 'block' : 'none';
+                } else {
+                    bmsProtocolRow.style.display = 'none';
+                }
+            }
+            
+            const hasWifiRadios = document.querySelectorAll('input[name="hasWifi"]');
+            const wifiFrequencyRow = document.getElementById('wifiFrequencyRow');
+            
+            if (hasWifiRadios.length && wifiFrequencyRow) {
+                hasWifiRadios.forEach(radio => {
+                    radio.addEventListener('change', function() {
+                        wifiFrequencyRow.style.display = (this.value === 'yes' || this.value === 'limited') ? 'block' : 'none';
+                    });
+                });
+                
+                // Check initial state
+                const checkedRadio = document.querySelector('input[name="hasWifi"]:checked');
+                if (checkedRadio) {
+                    wifiFrequencyRow.style.display = (checkedRadio.value === 'yes' || checkedRadio.value === 'limited') ? 'block' : 'none';
+                } else {
+                    wifiFrequencyRow.style.display = 'none';
+                }
+            }
+            
+            // Function to save form data to localStorage
+            function saveFormData() {
+                const form = document.getElementById('assessmentForm');
+                const inputs = form.querySelectorAll('input, select, textarea');
+                
+                inputs.forEach(input => {
+                    if (input.name && input.name !== '') {
+                        if (input.type === 'checkbox') {
+                            if (!formData[input.name]) formData[input.name] = [];
+                            
+                            // Clear checkboxes array before repopulating
+                            if (input === document.querySelector(`input[name="${input.name}"]`)) {
+                                formData[input.name] = [];
+                            }
+                            
+                            if (input.checked) {
+                                formData[input.name].push(input.value);
+                            }
+                        } else if (input.type === 'radio') {
+                            if (input.checked) {
+                                formData[input.name] = input.value;
+                            }
+                        } else if (input.type !== 'file') {
+                            formData[input.name] = input.value;
+                        }
+                    }
+                });
+                
+                // Save to localStorage
+                localStorage.setItem('odcvAssessmentData', JSON.stringify(formData));
+            }
+            
+            // Function to populate form fields from saved data
+            function populateFormFields() {
+                for (const key in formData) {
+                    const input = document.querySelector(`[name="${key}"]`);
+                    if (input) {
+                        if (input.type === 'checkbox') {
+                            // Handle checkbox groups
+                            const checkboxes = document.querySelectorAll(`[name="${key}"]`);
+                            checkboxes.forEach(checkbox => {
+                                checkbox.checked = formData[key].includes(checkbox.value);
+                            });
+                        } else if (input.type === 'radio') {
+                            // Handle radio groups
+                            const radio = document.querySelector(`[name="${key}"][value="${formData[key]}"]`);
+                            if (radio) radio.checked = true;
+                        } else {
+                            // Handle text inputs, selects, etc.
+                            input.value = formData[key];
+                        }
+                    }
+                }
+                
+                // Pre-populate building name across all sections
+                if (formData['buildingName']) {
+                    const buildingNameFields = ['discoveryBuildingName', 'surveyBuildingName'];
+                    buildingNameFields.forEach(field => {
+                        const input = document.getElementById(field);
+                        if (input && !input.value) {
+                            input.value = formData['buildingName'];
+                        }
+                    });
+                }
+                
+                // Pre-populate square footage to pilot area if empty
+                if (formData['squareFootage'] && !formData['pilotSqFt']) {
+                    const pilotSqFtInput = document.getElementById('pilotSqFt');
+                    if (pilotSqFtInput) {
+                        pilotSqFtInput.value = formData['squareFootage'];
+                    }
+                }
+                
+                // Check if any sections are completed
+                if (Object.keys(formData).length > 0) {
+                    // If we have technical discovery data, mark initial screening as completed
+                    if (formData['discoveryBuildingName'] || formData['buildingAddress']) {
+                        progressSteps[0].classList.add('completed');
+                    }
+                    
+                    // If we have site assessment data, mark technical discovery as completed
+                    if (formData['surveyBuildingName'] || formData['surveyDate']) {
+                        progressSteps[1].classList.add('completed');
+                    }
+                }
+                
+                // Trigger conditional fields
+                document.querySelectorAll('input[type="radio"]:checked').forEach(radio => {
+                    const event = new Event('change');
+                    radio.dispatchEvent(event);
+                });
+            }
+            
+            // Toast notification function
+            function showToast(message) {
+                const toast = document.getElementById('toast');
+                toast.querySelector('.toast-message').textContent = message;
+                toast.classList.add('show');
+                
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 3000);
+            }
+        });
+    </script>
+</body>
+</html>
