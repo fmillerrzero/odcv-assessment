@@ -1,652 +1,1278 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>O-DCV Assessment Form</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 20px;
-      background-color: #f4f4f4;
-    }
-    .container {
-      max-width: 800px;
-      margin: 0 auto;
-      background: #fff;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    }
-    h2 {
-      color: #333;
-      border-bottom: 2px solid #eee;
-      padding-bottom: 10px;
-    }
-    .section {
-      margin-bottom: 20px;
-    }
-    label {
-      display: block;
-      margin: 10px 0 5px;
-      font-weight: bold;
-    }
-    input[type="text"], input[type="email"], input[type="number"], select, textarea {
-      width: 100%;
-      padding: 8px;
-      margin-bottom: 10px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      box-sizing: border-box;
-    }
-    input[type="radio"] {
-      margin-right: 5px;
-    }
-    .radio-group {
-      display: flex;
-      gap: 20px;
-      margin-bottom: 10px;
-    }
-    .photo-group {
-      margin-bottom: 10px;
-    }
-    .hidden {
-      display: none;
-    }
-    button {
-      background-color: #007BFF;
-      color: #fff;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #0056b3;
-    }
-    .error {
-      color: red;
-      font-size: 0.9em;
-      margin-bottom: 10px;
-    }
-    .success {
-      color: green;
-      font-size: 0.9em;
-      margin-bottom: 10px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>O-DCV Assessment Form</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1d4ed8;
+            --secondary: #10b981;
+            --background: #f9fafb;
+            --text: #1f2937;
+            --border: #d1d5db;
+            --error: #ef4444;
+            --success: #10b981;
+            --font-family: 'Inter', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 20px;
+            border-bottom: 3px solid var(--secondary);
+            padding-bottom: 10px;
+        }
+
+        .progress-nav {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            gap: 20px;
+            position: relative;
+        }
+
+        .progress-step {
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background-color: var(--border);
+            border: 2px solid var(--border);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .step-number .checkmark {
+            display: none;
+            font-size: 1.2rem;
+        }
+
+        .progress-step.active .step-number {
+            background-color: var(--primary);
+            border-color: var(--primary);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .progress-step.completed .step-number {
+            background-color: var(--secondary);
+            border-color: var(--secondary);
+            color: white;
+        }
+
+        .progress-step.completed .step-number .checkmark {
+            display: inline;
+        }
+
+        .step-label {
+            font-size: 0.9rem;
+            color: var(--text);
+            margin-top: 5px;
+        }
+
+        .progress-line {
+            position: absolute;
+            top: 20px;
+            left: 60px;
+            right: 60px;
+            height: 2px;
+            background: var(--border);
+            z-index: 0;
+        }
+
+        .stage-content {
+            display: none;
+        }
+
+        .stage-content.active {
+            display: block;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form-label {
+            font-weight: 500;
+            font-size: 1rem;
+            background: #f3f4f6;
+            padding: 8px;
+            border-radius: 4px;
+        }
+
+        .form-label.required::after {
+            content: '*';
+            color: var(--error);
+            margin-left: 5px;
+        }
+
+        .form-control {
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.1);
+            outline: none;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .conditional-field {
+            display: none;
+            margin-top: 10px;
+            grid-column: 1 / -1;
+        }
+
+        .conditional-field.show {
+            display: block;
+        }
+
+        .tabset {
+            margin-bottom: 20px;
+        }
+
+        .tab-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .tab-button {
+            padding: 10px 20px;
+            border: none;
+            background: #e5e7eb;
+            color: var(--text);
+            cursor: pointer;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+
+        .tab-button.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .dynamic-list {
+            margin-bottom: 20px;
+        }
+
+        .dynamic-item {
+            border: 1px solid var(--border);
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 6px;
+            position: relative;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .remove-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--error);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+
+        .add-btn, .nav-btn {
+            padding: 12px 24px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .add-btn:hover, .nav-btn:hover {
+            background: #1e40af;
+        }
+
+        .photo-upload {
+            margin-top: 10px;
+        }
+
+        .error-message {
+            color: var(--error);
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        .success-message {
+            color: var(--success);
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        .radio-option input[type="radio"] {
+            display: none;
+        }
+
+        .radio-option label {
+            cursor: pointer;
+            position: relative;
+            padding-left: 25px;
+        }
+
+        .radio-option label::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 18px;
+            height: 18px;
+            border: 2px solid var(--primary);
+            border-radius: 50%;
+            background: white;
+        }
+
+        .radio-option input[type="radio"]:checked + label::before {
+            background: var(--primary);
+        }
+
+        .radio-option input[type="radio"]:checked + label::after {
+            content: '';
+            position: absolute;
+            left: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: white;
+        }
+
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <h1>O-DCV Assessment Form</h1>
-    <p>This form is used to assess the suitability of your building for an Occupancy-Based Demand Control Ventilation (O-DCV) pilot. Please provide as much information as possible. Fields marked with * are required. Tooltips are available for technical terms by hovering over the labels.</p>
-    <form id="assessmentForm" enctype="multipart/form-data">
-      <!-- Initial Screening -->
-      <div class="section">
-        <h2>Initial Screening</h2>
-        <label for="ContactName" title="Your name or the contact person's name.">Contact Name *</label>
-        <input type="text" id="ContactName" name="ContactName" required>
+    <div class="container">
+        <h1>O-DCV Assessment Form</h1>
+        <p>This form assesses your building's suitability for an Occupancy-Based Demand Control Ventilation (O-DCV) pilot. Provide as much detail as possible. Required fields are marked with *. Hover over labels for explanations.</p>
 
-        <label for="ContactEmail" title="Your email address for follow-up communication.">Contact Email *</label>
-        <input type="email" id="ContactEmail" name="ContactEmail" required>
-
-        <label for="BuildingName" title="The name of the building being assessed.">Building Name *</label>
-        <input type="text" id="BuildingName" name="BuildingName" required>
-
-        <label for="BuildingSquareFootage" title="Total square footage of the building. Estimate if exact number is unknown.">Building Square Footage</label>
-        <input type="number" id="BuildingSquareFootage" name="BuildingSquareFootage" min="0">
-
-        <label for="BuildingType" title="Primary use of the building. Select 'Unknown' if not sure.">Building Type *</label>
-        <select id="BuildingType" name="BuildingType" required>
-          <option value="">Select...</option>
-          <option value="Office">Office</option>
-          <option value="Education">Education</option>
-          <option value="Healthcare">Healthcare</option>
-          <option value="Retail">Retail</option>
-          <option value="Hospitality">Hospitality</option>
-          <option value="Residential">Residential</option>
-          <option value="Industrial">Industrial</option>
-          <option value="Mixed">Mixed</option>
-          <option value="Other">Other</option>
-          <option value="Unknown">Unknown</option>
-        </select>
-
-        <div id="OtherBuildingTypeDiv" class="hidden">
-          <label for="OtherBuildingType" title="Specify the building type if 'Other' is selected.">Other Building Type</label>
-          <input type="text" id="OtherBuildingType" name="OtherBuildingType">
+        <div class="progress-nav">
+            <div class="progress-step active" data-step="initial-screening">
+                <div class="step-number">1 <span class="checkmark">✓</span></div>
+                <div class="step-label">Initial Screening</div>
+            </div>
+            <div class="progress-step" data-step="technical-discovery">
+                <div class="step-number">2 <span class="checkmark">✓</span></div>
+                <div class="step-label">Technical Discovery</div>
+            </div>
+            <div class="progress-step" data-step="site-assessment">
+                <div class="step-number">3 <span class="checkmark">✓</span></div>
+                <div class="step-label">Site Assessment</div>
+            </div>
+            <div class="progress-line"></div>
         </div>
 
-        <label title="Variable Air Volume systems control airflow to different zones. Select 'Don't know' if unsure.">Has VAV Systems? *</label>
-        <div class="radio-group">
-          <label><input type="radio" name="HasVAV" value="Yes" required> Yes</label>
-          <label><input type="radio" name="HasVAV" value="No"> No</label>
-          <label><input type="radio" name="HasVAV" value="Don't know"> Don't know</label>
-        </div>
-
-        <div id="HasVAVYesDiv" class="hidden">
-          <label title="Variable Frequency Drives adjust motor speeds for energy efficiency.">Has VFDs?</label>
-          <div class="radio-group">
-            <label><input type="radio" name="HasVFD" value="Yes"> Yes</label>
-            <label><input type="radio" name="HasVFD" value="No"> No</label>
-            <label><input type="radio" name="HasVFD" value="Don't know"> Don't know</label>
-          </div>
-
-          <label title="Dampers that control airflow to individual zones.">Has Zonal Dampers?</label>
-          <div class="radio-group">
-            <label><input type="radio" name="HasZonalDampers" value="Yes"> Yes</label>
-            <label><input type="radio" name="HasZonalDampers" value="No"> No</label>
-            <label><input type="radio" name="HasZonalDampers" value="Don't know"> Don't know</label>
-          </div>
-
-          <label title="Dampers that control the intake of outside air.">Has Adjustable OA Dampers?</label>
-          <div class="radio-group">
-            <label><input type="radio" name="HasAdjustableOADampers" value="Yes"> Yes</label>
-            <label><input type="radio" name="HasAdjustableOADampers" value="No"> No</label>
-            <label><input type="radio" name="HasAdjustableOADampers" value="Don't know"> Don't know</label>
-          </div>
-
-          <label title="Can the Building Management System control the dampers?">Dampers Controllable by BMS?</label>
-          <div class="radio-group">
-            <label><input type="radio" name="DampersControllableByBMS" value="Yes"> Yes</label>
-            <label><input type="radio" name="DampersControllableByBMS" value="No"> No</label>
-            <label><input type="radio" name="DampersControllableByBMS" value="Don't know"> Don't know</label>
-          </div>
-        </div>
-
-        <label title="Building Management System automates and monitors building systems. Select 'Don't know' if unsure.">Has BMS? *</label>
-        <div class="radio-group">
-          <label><input type="radio" name="HasBMS" value="Yes" required> Yes</label>
-          <label><input type="radio" name="HasBMS" value="No"> No</label>
-          <label><input type="radio" name="HasBMS" value="Don't know"> Don't know</label>
-        </div>
-
-        <div id="HasBMSYesDiv" class="hidden">
-          <label title="Communication standard used by the BMS, like BACnet or Modbus.">BMS Protocol</label>
-          <select id="BMSProtocol" name="BMSProtocol">
-            <option value="">Select...</option>
-            <option value="BACnet">BACnet</option>
-            <option value="Modbus">Modbus</option>
-            <option value="Other">Other</option>
-            <option value="None">None</option>
-          </select>
-
-          <label title="Ability to change temperature and airflow settings via BMS. Select 'Don't know' if unsure.">Can Adjust Setpoints/Airflow?</label>
-          <div class="radio-group">
-            <label><input type="radio" name="CanAdjustSetpointsAirflow" value="Yes"> Yes</label>
-            <label><input type="radio" name="CanAdjustSetpointsAirflow" value="No"> No</label>
-            <label><input type="radio" name="CanAdjustSetpointsAirflow" value="Don't know"> Don't know</label>
-          </div>
-
-          <label title="IT approval for integrating with BACnet protocol. Select 'Don't know' if unsure.">BACnet Integration Approved?</label>
-          <div class="radio-group">
-            <label><input type="radio" name="BACnetApproved" value="Yes"> Yes</label>
-            <label><input type="radio" name="BACnetApproved" value="No"> No</label>
-            <label><input type="radio" name="BACnetApproved" value="Don't know"> Don't know</label>
-          </div>
-
-          <label title="Does the BMS have an occupied standby mode programmed?">Has Standby Mode?</label>
-          <div class="radio-group">
-            <label><input type="radio" name="HasStandbyMode" value="Yes"> Yes</label>
-            <label><input type="radio" name="HasStandbyMode" value="No"> No</label>
-            <label><input type="radio" name="HasStandbyMode" value="Don't know"> Don't know</label>
-          </div>
-
-          <label title="Can the BMS log data for zonal airflow, AHU power, etc.?">Has Data Logging?</label>
-          <div class="radio-group">
-            <label><input type="radio" name="HasDataLogging" value="Yes"> Yes</label>
-            <label><input type="radio" name="HasDataLogging" value="No"> No</label>
-            <label><input type="radio" name="HasDataLogging" value="Don't know"> Don't know</label>
-          </div>
-
-          <label title="Provide the vendor, model, and version of the BMS if known.">BMS Vendor, Model, Version</label>
-          <input type="text" id="BMSVendorModelVersion" name="BMSVendorModelVersion">
-
-          <label title="Overall condition of the BMS system.">BMS Condition</label>
-          <select id="BMSCondition" name="BMSCondition">
-            <option value="">Select...</option>
-            <option value="Excellent">Excellent</option>
-            <option value="Good">Good</option>
-            <option value="Fair">Fair</option>
-            <option value="Poor">Poor</option>
-          </select>
-
-          <label title="The speed of the supply fan, typically in % or RPM. Key for energy modeling.">Fan Speed</label>
-          <input type="text" id="FanSpeed" name="FanSpeed">
-
-          <label title="Position of the outdoor air damper, in %. Affects ventilation load.">Outdoor Air Damper Position</label>
-          <input type="text" id="OutdoorAirDamperPosition" name="OutdoorAirDamperPosition">
-
-          <label title="Temperature of the air supplied by the AHU, in °F.">Supply Air Temperature</label>
-          <input type="text" id="SupplyAirTemperature" name="SupplyAirTemperature">
-
-          <label title="Current outdoor air temperature, in °F.">Outdoor Air Temperature</label>
-          <input type="text" id="OutdoorAirTemperature" name="OutdoorAirTemperature">
-
-          <label title="Flow rate of supply air, in CFM. Critical for airflow calculations.">Supply Air Flow Rate</label>
-          <input type="text" id="SupplyAirFlowRate" name="SupplyAirFlowRate">
-
-          <label title="Positions of VAV dampers, in %. Indicates zone demand.">VAV Damper Positions</label>
-          <input type="text" id="VAVDamperPositions" name="VAVDamperPositions">
-
-          <label title="Temperature setpoints for zones, in °F.">Zone Temperature Setpoints</label>
-          <input type="text" id="ZoneTemperatureSetpoints" name="ZoneTemperatureSetpoints">
-
-          <label title="Occupancy data, such as CO2 levels or occupant counts.">Occupancy Data</label>
-          <input type="text" id="OccupancyData" name="OccupancyData">
-
-          <label title="Total electricity consumption of the building, in kWh.">Whole Building Electricity Consumption</label>
-          <input type="text" id="WholeBuildingElectricityConsumption" name="WholeBuildingElectricityConsumption">
-        </div>
-
-        <label title="Are there clearly defined entry and exit points for the pilot area? Select 'Don't know' if unsure.">Defined Entry/Exit Points?</label>
-        <div class="radio-group">
-          <label><input type="radio" name="DefinedEntryExitPoints" value="Yes"> Yes</label>
-          <label><input type="radio" name="DefinedEntryExitPoints" value="No"> No</label>
-          <label><input type="radio" name="DefinedEntryExitPoints" value="Don't know"> Don't know</label>
-        </div>
-
-        <label title="Is WiFi or Ethernet available for sensor connectivity? Select 'Don't know' if unsure.">WiFi or Ethernet Available?</label>
-        <div class="radio-group">
-          <label><input type="radio" name="NetworkAvailable" value="Yes"> Yes</label>
-          <label><input type="radio" name="NetworkAvailable" value="No"> No</label>
-          <label><input type="radio" name="NetworkAvailable" value="Don't know"> Don't know</label>
-        </div>
-
-        <label title="Are there established energy reduction targets for the building?">Energy Reduction Targets?</label>
-        <div class="radio-group">
-          <label><input type="radio" name="EnergyTargets" value="Yes"> Yes</label>
-          <label><input type="radio" name="EnergyTargets" value="No"> No</label>
-          <label><input type="radio" name="EnergyTargets" value="Don't know"> Don't know</label>
-        </div>
-
-        <label title="Do you have permission to install occupancy sensors? Select 'Don't know' if unsure.">Can Install Sensors? *</label>
-        <div class="radio-group">
-          <label><input type="radio" name="CanInstallSensors" value="Yes" required> Yes</label>
-          <label><input type="radio" name="CanInstallSensors" value="No"> No</label>
-          <label><input type="radio" name="CanInstallSensors" value="Don't know"> Don't know</label>
-        </div>
-
-        <label title="Are you able to share HVAC data for energy savings calculations? Select 'Don't know' if unsure.">Can Share HVAC Data? *</label>
-        <div class="radio-group">
-          <label><input type="radio" name="CanShareHVACData" value="Yes" required> Yes</label>
-          <label><input type="radio" name="CanShareHVACData" value="No"> No</label>
-          <label><input type="radio" name="CanShareHVACData" value="Don't know"> Don't know</label>
-        </div>
-
-        <label title="Who occupies the space: Owner, Tenant, Both, or Unknown?">Occupancy Status</label>
-        <select id="OccupancyStatus" name="OccupancyStatus">
-          <option value="">Select...</option>
-          <option value="Owner">Owner</option>
-          <option value="Tenant">Tenant</option>
-          <option value="Both">Both</option>
-          <option value="Unknown">Unknown</option>
-        </select>
-
-        <label title="Would you permit installation of image-based sensors?">Permit Image Sensors?</label>
-        <div class="radio-group">
-          <label><input type="radio" name="PermitImageSensors" value="Yes"> Yes</label>
-          <label><input type="radio" name="PermitImageSensors" value="No"> No</label>
-          <label><input type="radio" name="PermitImageSensors" value="Don't know"> Don't know</label>
-        </div>
-
-        <label title="Who is responsible for managing HVAC controls?">HVAC Control Manager</label>
-        <input type="text" id="HVACControlManager" name="HVACControlManager">
-
-        <label title="List available set points, e.g., temperature, static pressure.">Available Set Points</label>
-        <input type="text" id="AvailableSetPoints" name="AvailableSetPoints">
-
-        <label title="List available device settings, e.g., fan speed, damper position.">Available Device Settings</label>
-        <input type="text" id="AvailableDeviceSettings" name="AvailableDeviceSettings">
-
-        <label title="Is the space submetered for energy consumption?">Is Submetered?</label>
-        <div class="radio-group">
-          <label><input type="radio" name="IsSubmetered" value="Yes"> Yes</label>
-          <label><input type="radio" name="IsSubmetered" value="No"> No</label>
-          <label><input type="radio" name="IsSubmetered" value="Don't know"> Don't know</label>
-        </div>
-
-        <label title="Is disaggregated energy data available?">Has Disaggregated Data?</label>
-        <div class="radio-group">
-          <label><input type="radio" name="HasDisaggregatedData" value="Yes"> Yes</label>
-          <label><input type="radio" name="HasDisaggregatedData" value="No"> No</label>
-          <label><input type="radio" name="HasDisaggregatedData" value="Don't know"> Don't know</label>
-        </div>
-      </div>
-
-      <!-- Technical Discovery -->
-      <div class="section">
-        <h2>Technical Discovery</h2>
-        <label for="BuildingAge" title="Age of the building in years.">Building Age</label>
-        <input type="number" id="BuildingAge" name="BuildingAge" min="0">
-
-        <label for="LastRenovation" title="Year of the last major renovation, if known.">Last Renovation (Year)</label>
-        <input type="number" id="LastRenovation" name="LastRenovation" min="0">
-
-        <label title="Do you know which floor or area will be used for the pilot? Select 'Don't know' if unsure.">Know Pilot Floor? *</label>
-        <div class="radio-group">
-          <label><input type="radio" name="KnowPilotFloor" value="Yes" required> Yes</label>
-          <label><input type="radio" name="KnowPilotFloor" value="No"> No</label>
-          <label><input type="radio" name="KnowPilotFloor" value="Don't know"> Don't know</label>
-        </div>
-
-        <div id="KnowPilotFloorYesDiv" class="hidden">
-          <label for="PilotFloor" title="Specify the floor or area for the pilot, e.g., '3rd Floor'.">Pilot Floor</label>
-          <input type="text" id="PilotFloor" name="PilotFloor">
-
-          <label for="PilotFloorSquareFootage" title="Square footage of the pilot floor or area.">Pilot Floor Square Footage</label>
-          <input type="number" id="PilotFloorSquareFootage" name="PilotFloorSquareFootage" min="0">
-
-          <label for="NumberOfZones" title="Number of HVAC zones in the pilot area.">Number of Zones</label>
-          <input type="number" id="NumberOfZones" name="NumberOfZones" min="0">
-
-          <label for="EntryExitPointsPerZone" title="Describe entry/exit points for each zone, e.g., '2 doors, 1 window'.">Entry/Exit Points per Zone</label>
-          <input type="text" id="EntryExitPointsPerZone" name="EntryExitPointsPerZone">
-
-          <label for="ZoneSquareFootage" title="Square footage of each zone, e.g., 'Zone 1: 5000, Zone 2: 3000'.">Zone Square Footage</label>
-          <input type="text" id="ZoneSquareFootage" name="ZoneSquareFootage">
-
-          <label for="AHUName1" title="Name or identifier of the first Air Handling Unit serving the pilot floor.">AHU Name 1</label>
-          <input type="text" id="AHUName1" name="AHUName1">
-
-          <label for="AHUCapacity1" title="Capacity of the first AHU in CFM.">AHU Capacity 1 (CFM)</label>
-          <input type="number" id="AHUCapacity1" name="AHUCapacity1" min="0">
-
-          <label for="AHUCondition1" title="Physical condition of the first AHU.">AHU Condition 1</label>
-          <select id="AHUCondition1" name="AHUCondition1">
-            <option value="">Select...</option>
-            <option value="Excellent">Excellent</option>
-            <option value="Good">Good</option>
-            <option value="Fair">Fair</option>
-            <option value="Poor">Poor</option>
-          </select>
-
-          <label for="AHUDedicatedOrShared1" title="Is the first AHU dedicated to the pilot floor or shared?">AHU Dedicated or Shared 1</label>
-          <select id="AHUDedicatedOrShared1" name="AHUDedicatedOrShared1">
-            <option value="">Select...</option>
-            <option value="Dedicated">Dedicated</option>
-            <option value="Shared">Shared</option>
-            <option value="Unknown">Unknown</option>
-          </select>
-
-          <label for="AHUSpeedControl1" title="How is the speed of the first AHU controlled?">AHU Speed Control 1</label>
-          <select id="AHUSpeedControl1" name="AHUSpeedControl1">
-            <option value="">Select...</option>
-            <option value="VFD">VFD</option>
-            <option value="BMS">BMS</option>
-            <option value="Manual">Manual</option>
-            <option value="Other">Other</option>
-          </select>
-
-          <label title="Are the speed settings of the first AHU mapped to the CFM of outside air delivered?">Speed Mapped to OA CFM 1?</label>
-          <div class="radio-group">
-            <label><input type="radio" name="SpeedMappedToOACFM1" value="Yes"> Yes</label>
-            <label><input type="radio" name="SpeedMappedToOACFM1" value="No"> No</label>
-            <label><input type="radio" name="SpeedMappedToOACFM1" value="Don't know"> Don't know</label>
-          </div>
-
-          <label for="AHUName2" title="Name or identifier of the second AHU serving the pilot floor, if applicable.">AHU Name 2</label>
-          <input type="text" id="AHUName2" name="AHUName2">
-
-          <label for="AHUCapacity2" title="Capacity of the second AHU in CFM.">AHU Capacity 2 (CFM)</label>
-          <input type="number" id="AHUCapacity2" name="AHUCapacity2" min="0">
-
-          <label for="AHUCondition2" title="Physical condition of the second AHU.">AHU Condition 2</label>
-          <select id="AHUCondition2" name="AHUCondition2">
-            <option value="">Select...</option>
-            <option value="Excellent">Excellent</option>
-            <option value="Good">Good</option>
-            <option value="Fair">Fair</option>
-            <option value="Poor">Poor</option>
-          </select>
-
-          <label for="AHUDedicatedOrShared2" title="Is the second AHU dedicated to the pilot floor or shared?">AHU Dedicated or Shared 2</label>
-          <select id="AHUDedicatedOrShared2" name="AHUDedicatedOrShared2">
-            <option value="">Select...</option>
-            <option value="Dedicated">Dedicated</option>
-            <option value="Shared">Shared</option>
-            <option value="Unknown">Unknown</option>
-          </select>
-
-          <label for="AHUSpeedControl2" title="How is the speed of the second AHU controlled?">AHU Speed Control 2</label>
-          <select id="AHUSpeedControl2" name="AHUSpeedControl2">
-            <option value="">Select...</option>
-            <option value="VFD">VFD</option>
-            <option value="BMS">BMS</option>
-            <option value="Manual">Manual</option>
-            <option value="Other">Other</option>
-          </select>
-
-          <label title="Are the speed settings of the second AHU mapped to the CFM of outside air delivered?">Speed Mapped to OA CFM 2?</label>
-          <div class="radio-group">
-            <label><input type="radio" name="SpeedMappedToOACFM2" value="Yes"> Yes</label>
-            <label><input type="radio" name="SpeedMappedToOACFM2" value="No"> No</label>
-            <label><input type="radio" name="SpeedMappedToOACFM2" value="Don't know"> Don't know</label>
-          </div>
-
-          <label for="EntryExitTypes" title="Describe the types of entry/exit points in the pilot area, e.g., doors, turnstiles.">Entry/Exit Types</label>
-          <input type="text" id="EntryExitTypes" name="EntryExitTypes">
-
-          <label title="Are the entry/exit points ≤70\" wide?">Entry/Exit Width</label>
-          <div class="radio-group">
-            <label><input type="radio" name="EntryExitWidth" value="≤70"> ≤70"</label>
-            <label><input type="radio" name="EntryExitWidth" value=">70"> >70"</label>
-            <label><input type="radio" name="EntryExitWidth" value="Unknown"> Unknown</label>
-          </div>
-
-          <label title="Is there a suitable surface for mounting sensors?">Suitable Mounting Surface?</label>
-          <div class="radio-group">
-            <label><input type="radio" name="SuitableMountingSurface" value="Yes"> Yes</label>
-            <label><input type="radio" name="SuitableMountingSurface" value="No"> No</label>
-            <label><input type="radio" name="SuitableMountingSurface" value="Don't know"> Don't know</label>
-          </div>
-        </div>
-      </div>
-
-      <!-- Site Assessment -->
-      <div class="section">
-        <h2>Site Assessment</h2>
-        <label for="SiteVisitDate" title="Date of the site visit for assessment.">Site Visit Date *</label>
-        <input type="date" id="SiteVisitDate" name="SiteVisitDate" required>
-
-        <label for="InspectorName" title="Name of the person conducting the site assessment.">Inspector Name *</label>
-        <input type="text" id="InspectorName" name="InspectorName" required>
-
-        <label title="Upload up to 5 photos (max 10MB each) of key areas like AHUs, entry points, or BMS interfaces. Descriptions are optional but helpful.">Photos</label>
-        <p>Please provide descriptions for each photo to help identify what they show.</p>
-        <div class="photo-group">
-          <input type="file" id="photo_1" name="photo_1" accept="image/*">
-          <label for="description_1" title="Describe what Photo 1 shows, e.g., 'AHU1' or 'Main Entry'.">Description for Photo 1</label>
-          <input type="text" id="description_1" name="description_1" placeholder="e.g., AHU1">
-        </div>
-        <div class="photo-group">
-          <input type="file" id="photo_2" name="photo_2" accept="image/*">
-          <label for="description_2" title="Describe what Photo 2 shows.">Description for Photo 2</label>
-          <input type="text" id="description_2" name="description_2" placeholder="e.g., Entry Point">
-        </div>
-        <div class="photo-group">
-          <input type="file" id="photo_3" name="photo_3" accept="image/*">
-          <label for="description_3" title="Describe what Photo 3 shows.">Description for Photo 3</label>
-          <input type="text" id="description_3" name="description_3">
-        </div>
-        <div class="photo-group">
-          <input type="file" id="photo_4" name="photo_4" accept="image/*">
-          <label for="description_4" title="Describe what Photo 4 shows.">Description for Photo 4</label>
-          <input type="text" id="description_4" name="description_4">
-        </div>
-        <div class="photo-group">
-          <input type="file" id="photo_5" name="photo_5" accept="image/*">
-          <label for="description_5" title="Describe what Photo 5 shows.">Description for Photo 5</label>
-          <input type="text" id="description_5" name="description_5">
-        </div>
-
-        <label for="WiFiSignalStrength" title="WiFi signal strength at potential sensor locations.">WiFi Signal Strength</label>
-        <select id="WiFiSignalStrength" name="WiFiSignalStrength">
-          <option value="">Select...</option>
-          <option value="Strong">Strong</option>
-          <option value="Medium">Medium</option>
-          <option value="Weak">Weak</option>
-          <option value="None">None</option>
-        </select>
-
-        <label for="AdditionalNotes" title="Any additional observations or comments.">Additional Notes</label>
-        <textarea id="AdditionalNotes" name="AdditionalNotes" rows="4"></textarea>
-
-        <label title="Can you provide a floor plan of the building?">Can Provide Floor Plan?</label>
-        <div class="radio-group">
-          <label><input type="radio" name="CanProvideFloorPlan" value="Yes"> Yes</label>
-          <label><input type="radio" name="CanProvideFloorPlan" value="No"> No</label>
-          <label><input type="radio" name="CanProvideFloorPlan" value="Don't know"> Don't know</label>
-        </div>
-
-        <label title="Can you provide mechanical drawings of the HVAC system?">Can Provide HVAC Drawing?</label>
-        <div class="radio-group">
-          <label><input type="radio" name="CanProvideHVACDrawing" value="Yes"> Yes</label>
-          <label><input type="radio" name="CanProvideHVACDrawing" value="No"> No</label>
-          <label><input type="radio" name="CanProvideHVACDrawing" value="Don't know"> Don't know</label>
-        </div>
-
-        <label for="HVACSequenceOfOperation" title="Describe the sequence of operation for the HVAC system, if known.">HVAC Sequence of Operation</label>
-        <textarea id="HVACSequenceOfOperation" name="HVACSequenceOfOperation" rows="4"></textarea>
-
-        <label title="Is there other relevant documentation provided?">Other Documentation Provided?</label>
-        <div class="radio-group">
-          <label><input type="radio" name="OtherDocumentationProvided" value="Yes"> Yes</label>
-          <label><input type="radio" name="OtherDocumentationProvided" value="No"> No</label>
-          <label><input type="radio" name="OtherDocumentationProvided" value="Don't know"> Don't know</label>
-        </div>
-
-        <label for="PreferredMVConsultant" title="Name of preferred Measurement & Verification consultant, if any.">Preferred M&V Consultant</label>
-        <input type="text" id="PreferredMVConsultant" name="PreferredMVConsultant">
-
-        <label title="Is this project a candidate for beta testing?">Is Beta Candidate?</label>
-        <div class="radio-group">
-          <label><input type="radio" name="IsBetaCandidate" value="Yes"> Yes</label>
-          <label><input type="radio" name="IsBetaCandidate" value="No"> No</label>
-          <label><input type="radio" name="IsBetaCandidate" value="Don't know"> Don't know</label>
-        </div>
-
-        <label for="BetaContactPhone" title="Phone number of the primary contact for beta collaboration.">Beta Contact Phone</label>
-        <input type="text" id="BetaContactPhone" name="BetaContactPhone">
-
-        <label for="BetaStartDate" title="Anticipated start date for beta deployment.">Beta Start Date</label>
-        <input type="date" id="BetaStartDate" name="BetaStartDate">
-
-        <label title="Are there up-to-date mechanical drawings and Sequence of Operations documentation?">Has Updated Mechanics/SOO?</label>
-        <div class="radio-group">
-          <label><input type="radio" name="HasUpdatedMechanicsSOO" value="Yes"> Yes</label>
-          <label><input type="radio" name="HasUpdatedMechanicsSOO" value="No"> No</label>
-          <label><input type="radio" name="HasUpdatedMechanicsSOO" value="Don't know"> Don't know</label>
-        </div>
-      </div>
-
-      <button type="submit">Submit</button>
-      <div id="message"></div>
-    </form>
-  </div>
-
-  <script>
-    // Form submission and conditional logic
-    document.getElementById('assessmentForm').addEventListener('submit', function(event) {
-      event.preventDefault();
-
-      // Validate form
-      let isValid = true;
-      const requiredFields = document.querySelectorAll('[required]');
-      requiredFields.forEach(field => {
-        if (!field.value.trim()) {
-          isValid = false;
-          field.style.borderColor = 'red';
-        } else {
-          field.style.borderColor = '#ccc';
+        <form id="assessmentForm" action="https://script.google.com/macros/s/AKfycbyGWrlP-iLfj_ZwS2A7K-n3F8CqCKo-Fy6e8x0MvKCjHDpQXNenfn2r8hyvRxpOZ5rGLw/exec" method="POST" enctype="multipart/form-data">
+            <div id="initial-screening" class="stage-content active">
+                <h2>Initial Screening</h2>
+                <div class="form-row">
+                    <label for="ContactName" class="form-label required">Contact Name</label>
+                    <input type="text" id="ContactName" name="ContactName" class="form-control" required>
+                </div>
+                <div class="form-row">
+                    <label for="ContactEmail" class="form-label required">Contact Email</label>
+                    <input type="email" id="ContactEmail" name="ContactEmail" class="form-control" required>
+                </div>
+                <div class="form-row">
+                    <label for="BuildingName" class="form-label required">Building Name</label>
+                    <input type="text" id="BuildingName" name="BuildingName" class="form-control" required>
+                </div>
+                <div class="form-row">
+                    <label for="BuildingSquareFootage" class="form-label">Building Square Footage</label>
+                    <input type="number" id="BuildingSquareFootage" name="BuildingSquareFootage" class="form-control" min="0">
+                </div>
+                <div class="form-row">
+                    <label for="BuildingType" class="form-label required">Building Type</label>
+                    <select id="BuildingType" name="BuildingType" class="form-control" required>
+                        <option value="">Select...</option>
+                        <option value="Office">Office</option>
+                        <option value="Education">Education</option>
+                        <option value="Healthcare">Healthcare</option>
+                        <option value="Retail">Retail</option>
+                        <option value="Hospitality">Hospitality</option>
+                        <option value="Residential">Residential</option>
+                        <option value="Industrial">Industrial</option>
+                        <option value="Mixed">Mixed</option>
+                        <option value="Other">Other</option>
+                        <option value="Unknown">Unknown</option>
+                    </select>
+                </div>
+                <div id="OtherBuildingTypeDiv" class="conditional-field">
+                    <label for="OtherBuildingType">Other Building Type</label>
+                    <input type="text" id="OtherBuildingType" name="OtherBuildingType" class="form-control">
+                </div>
+                <div class="form-row">
+                    <label class="form-label required tooltip">Has VAV Systems?<span class="tooltiptext">Variable Air Volume systems control airflow to different zones.</span></label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" id="HasVAVYes" name="HasVAV" value="Yes" required>
+                            <label for="HasVAVYes">Yes</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="HasVAVNo" name="HasVAV" value="No">
+                            <label for="HasVAVNo">No</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="HasVAVDontKnow" name="HasVAV" value="Don't know">
+                            <label for="HasVAVDontKnow">Don't know</label>
+                        </div>
+                    </div>
+                </div>
+                <div id="HasVAVYesDiv" class="conditional-field">
+                    <div class="form-row">
+                        <label class="form-label">Has VFDs?</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" id="HasVFDYes" name="HasVFD" value="Yes">
+                                <label for="HasVFDYes">Yes</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="HasVFDNo" name="HasVFD" value="No">
+                                <label for="HasVFDNo">No</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="HasVFDDontKnow" name="HasVFD" value="Don't know">
+                                <label for="HasVFDDontKnow">Don't know</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <label class="form-label">Has Zonal Dampers?</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" id="HasZonalDampersYes" name="HasZonalDampers" value="Yes">
+                                <label for="HasZonalDampersYes">Yes</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="HasZonalDampersNo" name="HasZonalDampers" value="No">
+                                <label for="HasZonalDampersNo">No</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="HasZonalDampersDontKnow" name="HasZonalDampers" value="Don't know">
+                                <label for="HasZonalDampersDontKnow">Don't know</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <label class="form-label">Has Adjustable OA Dampers?</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" id="HasAdjustableOADampersYes" name="HasAdjustableOADampers" value="Yes">
+                                <label for="HasAdjustableOADampersYes">Yes</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="HasAdjustableOADampersNo" name="HasAdjustableOADampers" value="No">
+                                <label for="HasAdjustableOADampersNo">No</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="HasAdjustableOADampersDontKnow" name="HasAdjustableOADampers" value="Don't know">
+                                <label for="HasAdjustableOADampersDontKnow">Don't know</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <label class="form-label">Dampers Controllable by BMS?</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" id="DampersControllableByBMSYes" name="DampersControllableByBMS" value="Yes">
+                                <label for="DampersControllableByBMSYes">Yes</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="DampersControllableByBMSNo" name="DampersControllableByBMS" value="No">
+                                <label for="DampersControllableByBMSNo">No</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="DampersControllableByBMSDontKnow" name="DampersControllableByBMS" value="Don't know">
+                                <label for="DampersControllableByBMSDontKnow">Don't know</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <label class="form-label required tooltip">Has BMS?<span class="tooltiptext">Building Management System automates and monitors building systems.</span></label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" id="HasBMSYes" name="HasBMS" value="Yes" required>
+                            <label for="HasBMSYes">Yes</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="HasBMSNo" name="HasBMS" value="No">
+                            <label for="HasBMSNo">No</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="HasBMSDontKnow" name="HasBMS" value="Don't know">
+                            <label for="HasBMSDontKnow">Don't know</label>
+                        </div>
+                    </div>
+                </div>
+                <div id="HasBMSYesDiv" class="conditional-field">
+                    <div class="form-row">
+                        <label for="BMSProtocol" class="form-label">BMS Protocol</label>
+                        <select id="BMSProtocol" name="BMSProtocol" class="form-control">
+                            <option value="">Select...</option>
+                            <option value="BACnet">BACnet</option>
+                            <option value="Modbus">Modbus</option>
+                            <option value="Other">Other</option>
+                            <option value="None">None</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <label class="form-label">Can Adjust Setpoints/Airflow?</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" id="CanAdjustSetpointsAirflowYes" name="CanAdjustSetpointsAirflow" value="Yes">
+                                <label for="CanAdjustSetpointsAirflowYes">Yes</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="CanAdjustSetpointsAirflowNo" name="CanAdjustSetpointsAirflow" value="No">
+                                <label for="CanAdjustSetpointsAirflowNo">No</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="CanAdjustSetpointsAirflowDontKnow" name="CanAdjustSetpointsAirflow" value="Don't know">
+                                <label for="CanAdjustSetpointsAirflowDontKnow">Don't know</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <label class="form-label">BACnet Integration Approved?</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" id="BACnetApprovedYes" name="BACnetApproved" value="Yes">
+                                <label for="BACnetApprovedYes">Yes</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="BACnetApprovedNo" name="BACnetApproved" value="No">
+                                <label for="BACnetApprovedNo">No</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="BACnetApprovedDontKnow" name="BACnetApproved" value="Don't know">
+                                <label for="BACnetApprovedDontKnow">Don't know</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <label class="form-label">Has Standby Mode?</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" id="HasStandbyModeYes" name="HasStandbyMode" value="Yes">
+                                <label for="HasStandbyModeYes">Yes</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="HasStandbyModeNo" name="HasStandbyMode" value="No">
+                                <label for="HasStandbyModeNo">No</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="HasStandbyModeDontKnow" name="HasStandbyMode" value="Don't know">
+                                <label for="HasStandbyModeDontKnow">Don't know</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <label class="form-label">Has Data Logging?</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" id="HasDataLoggingYes" name="HasDataLogging" value="Yes">
+                                <label for="HasDataLoggingYes">Yes</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="HasDataLoggingNo" name="HasDataLogging" value="No">
+                                <label for="HasDataLoggingNo">No</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="HasDataLoggingDontKnow" name="HasDataLogging" value="Don't know">
+                                <label for="HasDataLoggingDontKnow">Don't know</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <label for="BMSVendorModelVersion" class="form-label">BMS Vendor, Model, Version</label>
+                        <input type="text" id="BMSVendorModelVersion" name="BMSVendorModelVersion" class="form-control">
+                    </div>
+                    <div class="form-row">
+                        <label for="BMSCondition" class="form-label">BMS Condition</label>
+                        <select id="BMSCondition" name="BMSCondition" class="form-control">
+                            <option value="">Select...</option>
+                            <option value="Excellent">Excellent</option>
+                            <option value="Good">Good</option>
+                            <option value="Fair">Fair</option>
+                            <option value="Poor">Poor</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <label for="FanSpeed" class="form-label tooltip">Fan Speed<span class="tooltiptext">The speed of the supply fan, typically in % or RPM. Key for energy modeling.</span></label>
+                        <input type="text" id="FanSpeed" name="FanSpeed" class="form-control">
+                    </div>
+                    <div class="form-row">
+                        <label for="OutdoorAirDamperPosition" class="form-label">Outdoor Air Damper Position</label>
+                        <input type="text" id="OutdoorAirDamperPosition" name="OutdoorAirDamperPosition" class="form-control">
+                    </div>
+                    <div class="form-row">
+                        <label for="SupplyAirTemperature" class="form-label">Supply Air Temperature</label>
+                        <input type="text" id="SupplyAirTemperature" name="SupplyAirTemperature" class="form-control">
+                    </div>
+                    <div class="form-row">
+                        <label for="OutdoorAirTemperature" class="form-label">Outdoor Air Temperature</label>
+                        <input type="text" id="OutdoorAirTemperature" name="OutdoorAirTemperature" class="form-control">
+                    </div>
+                    <div class="form-row">
+                        <label for="SupplyAirFlowRate" class="form-label">Supply Air Flow Rate</label>
+                        <input type="text" id="SupplyAirFlowRate" name="SupplyAirFlowRate" class="form-control">
+                    </div>
+                    <div class="form-row">
+                        <label for="VAVDamperPositions" class="form-label">VAV Damper Positions</label>
+                        <input type="text" id="VAVDamperPositions" name="VAVDamperPositions" class="form-control">
+                    </div>
+                    <div class="form-row">
+                        <label for="ZoneTemperatureSetpoints" class="form-label">Zone Temperature Setpoints</label>
+                        <input type="text" id="ZoneTemperatureSetpoints" name="ZoneTemperatureSetpoints" class="form-control">
+                    </div>
+                    <div class="form-row">
+                        <label for="OccupancyData" class="form-label">Occupancy Data</label>
+                        <input type="text" id="OccupancyData" name="OccupancyData" class="form-control">
+                    </div>
+                    <div class="form-row">
+                        <label for="WholeBuildingElectricityConsumption" class="form-label">Whole Building Electricity Consumption</label>
+                        <input type="text" id="WholeBuildingElectricityConsumption" name="WholeBuildingElectricityConsumption" class="form-control">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <label class="form-label">Defined Entry/Exit Points?</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" id="DefinedEntryExitPointsYes" name="DefinedEntryExitPoints" value="Yes">
+                            <label for="DefinedEntryExitPointsYes">Yes</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="DefinedEntryExitPointsNo" name="DefinedEntryExitPoints" value="No">
+                            <label for="DefinedEntryExitPointsNo">No</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="DefinedEntryExitPointsDontKnow" name="DefinedEntryExitPoints" value="Don't know">
+                            <label for="DefinedEntryExitPointsDontKnow">Don't know</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <label class="form-label">WiFi or Ethernet Available?</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" id="NetworkAvailableYes" name="NetworkAvailable" value="Yes">
+                            <label for="NetworkAvailableYes">Yes</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="NetworkAvailableNo" name="NetworkAvailable" value="No">
+                            <label for="NetworkAvailableNo">No</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="NetworkAvailableDontKnow" name="NetworkAvailable" value="Don't know">
+                            <label for="NetworkAvailableDontKnow">Don't know</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <label class="form-label">Energy Reduction Targets?</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" id="EnergyTargetsYes" name="EnergyTargets" value="Yes">
+                            <label for="EnergyTargetsYes">Yes</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="EnergyTargetsNo" name="EnergyTargets" value="No">
+                            <label for="EnergyTargetsNo">No</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="EnergyTargetsDontKnow" name="EnergyTargets" value="Don't know">
+                            <label for="EnergyTargetsDontKnow">Don't know</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <label class="form-label required">Can Install Sensors?</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" id="CanInstallSensorsYes" name="CanInstallSensors" value="Yes" required>
+                            <label for="CanInstallSensorsYes">Yes</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="CanInstallSensorsNo" name="CanInstallSensors" value="No">
+                            <label for="CanInstallSensorsNo">No</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="CanInstallSensorsDontKnow" name="CanInstallSensors" value="Don't know">
+                            <label for="CanInstallSensorsDontKnow">Don't know</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <label class="form-label required">Can Share HVAC Data?</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" id="CanShareHVACDataYes" name="CanShareHVACData" value="Yes" required>
+                            <label for="CanShareHVACDataYes">Yes</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="CanShareHVACDataNo" name="CanShareHVACData" value="No">
+                            <label for="CanShareHVACDataNo">No</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="CanShareHVACDataDontKnow" name="CanShareHVACData" value="Don't know">
+                            <label for="CanShareHVACDataDontKnow">Don't know</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <label for="OccupancyStatus" class="form-label">Occupancy Status</label>
+                    <select id="OccupancyStatus" name="OccupancyStatus" class="form-control">
+                        <option value="">Select...</option>
+                        <option value="Owner">Owner</option>
+                        <option value="Tenant">Tenant</option>
+                        <option value="Both">Both</option>
+                        <option value="Unknown">Unknown</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <label class="form-label">Permit Image Sensors?</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" id="PermitImageSensorsYes" name="PermitImageSensors" value="Yes">
+                            <label for="PermitImageSensorsYes">Yes</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="PermitImageSensorsNo" name="PermitImageSensors" value="No">
+                            <label for="PermitImageSensorsNo">No</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="PermitImageSensorsDontKnow" name="PermitImageSensors" value="Don't know">
+                            <label for="PermitImageSensorsDontKnow">Don't know</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <label for="HVACControlManager" class="form-label">HVAC Control Manager</label>
+                    <input type="text" id="HVACControlManager" name="HVACControlManager" class="form-control">
+                </div>
+                <div class="form-row">
+                    <label for="AvailableSetPoints" class="form-label">Available Set Points</label>
+                    <input type="text" id="AvailableSetPoints" name="AvailableSetPoints" class="form-control">
+                </div>
+                <div class="form-row">
+                    <label for="AvailableDeviceSettings" class="form-label">Available Device Settings</label>
+                    <input type="text" id="AvailableDeviceSettings" name="AvailableDeviceSettings" class="form-control">
+                </div>
+                <div class="form-row">
+                    <label class="form-label">Is Submetered?</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" id="IsSubmeteredYes" name="IsSubmetered" value="Yes">
+                            <label for="IsSubmeteredYes">Yes</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="IsSubmeteredNo" name="IsSubmetered" value="No">
+                            <label for="IsSubmeteredNo">No</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="IsSubmeteredDontKnow" name="IsSubmetered" value="Don't know">
+                            <label for="IsSubmeteredDontKnow">Don't know</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <label class="form-label">Has Disaggregated Data?</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" id="HasDisaggregatedDataYes" name="HasDisaggregatedData" value="Yes">
+                            <label for="HasDisaggregatedDataYes">Yes</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="HasDisaggregatedDataNo" name="HasDisaggregatedData" value="No">
+                            <label for="HasDisaggregatedDataNo">No</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="HasDisaggregatedDataDontKnow" name="HasDisaggregatedData" value="Don't know">
+                            <label for="HasDisaggregatedDataDontKnow">Don't know</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <button type="button" id="toDiscoveryBtn" class="nav-btn">Continue to Technical Discovery</button>
+                </div>
+            </div>
+
+            <div id="technical-discovery" class="stage-content">
+                <h2>Technical Discovery</h2>
+                <div class="tabset">
+                    <div class="tab-buttons">
+                        <button class="tab-button active" data-tab="building-info">Building Info</button>
+                        <button class="tab-button" data-tab="hvac-systems">HVAC Systems</button>
+                    </div>
+                    <div id="building-info" class="tab-content active">
+                        <div class="form-row">
+                            <label for="BuildingAge" class="form-label">Building Age (Years)</label>
+                            <input type="number" id="BuildingAge" name="BuildingAge" class="form-control" min="0">
+                        </div>
+                        <div class="form-row">
+                            <label for="LastRenovation" class="form-label">Last Renovation (Year)</label>
+                            <input type="number" id="LastRenovation" name="LastRenovation" class="form-control" min="0">
+                        </div>
+                    </div>
+                    <div id="hvac-systems" class="tab-content">
+                        <div id="ahuList" class="dynamic-list">
+                            <div class="dynamic-item">
+                                <div class="form-row">
+                                    <label for="AHUName1" class="form-label">AHU Name 1</label>
+                                    <input type="text" id="AHUName1" name="AHUName1" class="form-control">
+                                </div>
+                                <div class="form-row">
+                                    <label for="AHUCapacity1" class="form-label">AHU Capacity 1 (CFM)</label>
+                                    <input type="number" id="AHUCapacity1" name="AHUCapacity1" class="form-control" min="0">
+                                </div>
+                                <div class="form-row">
+                                    <label for="AHUCondition1" class="form-label">AHU Condition 1</label>
+                                    <select id="AHUCondition1" name="AHUCondition1" class="form-control">
+                                        <option value="">Select...</option>
+                                        <option value="Excellent">Excellent</option>
+                                        <option value="Good">Good</option>
+                                        <option value="Fair">Fair</option>
+                                        <option value="Poor">Poor</option>
+                                    </select>
+                                </div>
+                                <div class="form-row">
+                                    <label for="AHUDedicatedOrShared1" class="form-label">AHU Dedicated or Shared 1</label>
+                                    <select id="AHUDedicatedOrShared1" name="AHUDedicatedOrShared1" class="form-control">
+                                        <option value="">Select...</option>
+                                        <option value="Dedicated">Dedicated</option>
+                                        <option value="Shared">Shared</option>
+                                        <option value="Unknown">Unknown</option>
+                                    </select>
+                                </div>
+                                <div class="form-row">
+                                    <label for="AHUSpeedControl1" class="form-label">AHU Speed Control 1</label>
+                                    <select id="AHUSpeedControl1" name="AHUSpeedControl1" class="form-control">
+                                        <option value="">Select...</option>
+                                        <option value="VFD">VFD</option>
+                                        <option value="BMS">BMS</option>
+                                        <option value="Manual">Manual</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                                <div class="form-row">
+                                    <label class="form-label">Speed Mapped to OA CFM 1?</label>
+                                    <div class="radio-group">
+                                        <div class="radio-option">
+                                            <input type="radio" id="SpeedMappedToOACFM1Yes" name="SpeedMappedToOACFM1" value="Yes">
+                                            <label for="SpeedMappedToOACFM1Yes">Yes</label>
+                                        </div>
+                                        <div class="radio-option">
+                                            <input type="radio" id="SpeedMappedToOACFM1No" name="SpeedMappedToOACFM1" value="No">
+                                            <label for="SpeedMappedToOACFM1No">No</label>
+                                        </div>
+                                        <div class="radio-option">
+                                            <input type="radio" id="SpeedMappedToOACFM1DontKnow" name="SpeedMappedToOACFM1" value="Don't know">
+                                            <label for="SpeedMappedToOACFM1DontKnow">Don't know</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="button" class="remove-btn">Remove AHU</button>
+                            </div>
+                        </div>
+                        <button type="button" id="addAHU" class="add-btn">Add AHU</button>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <label class="form-label required">Know Pilot Floor?</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" id="KnowPilotFloorYes" name="KnowPilotFloor" value="Yes" required>
+                            <label for="KnowPilotFloorYes">Yes</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="KnowPilotFloorNo" name="KnowPilotFloor" value="No">
+                            <label for="KnowPilotFloorNo">No</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="KnowPilotFloorDontKnow" name="KnowPilotFloor" value="Don't know">
+                            <label for="KnowPilotFloorDontKnow">Don't know</label>
+                        </div>
+                    </div>
+                </div>
+                <div id="KnowPilotFloorYesDiv" class="conditional-field">
+                    <div class="form-row">
+                        <label for="PilotFloor" class="form-label">Pilot Floor</label>
+                        <input type="text" id="PilotFloor" name="PilotFloor" class="form-control">
+                    </div>
+                    <div class="form-row">
+                        <label for="PilotFloorSquareFootage" class="form-label">Pilot Floor Square Footage</label>
+                        <input type="number" id="PilotFloorSquareFootage" name="PilotFloorSquareFootage" class="form-control" min="0">
+                    </div>
+                    <div class="form-row">
+                        <label for="NumberOfZones" class="form-label">Number of Zones</label>
+                        <input type="number" id="NumberOfZones" name="NumberOfZones" class="form-control" min="0">
+                    </div>
+                    <div class="form-row">
+                        <label for="EntryExitPointsPerZone" class="form-label">Entry/Exit Points per Zone</label>
+                        <input type="text" id="EntryExitPointsPerZone" name="EntryExitPointsPerZone" class="form-control">
+                    </div>
+                    <div class="form-row">
+                        <label for="ZoneSquareFootage" class="form-label">Zone Square Footage</label>
+                        <input type="text" id="ZoneSquareFootage" name="ZoneSquareFootage" class="form-control">
+                    </div>
+                    <div class="form-row">
+                        <label for="EntryExitTypes" class="form-label">Entry/Exit Types</label>
+                        <input type="text" id="EntryExitTypes" name="EntryExitTypes" class="form-control">
+                    </div>
+                    <div class="form-row">
+                        <label class="form-label">Entry/Exit Width</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" id="EntryExitWidthLTE70" name="EntryExitWidth" value="≤70">
+                                <label for="EntryExitWidthLTE70">≤70"</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="EntryExitWidthGT70" name="EntryExitWidth" value=">70">
+                                <label for="EntryExitWidthGT70">>70"</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="EntryExitWidthUnknown" name="EntryExitWidth" value="Unknown">
+                                <label for="EntryExitWidthUnknown">Unknown</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <label class="form-label">Suitable Mounting Surface?</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" id="SuitableMountingSurfaceYes" name="SuitableMountingSurface" value="Yes">
+                                <label for="SuitableMountingSurfaceYes">Yes</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="SuitableMountingSurfaceNo" name="SuitableMountingSurface" value="No">
+                                <label for="SuitableMountingSurfaceNo">No</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="SuitableMountingSurfaceDontKnow" name="SuitableMountingSurface" value="Don't know">
+                                <label for="SuitableMountingSurfaceDontKnow">Don't know</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <button type="button" id="backToScreeningBtn" class="nav-btn">Back to Initial Screening</button>
+                    <button type="button" id="toSiteAssessmentBtn" class="nav-btn">Continue to Site Assessment</button>
+                </div>
+            </div>
+
+            <div id="site-assessment" class="stage-content">
+                <h2>Site Assessment</h2>
+                <div class="form-row">
+                    <label for="SiteVisitDate" class="form-label required">Site Visit Date</label>
+                    <input type="date" id="SiteVisitDate" name="SiteVisitDate" class="form-control" required>
+                </div>
+                <div class="form-row">
+                    <label for="InspectorName" class="form-label required">Inspector Name</label>
+                    <input type="text" id="InspectorName" name="InspectorName" class="form-control" required>
+                </div>
+                <div class="form-row">
+                    <label class="form-label tooltip">Photos (up to 5, max 10MB each)<span class="tooltiptext">Upload photos of key areas like AHUs, entry points, or BMS interfaces. Max 10MB each.</span></label>
+                    <div class="photo-group">
+                        <input type="file" id="photo_1" name="photo_1" accept="image/*" class="photo-upload">
+                        <label for="description_1">Description for Photo 1</label>
+                        <input type="text" id="description_1" name="description_1" class="form-control" placeholder="e.g., AHU1">
+                    </div>
+                    <div class="photo-group">
+                        <input type="file" id="photo_2" name="photo_2" accept="image/*" class="photo-upload">
+                        <label for="description_2">Description for Photo 2</label>
+                        <input type="text" id="description_2" name="description_2" class="form-control" placeholder="e.g., Entry Point">
+                    </div>
+                    <div class="photo-group">
+                        <input type="file" id="photo_3" name="photo_3" accept="image/*" class="photo-upload">
+                        <label for="description_3">Description for Photo 3</label>
+                        <input type="text" id="description_3" name="description_3" class="form-control">
+                    </div>
+                    <div class="photo-group">
+                        <input type="file" id="photo_4" name="photo_4" accept="image/*" class="photo-upload">
+                        <label for="description_4">Description for Photo 4</label>
+                        <input type="text" id="description_4" name="description_4" class="form-control">
+                    </div>
+                    <div class="photo-group">
+                        <input type="file" id="photo_5" name="photo_5" accept="image/*" class="photo-upload">
+                        <label for="description_5">Description for Photo 5</label>
+                        <input type="text" id="description_5" name="description_5" class="form-control">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <label for="WiFiSignalStrength" class="form-label">WiFi Signal Strength</label>
+                    <select id="WiFiSignalStrength" name="WiFiSignalStrength" class="form-control">
+                        <option value="">Select...</option>
+                        <option value="Strong">Strong</option>
+                        <option value="Medium">Medium</option>
+                        <option value="Weak">Weak</option>
+                        <option value="None">None</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <label for="AdditionalNotes" class="form-label">Additional Notes</label>
+                    <textarea id="AdditionalNotes" name="AdditionalNotes" class="form-control" rows="4"></textarea>
+                </div>
+                <div class="form-row">
+                    <button type="button" id="backToDiscoveryBtn" class="nav-btn">Back to Technical Discovery</button>
+                    <button type="submit" id="submitFormBtn" class="nav-btn">Submit Assessment</button>
+                </div>
+                <div id="message" class="form-row"></div>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        const progressSteps = document.querySelectorAll('.progress-step');
+        const stages = document.querySelectorAll('.stage-content');
+        const tabButtons = document.querySelectorAll('.tab-button');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        function navigateToStep(stepId) {
+            stages.forEach(stage => stage.classList.remove('active'));
+            document.getElementById(stepId).classList.add('active');
+            progressSteps.forEach(step => {
+                step.classList.remove('active');
+                if (step.dataset.step === stepId) step.classList.add('active');
+            });
         }
-      });
 
-      // Validate email format
-      const email = document.getElementById('ContactEmail');
-      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailPattern.test(email.value)) {
-        isValid = false;
-        email.style.borderColor = 'red';
-      }
+        function validateSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            const requiredFields = section.querySelectorAll('[required]');
+            let isValid = true;
+            const missingFields = [];
 
-      // Validate numbers (must be positive if provided)
-      const numberFields = ['BuildingSquareFootage', 'BuildingAge', 'LastRenovation', 'PilotFloorSquareFootage', 'AHUCapacity1', 'AHUCapacity2', 'NumberOfZones'];
-      numberFields.forEach(id => {
-        const field = document.getElementById(id);
-        if (field.value && field.value < 0) {
-          isValid = false;
-          field.style.borderColor = 'red';
+            requiredFields.forEach(field => {
+                if (field.type === 'radio') {
+                    const radioGroup = section.querySelectorAll(`input[name="${field.name}"]`);
+                    const isChecked = Array.from(radioGroup).some(radio => radio.checked);
+                    if (!isChecked) {
+                        isValid = false;
+                        missingFields.push(field.name);
+                    }
+                } else if (!field.value.trim()) {
+                    isValid = false;
+                    missingFields.push(field.name);
+                }
+            });
+
+            if (!isValid) alert(`Please fill in all required fields: ${missingFields.join(', ')}`);
+            return isValid;
         }
-      });
 
-      // Validate photo sizes (max 10MB)
-      const photoInputs = ['photo_1', 'photo_2', 'photo_3', 'photo_4', 'photo_5'];
-      photoInputs.forEach(id => {
-        const photo = document.getElementById(id);
-        if (photo.files.length > 0) {
-          const file = photo.files[0];
-          if (file.size > 10 * 1024 * 1024) { // 10MB
-            isValid = false;
-            photo.style.borderColor = 'red';
-            alert('Photo ' + id + ' exceeds 10MB limit.');
-          }
+        function toggleSections() {
+            const buildingType = document.getElementById('BuildingType').value;
+            document.getElementById('OtherBuildingTypeDiv').classList.toggle('show', buildingType === 'Other');
+
+            const hasVAV = document.querySelector('input[name="HasVAV"]:checked')?.value;
+            document.getElementById('HasVAVYesDiv').classList.toggle('show', hasVAV === 'Yes');
+
+            const hasBMS = document.querySelector('input[name="HasBMS"]:checked')?.value;
+            document.getElementById('HasBMSYesDiv').classList.toggle('show', hasBMS === 'Yes');
+
+            const knowPilotFloor = document.querySelector('input[name="KnowPilotFloor"]:checked')?.value;
+            document.getElementById('KnowPilotFloorYesDiv').classList.toggle('show', knowPilotFloor === 'Yes');
         }
-      });
 
-      if (!isValid) {
-        document.getElementById('message').innerHTML = '<div class="error">Please fill all required fields correctly.</div>';
-        return;
-      }
+        document.getElementById('BuildingType').addEventListener('change', toggleSections);
+        document.querySelectorAll('input[name="HasVAV"]').forEach(input => input.addEventListener('change', toggleSections));
+        document.querySelectorAll('input[name="HasBMS"]').forEach(input => input.addEventListener('change', toggleSections));
+        document.querySelectorAll('input[name="KnowPilotFloor"]').forEach(input => input.addEventListener('change', toggleSections));
 
-      // Prepare form data
-      const formData = new FormData(this);
-      document.getElementById('message').innerHTML = '<div class="success">Submitting...</div>';
+        progressSteps.forEach(step => {
+            step.addEventListener('click', () => {
+                const currentStep = document.querySelector('.stage-content.active').id;
+                const targetStep = step.dataset.step;
+                if (currentStep === targetStep) return;
+                if (currentStep === 'initial-screening' && targetStep !== 'initial-screening' && !validateSection('initial-screening')) return;
+                if (currentStep === 'technical-discovery' && targetStep === 'site-assessment' && !validateSection('technical-discovery')) return;
+                navigateToStep(targetStep);
+            });
+        });
 
-      // Submit to Google Apps Script
-      fetch('https://script.google.com/macros/s/AKfycbyGWrlP-iLfj_ZwS2A7K-n3F8CqCKo-Fy6e8x0MvKCjHDpQXNenfn2r8hyvRxpOZ5rGLw/exec', {
-        method: 'POST',
-        body: formData
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.result === 'success') {
-          document.getElementById('message').innerHTML = '<div class="success">Form submitted successfully!</div>';
-          document.getElementById('assessmentForm').reset();
-          toggleSections();
-        } else {
-          document.getElementById('message').innerHTML = '<div class="error">Submission failed: ' + data.error + '</div>';
-        }
-      })
-      .catch(error => {
-        document.getElementById('message').innerHTML = '<div class="error">Error: ' + error.message + '</div>';
-      });
-    });
+        document.getElementById('toDiscoveryBtn').addEventListener('click', () => {
+            if (validateSection('initial-screening')) {
+                navigateToStep('technical-discovery');
+                progressSteps[0].classList.add('completed');
+            }
+        });
 
-    // Conditional logic for gatekeepers
-    function toggleSections() {
-      // Building Type
-      const buildingType = document.getElementById('BuildingType').value;
-      document.getElementById('OtherBuildingTypeDiv').classList.toggle('hidden', buildingType !== 'Other');
+        document.getElementById('toSiteAssessmentBtn').addEventListener('click', () => {
+            if (validateSection('technical-discovery')) {
+                navigateToStep('site-assessment');
+                progressSteps[1].classList.add('completed');
+            }
+        });
 
-      // Has VAV
-      const hasVAV = document.querySelector('input[name="HasVAV"]:checked')?.value;
-      document.getElementById('HasVAVYesDiv').classList.toggle('hidden', hasVAV !== 'Yes');
+        document.getElementById('backToScreeningBtn').addEventListener('click', () => navigateToStep('initial-screening'));
+        document.getElementById('backToDiscoveryBtn').addEventListener('click', () => navigateToStep('technical-discovery'));
 
-      // Has BMS
-      const hasBMS = document.querySelector('input[name="HasBMS"]:checked')?.value;
-      document.getElementById('HasBMSYesDiv').classList.toggle('hidden', hasBMS !== 'Yes');
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                tabContents.forEach(content => content.classList.remove('active'));
+                button.classList.add('active');
+                document.getElementById(button.dataset.tab).classList.add('active');
+            });
+        });
 
-      // Know Pilot Floor
-      const knowPilotFloor = document.querySelector('input[name="KnowPilotFloor"]:checked')?.value;
-      document.getElementById('KnowPilotFloorYesDiv').classList.toggle('hidden', knowPilotFloor !== 'Yes');
-    }
+        document.getElementById('addAHU').addEventListener('click', function() {
+            const ahuList = document.getElementById('ahuList');
+            const ahuCount = ahuList.querySelectorAll('.dynamic-item').length;
+            if (ahuCount < 2) {
+                const template = `
+                    <div class="dynamic-item">
+                        <div class="form-row">
+                            <label for="AHUName2" class="form-label">AHU Name 2</label>
+                            <input type="text" id="AHUName2" name="AHUName2" class="form-control">
+                        </div>
+                        <div class="form-row">
+                            <label for="AHUCapacity2" class="form-label">AHU Capacity 2 (CFM)</label>
+                            <input type="number" id="AHUCapacity2" name="AHUCapacity2" class="form-control" min="0">
+                        </div>
+                        <div class="form-row">
+                            <label for="AHUCondition2" class="form-label">AHU Condition 2</label>
+                            <select id="AHUCondition2" name="AHUCondition2" class="form-control">
+                                <option value="">Select...</option>
+                                <option value="Excellent">Excellent</option>
+                                <option value="Good">Good</option>
+                                <option value="Fair">Fair</option>
+                                <option value="Poor">Poor</option>
+                            </select>
+                        </div>
+                        <div class="form-row">
+                            <label for="AHUDedicatedOrShared2" class="form-label">AHU Dedicated or Shared 2</label>
+                            <select id="AHUDedicatedOrShared2" name="AHUDedicatedOrShared2" class="form-control">
+                                <option value="">Select...</option>
+                                <option value="Dedicated">Dedicated</option>
+                                <option value="Shared">Shared</option>
+                                <option value="Unknown">Unknown</option>
+                            </select>
+                        </div>
+                        <div class="form-row">
+                            <label for="AHUSpeedControl2" class="form-label">AHU Speed Control 2</label>
+                            <select id="AHUSpeedControl2" name="AHUSpeedControl2" class="form-control">
+                                <option value="">Select...</option>
+                                <option value="VFD">VFD</option>
+                                <option value="BMS">BMS</option>
+                                <option value="Manual">Manual</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-row">
+                            <label class="form-label">Speed Mapped to OA CFM 2?</label>
+                            <div class="radio-group">
+                                <div class="radio-option">
+                                    <input type="radio" id="SpeedMappedToOACFM2Yes" name="SpeedMappedToOACFM2" value="Yes">
+                                    <label for="SpeedMappedToOACFM2Yes">Yes</label>
+                                </div>
+                                <div class="radio-option">
+                                    <input type="radio" id="SpeedMappedToOACFM2No" name="SpeedMappedToOACFM2" value="No">
+                                    <label for="SpeedMappedToOACFM2No">No</label>
+                                </div>
+                                <div class="radio-option">
+                                    <input type="radio" id="SpeedMappedToOACFM2DontKnow" name="SpeedMappedToOACFM2" value="Don't know">
+                                    <label for="SpeedMappedToOACFM2DontKnow">Don't know</label>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="remove-btn">Remove AHU</button>
+                    </div>`;
+                ahuList.insertAdjacentHTML('beforeend', template);
+                if (ahuCount + 1 >= 2) this.disabled = true;
+            }
+        });
 
-    // Add event listeners for gatekeepers
-    document.getElementById('BuildingType').addEventListener('change', toggleSections);
-    document.querySelectorAll('input[name="HasVAV"]').forEach(input => input.addEventListener('change', toggleSections));
-    document.querySelectorAll('input[name="HasBMS"]').forEach(input => input.addEventListener('change', toggleSections));
-    document.querySelectorAll('input[name="KnowPilotFloor"]').forEach(input => input.addEventListener('change', toggleSections));
-  </script>
+        document.getElementById('ahuList').addEventListener('click', function(e) {
+            if (e.target.classList.contains('remove-btn')) {
+                e.target.parentElement.remove();
+                document.getElementById('addAHU').disabled = false;
+            }
+        });
+
+        document.getElementById('assessmentForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            let isValid = true;
+
+            const requiredFields = document.querySelectorAll('[required]');
+            requiredFields.forEach(field => {
+                if (field.type === 'radio') {
+                    const radioGroup = document.querySelectorAll(`input[name="${field.name}"]`);
+                    if (!Array.from(radioGroup).some(radio => radio.checked)) {
+                        isValid = false;
+                        field.style.borderColor = 'var(--error)';
+                    }
+                } else if (!field.value.trim()) {
+                    isValid = false;
+                    field.style.borderColor = 'var(--error)';
+                } else {
+                    field.style.borderColor = 'var(--border)';
+                }
+            });
+
+            const email = document.getElementById('ContactEmail');
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailPattern.test(email.value)) {
+                isValid = false;
+                email.style.borderColor = 'var(--error)';
+            }
+
+            const photoInputs = ['photo_1', 'photo_2', 'photo_3', 'photo_4', 'photo_5'];
+            photoInputs.forEach(id => {
+                const photo = document.getElementById(id);
+                if (photo.files.length > 0 && photo.files[0].size > 10 * 1024 * 1024) {
+                    isValid = false;
+                    photo.style.borderColor = 'var(--error)';
+                    alert(`Photo ${id} exceeds 10MB limit.`);
+                }
+            });
+
+            if (!isValid) {
+                document.getElementById('message').innerHTML = '<div class="error-message">Please fill all required fields correctly.</div>';
+                return;
+            }
+
+            const formData = new FormData(this);
+            document.getElementById('message').innerHTML = '<div class="success-message">Submitting...</div>';
+
+            fetch(this.action, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.result === 'success') {
+                    document.getElementById('message').innerHTML = '<div class="success-message">Form submitted successfully!</div>';
+                    this.reset();
+                    toggleSections();
+                    progressSteps.forEach(step => step.classList.remove('completed'));
+                    navigateToStep('initial-screening');
+                } else {
+                    document.getElementById('message').innerHTML = `<div class="error-message">Submission failed: ${data.error}</div>`;
+                }
+            })
+            .catch(error => {
+                document.getElementById('message').innerHTML = `<div class="error-message">Error: ${error.message}</div>`;
+            });
+        });
+
+        toggleSections();
+    </script>
 </body>
 </html>
