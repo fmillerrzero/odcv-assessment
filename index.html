@@ -3,18 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>O-DCV Assessment Form</title>
+    <title>O-DCV Assessment Form | R-Zero</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- CSS Styles -->
     <style>
+        /* R-Zero Color Scheme */
         :root {
-            --primary: #1d4ed8;
-            --secondary: #10b981;
-            --background: #f9fafb;
-            --text: #1f2937;
-            --border: #d1d5db;
-            --error: #ef4444;
-            --success: #10b981;
+            --primary: #00769d; /* R-Zero blue */
+            --primary-dark: #005f7e; /* Darker blue for hover states */
+            --secondary: #39B9C0; /* R-Zero teal */
+            --background: #f8fafc; /* Light gray background */
+            --surface: #ffffff; /* Surface color */
+            --text: #1a202c; /* Dark text */
+            --text-light: #4a5568; /* Lighter text for descriptions */
+            --border: #e2e8f0; /* Light border */
+            --error: #e53e3e; /* Red for errors */
+            --success: #38a169; /* Green for success */
+            --warning: #f6ad55; /* Orange for warnings */
+            --info: #63b3ed; /* Blue for info */
             --font-family: 'Inter', sans-serif;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.05);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.05);
+            --radius-sm: 6px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --transition: all 0.2s ease;
         }
 
         * {
@@ -28,20 +43,37 @@
             background-color: var(--background);
             color: var(--text);
             line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
         .container {
-            max-width: 800px;
+            max-width: 900px;
             margin: 40px auto;
-            padding: 20px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 24px;
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Form Header and Logo */
+        .form-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .logo {
+            max-width: 200px;
+            height: auto;
+            margin-bottom: 20px;
         }
 
         h1 {
             text-align: center;
-            font-size: 2.5rem;
+            font-size: 2.25rem;
             font-weight: 700;
             color: var(--primary);
             margin-bottom: 20px;
@@ -51,53 +83,73 @@
             font-size: 1.5rem;
             font-weight: 600;
             color: var(--primary);
-            margin-bottom: 20px;
-            border-bottom: 3px solid var(--secondary);
-            padding-bottom: 10px;
+            margin-bottom: 16px;
+            border-bottom: 2px solid var(--secondary);
+            padding-bottom: 8px;
+        }
+
+        h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-top: 16px;
+            margin-bottom: 12px;
         }
 
         p.section-intro {
-            font-size: 1.1rem;
-            color: #4b5563;
+            font-size: 1rem;
+            color: var(--text-light);
             margin-bottom: 20px;
-            background: #f3f4f6;
-            padding: 10px;
-            border-radius: 4px;
+            background: #edf2f7;
+            padding: 12px;
+            border-radius: var(--radius-sm);
         }
 
+        .security-note {
+            background: #e6fffa;
+            padding: 12px;
+            border-radius: var(--radius-sm);
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            color: var(--text);
+            border-left: 4px solid var(--secondary);
+        }
+
+        /* Progress Navigation */
         .progress-nav {
             display: flex;
             justify-content: center;
-            margin-bottom: 30px;
-            gap: 20px;
+            margin-bottom: 32px;
+            gap: 24px;
             position: relative;
         }
 
         .progress-step {
             text-align: center;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: var(--transition);
             position: relative;
             z-index: 1;
         }
 
         .step-number {
-            width: 40px;
-            height: 40px;
+            width: 36px;
+            height: 36px;
             background-color: var(--border);
             border: 2px solid var(--border);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: bold;
-            font-size: 1.2rem;
-            transition: all 0.3s ease;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: var(--transition);
+            margin: 0 auto;
         }
 
         .step-number .checkmark {
             display: none;
-            font-size: 1.2rem;
+            font-size: 1rem;
         }
 
         .progress-step.active .step-number {
@@ -118,14 +170,14 @@
         }
 
         .step-label {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: var(--text);
-            margin-top: 5px;
+            margin-top: 6px;
         }
 
         .progress-line {
             position: absolute;
-            top: 20px;
+            top: 18px;
             left: 60px;
             right: 60px;
             height: 2px;
@@ -133,18 +185,26 @@
             z-index: 0;
         }
 
+        /* Content Sections */
         .stage-content {
             display: none;
         }
 
         .stage-content.active {
             display: block;
+            animation: fadeIn 0.3s ease;
         }
 
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Form Components */
         .form-row {
             display: grid;
-            grid-template-columns: 200px 1fr;
-            gap: 10px;
+            grid-template-columns: 220px 1fr;
+            gap: 12px;
             align-items: center;
             margin-bottom: 20px;
         }
@@ -152,83 +212,126 @@
         @media (max-width: 768px) {
             .form-row {
                 grid-template-columns: 1fr;
+                gap: 8px;
             }
         }
 
         .form-label {
             font-weight: 500;
-            font-size: 1rem;
-            background: #f3f4f6;
-            padding: 8px;
-            border-radius: 4px;
+            font-size: 0.95rem;
+            background: #f7fafc;
+            padding: 8px 12px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .form-label.required::after {
             content: '*';
             color: var(--error);
-            margin-left: 5px;
+            font-weight: 700;
         }
 
         .form-control {
             padding: 10px;
             border: 1px solid var(--border);
-            border-radius: 6px;
-            font-size: 1rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.95rem;
             transition: border-color 0.2s, box-shadow 0.2s;
+            width: 100%;
+            font-family: var(--font-family);
         }
 
         .form-control:focus {
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.1);
+            box-shadow: 0 0 0 3px rgba(0, 118, 157, 0.1);
             outline: none;
         }
 
+        .form-control.invalid {
+            border-color: var(--error);
+        }
+
+        select.form-control {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%231a202c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 16px;
+            padding-right: 30px;
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* Radio and Checkbox Styling */
         .radio-group {
             display: flex;
-            gap: 20px;
+            gap: 16px;
             flex-wrap: wrap;
         }
 
         .radio-option {
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 6px;
         }
 
+        .radio-option input[type="radio"] {
+            margin-right: 5px;
+        }
+
+        /* Conditional Fields */
         .conditional-field {
             display: none;
-            margin-top: 10px;
+            margin-top: 12px;
             grid-column: 1 / -1;
+            transition: opacity 0.3s ease, max-height 0.3s ease;
+            opacity: 0;
+            max-height: 0;
+            overflow: hidden;
         }
 
         .conditional-field.show {
             display: block;
+            opacity: 1;
+            max-height: 2000px; /* Adjust for content */
         }
 
+        /* Tabs */
         .tabset {
-            margin-bottom: 20px;
+            margin-bottom: 24px;
         }
 
         .tab-buttons {
             display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
+            gap: 12px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
         }
 
         .tab-button {
             padding: 10px 20px;
             border: none;
-            background: #e5e7eb;
+            background: #edf2f7;
             color: var(--text);
             cursor: pointer;
-            border-radius: 6px;
+            border-radius: var(--radius-sm);
             font-weight: 500;
-            transition: background 0.2s;
+            font-size: 0.9rem;
+            transition: background 0.2s, color 0.2s;
         }
 
         .tab-button.active {
             background: var(--primary);
             color: white;
+        }
+
+        .tab-button:hover:not(.active) {
+            background: #e2e8f0;
         }
 
         .tab-content {
@@ -239,30 +342,58 @@
             display: block;
         }
 
+        /* Dynamic List Styling */
         .dynamic-list {
-            margin-bottom: 20px;
+            margin-bottom: 24px;
         }
 
         .dynamic-item {
             border: 1px solid var(--border);
-            padding: 15px;
-            margin-bottom: 15px;
-            border-radius: 6px;
+            padding: 16px;
+            margin-bottom: 16px;
+            border-radius: var(--radius-md);
             position: relative;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            background: var(--surface);
+            box-shadow: var(--shadow-sm);
+            transition: box-shadow 0.2s ease;
+        }
+
+        .dynamic-item:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .dynamic-item .form-row:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Button Styling */
+        button {
+            font-family: var(--font-family);
+            cursor: pointer;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
         }
 
         .remove-btn {
             position: absolute;
-            top: 10px;
-            right: 10px;
+            top: 12px;
+            right: 12px;
             background: var(--error);
             color: white;
             border: none;
-            padding: 5px 10px;
+            padding: 6px 12px;
             cursor: pointer;
-            border-radius: 4px;
-            font-size: 0.8rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.85rem;
+            transition: background 0.2s;
+        }
+
+        .remove-btn:hover {
+            background: #c53030;
         }
 
         .add-btn, .nav-btn {
@@ -270,93 +401,108 @@
             background: var(--primary);
             color: white;
             border: none;
-            border-radius: 6px;
+            border-radius: var(--radius-sm);
             font-weight: 500;
+            font-size: 0.95rem;
             cursor: pointer;
             transition: background 0.2s;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: var(--shadow-sm);
         }
 
         .add-btn:hover, .nav-btn:hover {
-            background: #1e40af;
+            background: var(--primary-dark);
+            box-shadow: var(--shadow-md);
         }
 
+        .add-btn:disabled, .nav-btn:disabled {
+            background: #a0aec0;
+            cursor: not-allowed;
+        }
+
+        .secondary-btn {
+            background: #edf2f7;
+            color: var(--text);
+        }
+
+        .secondary-btn:hover {
+            background: #e2e8f0;
+        }
+
+        /* Photo Upload */
         .photo-upload {
-            margin-top: 10px;
+            margin-top: 12px;
         }
 
+        .photo-preview {
+            max-width: 120px;
+            max-height: 120px;
+            margin-top: 8px;
+            border-radius: var(--radius-sm);
+            display: none;
+            object-fit: cover;
+            border: 1px solid var(--border);
+        }
+
+        /* Messages */
         .error-message {
             color: var(--error);
             font-size: 0.9rem;
-            margin-top: 5px;
+            margin-top: 8px;
         }
 
         .success-message {
             color: var(--success);
             font-size: 0.9rem;
-            margin-top: 5px;
+            margin-top: 8px;
         }
 
-        .radio-option input[type="radio"] {
-            display: none;
+        .warning-message {
+            color: var(--warning);
+            font-size: 0.9rem;
+            margin-top: 8px;
         }
 
-        .radio-option label {
-            cursor: pointer;
-            position: relative;
-            padding-left: 25px;
-        }
-
-        .radio-option label::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 18px;
-            height: 18px;
-            border: 2px solid var(--primary);
-            border-radius: 50%;
-            background: white;
-        }
-
-        .radio-option input[type="radio"]:checked + label::before {
-            background: var(--primary);
-        }
-
-        .radio-option input[type="radio"]:checked + label::after {
-            content: '';
-            position: absolute;
-            left: 5px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: white;
-        }
-
+        /* Tooltip */
         .tooltip {
             position: relative;
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
             cursor: help;
+            font-size: 0.85rem;
+            color: #718096;
+            margin-left: 6px;
+        }
+
+        .tooltip::before {
+            content: '?';
+            width: 18px;
+            height: 18px;
+            background: #e2e8f0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
         }
 
         .tooltip .tooltiptext {
             visibility: hidden;
-            width: 200px;
-            background-color: #333;
-            color: #fff;
+            width: 220px;
+            background-color: #2d3748;
+            color: white;
             text-align: center;
-            border-radius: 6px;
-            padding: 5px;
+            border-radius: var(--radius-sm);
+            padding: 8px;
             position: absolute;
-            z-index: 1;
-            bottom: 125%;
-            left: 50%;
-            margin-left: -100px;
+            z-index: 10;
+            top: -10px;
+            left: 100%;
+            margin-left: 12px;
+            font-size: 0.85rem;
+            box-shadow: var(--shadow-md);
             opacity: 0;
-            transition: opacity 0.3s;
+            transition: opacity 0.3s, visibility 0.3s;
+            pointer-events: none;
         }
 
         .tooltip:hover .tooltiptext {
@@ -364,18 +510,75 @@
             opacity: 1;
         }
 
-        .description {
+        @media (max-width: 768px) {
+            .tooltip .tooltiptext {
+                width: 180px;
+                top: -80px;
+                left: 50%;
+                transform: translateX(-50%);
+                margin-left: 0;
+            }
+        }
+
+        /* Status indicator */
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: var(--radius-sm);
             font-size: 0.9rem;
-            color: #4b5563;
-            margin-top: 5px;
+            margin-top: 12px;
+        }
+        
+        .status-indicator.success {
+            background-color: rgba(56, 161, 105, 0.1);
+            color: var(--success);
+        }
+        
+        .status-indicator.error {
+            background-color: rgba(229, 62, 62, 0.1);
+            color: var(--error);
+        }
+        
+        .status-indicator.warning {
+            background-color: rgba(246, 173, 85, 0.1);
+            color: var(--warning);
+        }
+        
+        .status-indicator.info {
+            background-color: rgba(99, 179, 237, 0.1);
+            color: var(--info);
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>O-DCV Assessment Form</h1>
-        <p>This form assesses your building's suitability for an Occupancy-Based Demand Control Ventilation (O-DCV) pilot. Provide as much detail as possible. Required fields are marked with *. Hover over labels for explanations.</p>
-
+        <!-- R-Zero Logo and Form Header -->
+        <div class="form-header">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT1NeHij0rTl9aJUhoyTzp6OUxgHmqTiMQxUA&s" 
+                 alt="R-Zero Logo" class="logo" 
+                 onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjUwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjx0ZXh0IHg9IjEwIiB5PSIzMCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjI0IiBmaWxsPSIjMDA3NjlkIj5SLVplcm88L3RleHQ+PC9zdmc+'" />
+            <h1>O-DCV Assessment Form</h1>
+        </div>
+        <p class="section-intro">This form assesses your building's readiness for Occupancy-Driven Demand-Controlled Ventilation (O-DCV), optimizing ventilation based on real-time occupancy data. All data is securely handled to ensure your privacy.</p>
+        
         <div class="progress-nav">
             <div class="progress-step active" data-step="initial-screening">
                 <div class="step-number">1 <span class="checkmark">✓</span></div>
@@ -393,923 +596,1397 @@
         </div>
 
         <form id="assessmentForm" action="https://script.google.com/macros/s/AKfycbyGWrlP-iLfj_ZwS2A7K-n3F8CqCKo-Fy6e8x0MvKCjHDpQXNenfn2r8hyvRxpOZ5rGLw/exec" method="POST" enctype="multipart/form-data">
+            <!-- Initial Screening Section -->
             <div id="initial-screening" class="stage-content active">
                 <h2>Initial Screening</h2>
-                <p class="section-intro">This section gathers basic information to determine if your building is suitable for an O-DCV pilot.</p>
+                <p class="section-intro">Let's start with basic information about your building and contact details to assess O-DCV eligibility.</p>
+                
+                <!-- Contact Information -->
+                <h3>Contact Information</h3>
                 <div class="form-row">
-                    <label for="ContactName" class="form-label required tooltip">Contact Name<span class="tooltiptext">Your name or the contact person's name.</span></label>
+                    <label for="ContactName" class="form-label required">Contact Name <span class="tooltip"><span class="tooltiptext">Your name or the primary contact's name for this assessment.</span></span></label>
                     <input type="text" id="ContactName" name="ContactName" class="form-control" required>
                 </div>
                 <div class="form-row">
-                    <label for="ContactEmail" class="form-label required tooltip">Contact Email<span class="tooltiptext">Your email address for follow-up communication.</span></label>
-                    <input type="email" id="ContactEmail" name="ContactEmail" class="form-control" required>
+                    <label for="ContactEmail" class="form-label required">Contact Email <span class="tooltip"><span class="tooltiptext">Email address for follow-up communication.</span></span></label>
+                    <input type="email" id="ContactEmail" name="ContactEmail" class="form-control" required pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$">
                 </div>
+                
+                <!-- Building Information -->
+                <h3>Building Information</h3>
                 <div class="form-row">
-                    <label for="BuildingName" class="form-label required tooltip">Building Name<span class="tooltiptext">The name of the building being assessed.</span></label>
+                    <label for="BuildingName" class="form-label required">Building Name <span class="tooltip"><span class="tooltiptext">The name or identifier of the building being assessed.</span></span></label>
                     <input type="text" id="BuildingName" name="BuildingName" class="form-control" required>
                 </div>
                 <div class="form-row">
-                    <label for="BuildingSquareFootage" class="form-label tooltip">Building Square Footage<span class="tooltiptext">Total square footage of the building. Estimate if exact number is unknown.</span></label>
+                    <label for="BuildingAddress" class="form-label">Building Address <span class="tooltip"><span class="tooltiptext">Full street address of the building (e.g., 123 Main St, City, State, ZIP).</span></span></label>
+                    <input type="text" id="BuildingAddress" name="BuildingAddress" class="form-control">
+                </div>
+                <div class="form-row">
+                    <label for="BuildingSquareFootage" class="form-label">Building Square Footage <span class="tooltip"><span class="tooltiptext">Total square footage of the building. Estimate if exact number is unknown.</span></span></label>
                     <input type="number" id="BuildingSquareFootage" name="BuildingSquareFootage" class="form-control" min="0">
                 </div>
                 <div class="form-row">
-                    <label for="BuildingType" class="form-label required tooltip">Building Type<span class="tooltiptext">Primary use of the building. Select 'Unknown' if not sure.</span></label>
+                    <label for="BuildingFloors" class="form-label">Number of Floors <span class="tooltip"><span class="tooltiptext">Total number of floors in the building, including basements.</span></span></label>
+                    <input type="number" id="BuildingFloors" name="BuildingFloors" class="form-control" min="1">
+                </div>
+                <div class="form-row">
+                    <label for="BuildingType" class="form-label required">Primary Building Use <span class="tooltip"><span class="tooltiptext">Select the main purpose of the building. Choose 'Other' if not listed.</span></span></label>
                     <select id="BuildingType" name="BuildingType" class="form-control" required>
                         <option value="">Select...</option>
-                        <option value="Office">Office</option>
-                        <option value="Education">Education</option>
-                        <option value="Healthcare">Healthcare</option>
-                        <option value="Retail">Retail</option>
-                        <option value="Hospitality">Hospitality</option>
-                        <option value="Residential">Residential</option>
-                        <option value="Industrial">Industrial</option>
-                        <option value="Mixed">Mixed</option>
-                        <option value="Other">Other</option>
-                        <option value="Unknown">Unknown</option>
+                        <!-- Will be populated from JSON -->
                     </select>
                 </div>
                 <div id="OtherBuildingTypeDiv" class="conditional-field">
-                    <label for="OtherBuildingType" class="form-label tooltip">Other Building Type<span class="tooltiptext">Specify the building type if 'Other' is selected.</span></label>
-                    <input type="text" id="OtherBuildingType" name="OtherBuildingType" class="form-control">
+                    <div class="form-row">
+                        <label for="OtherBuildingType" class="form-label">Other Building Type <span class="tooltip"><span class="tooltiptext">Specify the building type if 'Other' is selected (e.g., Warehouse).</span></span></label>
+                        <input type="text" id="OtherBuildingType" name="OtherBuildingType" class="form-control">
+                    </div>
                 </div>
                 <div class="form-row">
-                    <label class="form-label required tooltip">Has VAV Systems?<span class="tooltiptext">Variable Air Volume systems control airflow to different zones.</span></label>
-                    <div class="radio-group">
-                        <div class="radio-option">
-                            <input type="radio" id="HasVAVYes" name="HasVAV" value="Yes" required>
-                            <label for="HasVAVYes">Yes</label>
-                        </div>
-                        <div class="radio-option">
-                            <input type="radio" id="HasVAVNo" name="HasVAV" value="No">
-                            <label for="HasVAVNo">No</label>
-                        </div>
-                        <div class="radio-option">
-                            <input type="radio" id="HasVAVDontKnow" name="HasVAV" value="Don't know">
-                            <label for="HasVAVDontKnow">Don't know</label>
-                        </div>
+                    <label for="BuildingUsage" class="form-label">Building Usage <span class="tooltip"><span class="tooltiptext">Primary usage pattern of the building (e.g., daytime office hours).</span></span></label>
+                    <select id="BuildingUsage" name="BuildingUsage" class="form-control">
+                        <option value="">Select...</option>
+                        <!-- Will be populated from JSON -->
+                    </select>
+                </div>
+                <div id="OtherBuildingUsageDiv" class="conditional-field">
+                    <div class="form-row">
+                        <label for="OtherBuildingUsage" class="form-label">Other Building Usage <span class="tooltip"><span class="tooltiptext">Describe the usage pattern if 'Other' is selected.</span></span></label>
+                        <input type="text" id="OtherBuildingUsage" name="OtherBuildingUsage" class="form-control">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <label for="OperatingHours" class="form-label">Operating Hours <span class="tooltip"><span class="tooltiptext">Typical operating hours (e.g., Mon-Fri 9AM-5PM).</span></span></label>
+                    <input type="text" id="OperatingHours" name="OperatingHours" class="form-control" placeholder="e.g., Mon-Fri 9AM-5PM">
+                </div>
+                <div class="form-row">
+                    <label for="BuildingAge" class="form-label">Building Age (Years) <span class="tooltip"><span class="tooltiptext">Approximate age of the building in years.</span></span></label>
+                    <input type="number" id="BuildingAge" name="BuildingAge" class="form-control" min="0">
+                </div>
+                <div class="form-row">
+                    <label for="BuildingOwnerContact" class="form-label">Building Owner Contact <span class="tooltip"><span class="tooltiptext">Contact details for the building owner or manager (e.g., name, email).</span></span></label>
+                    <input type="text" id="BuildingOwnerContact" name="BuildingOwnerContact" class="form-control" placeholder="e.g., John Doe, john@example.com">
+                </div>
+                
+                <!-- HVAC System Information -->
+                <h3>HVAC System Information</h3>
+                <div class="form-row">
+                    <label class="form-label required">Has Variable Air Volume (VAV) Systems? <span class="tooltip"><span class="tooltiptext">Does the building use VAV systems to control airflow to different zones?</span></span></label>
+                    <div class="radio-group" id="HasVAVGroup">
+                        <!-- Will be populated from JSON -->
                     </div>
                 </div>
                 <div id="HasVAVYesDiv" class="conditional-field">
                     <div class="form-row">
-                        <label class="form-label tooltip">Has VFDs?<span class="tooltiptext">Variable Frequency Drives adjust motor speeds for energy efficiency.</span></label>
-                        <div class="radio-group">
-                            <div class="radio-option">
-                                <input type="radio" id="HasVFDYes" name="HasVFD" value="Yes">
-                                <label for="HasVFDYes">Yes</label>
-                            </div>
-                            <div class="radio-option">
-                                <input type="radio" id="HasVFDNo" name="HasVFD" value="No">
-                                <label for="HasVFDNo">No</label>
-                            </div>
-                            <div class="radio-option">
-                                <input type="radio" id="HasVFDDontKnow" name="HasVFD" value="Don't know">
-                                <label for="HasVFDDontKnow">Don't know</label>
-                            </div>
-                        </div>
+                        <label for="OtherVAVSystem" class="form-label">VAV System Details <span class="tooltip"><span class="tooltiptext">Specify the type or details of the VAV system (e.g., brand, model).</span></span></label>
+                        <input type="text" id="OtherVAVSystem" name="OtherVAVSystem" class="form-control" placeholder="e.g., Trane VAV boxes">
                     </div>
                     <div class="form-row">
-                        <label class="form-label tooltip">Has Zonal Dampers?<span class="tooltiptext">Dampers that control airflow to individual zones.</span></label>
-                        <div class="radio-group">
-                            <div class="radio-option">
-                                <input type="radio" id="HasZonalDampersYes" name="HasZonalDampers" value="Yes">
-                                <label for="HasZonalDampersYes">Yes</label>
-                            </div>
-                            <div class="radio-option">
-                                <input type="radio" id="HasZonalDampersNo" name="HasZonalDampers" value="No">
-                                <label for="HasZonalDampersNo">No</label>
-                            </div>
-                            <div class="radio-option">
-                                <input type="radio" id="HasZonalDampersDontKnow" name="HasZonalDampers" value="Don't know">
-                                <label for="HasZonalDampersDontKnow">Don't know</label>
-                            </div>
+                        <label class="form-label">Has Variable Frequency Drives (VFDs)? <span class="tooltip"><span class="tooltiptext">Are VFDs used to adjust motor speeds for energy efficiency?</span></span></label>
+                        <div class="radio-group" id="HasVFDGroup">
+                            <!-- Will be populated from JSON -->
                         </div>
                     </div>
-                    <div class="form-row">
-                        <label class="form-label tooltip">Has Adjustable OA Dampers?<span class="tooltiptext">Dampers that control the intake of outside air.</span></label>
-                        <div class="radio-group">
-                            <div class="radio-option">
-                                <input type="radio" id="HasAdjustableOADampersYes" name="HasAdjustableOADampers" value="Yes">
-                                <label for="HasAdjustableOADampersYes">Yes</label>
-                            </div>
-                            <div class="radio-option">
-                                <input type="radio" id="HasAdjustableOADampersNo" name="HasAdjustableOADampers" value="No">
-                                <label for="HasAdjustableOADampersNo">No</label>
-                            </div>
-                            <div class="radio-option">
-                                <input type="radio" id="HasAdjustableOADampersDontKnow" name="HasAdjustableOADampers" value="Don't know">
-                                <label for="HasAdjustableOADampersDontKnow">Don't know</label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <label class="form-label tooltip">Dampers Controllable by BMS?<span class="tooltiptext">Can the Building Management System control the dampers?</span></label>
-                        <div class="radio-group">
-                            <div class="radio-option">
-                                <input type="radio" id="DampersControllableByBMSYes" name="DampersControllableByBMS" value="Yes">
-                                <label for="DampersControllableByBMSYes">Yes</label>
-                            </div>
-                            <div class="radio-option">
-                                <input type="radio" id="DampersControllableByBMSNo" name="DampersControllableByBMS" value="No">
-                                <label for="DampersControllableByBMSNo">No</label>
-                            </div>
-                            <div class="radio-option">
-                                <input type="radio" id="DampersControllableByBMSDontKnow" name="DampersControllableByBMS" value="Don't know">
-                                <label for="DampersControllableByBMSDontKnow">Don't know</label>
-                            </div>
+                    <div id="HasVFDYesDiv" class="conditional-field">
+                        <div class="form-row">
+                            <label for="OtherVFDSystem" class="form-label">VFD System Details <span class="tooltip"><span class="tooltiptext">Specify the type or details of the VFD system (e.g., ABB ACH580).</span></span></label>
+                            <input type="text" id="OtherVFDSystem" name="OtherVFDSystem" class="form-control" placeholder="e.g., ABB ACH580">
                         </div>
                     </div>
                 </div>
+                
+                <!-- BMS Information -->
+                <h3>Building Management System</h3>
                 <div class="form-row">
-                    <label class="form-label required tooltip">Has BMS?<span class="tooltiptext">Building Management System automates and monitors building systems.</span></label>
-                    <div class="radio-group">
-                        <div class="radio-option">
-                            <input type="radio" id="HasBMSYes" name="HasBMS" value="Yes" required>
-                            <label for="HasBMSYes">Yes</label>
-                        </div>
-                        <div class="radio-option">
-                            <input type="radio" id="HasBMSNo" name="HasBMS" value="No">
-                            <label for="HasBMSNo">No</label>
-                        </div>
-                        <div class="radio-option">
-                            <input type="radio" id="HasBMSDontKnow" name="HasBMS" value="Don't know">
-                            <label for="HasBMSDontKnow">Don't know</label>
-                        </div>
+                    <label class="form-label required">Has Building Management System (BMS)? <span class="tooltip"><span class="tooltiptext">Does the building have a BMS to automate and monitor systems like HVAC?</span></span></label>
+                    <div class="radio-group" id="HasBMSGroup">
+                        <!-- Will be populated from JSON -->
                     </div>
                 </div>
                 <div id="HasBMSYesDiv" class="conditional-field">
+                    <h3>BMS Details</h3>
                     <div class="form-row">
-                        <label for="BMSProtocol" class="form-label tooltip">BMS Protocol<span class="tooltiptext">Communication standard used by the BMS, like BACnet or Modbus.</span></label>
+                        <label for="BMSManufacturer" class="form-label">BMS Manufacturer <span class="tooltip"><span class="tooltiptext">Select the manufacturer of the BMS (e.g., Siemens).</span></span></label>
+                        <select id="BMSManufacturer" name="BMSVendorModelVersion" class="form-control">
+                            <option value="">Select...</option>
+                            <!-- Will be populated from JSON -->
+                        </select>
+                    </div>
+                    <div id="OtherBMSSystemDiv" class="conditional-field">
+                        <div class="form-row">
+                            <label for="OtherBMSSystem" class="form-label">Other BMS System <span class="tooltip"><span class="tooltiptext">Specify the BMS manufacturer if 'Other' is selected.</span></span></label>
+                            <input type="text" id="OtherBMSSystem" name="OtherBMSSystem" class="form-control" placeholder="e.g., Tridium">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <label for="BMSProtocol" class="form-label">BMS Protocol <span class="tooltip"><span class="tooltiptext">Select the communication protocol used by the BMS.</span></span></label>
                         <select id="BMSProtocol" name="BMSProtocol" class="form-control">
                             <option value="">Select...</option>
-                            <option value="BACnet">BACnet</option>
-                            <option value="Modbus">Modbus</option>
-                            <option value="Other">Other</option>
-                            <option value="None">None</option>
+                            <!-- Will be populated from JSON -->
                         </select>
                     </div>
-                    <div class="form-row">
-                        <label class="form-label tooltip">Can Adjust Setpoints/Airflow?<span class="tooltiptext">Ability to change temperature and airflow settings via BMS.</span></label>
-                        <div class="radio-group">
-                            <div class="radio-option">
-                                <input type="radio" id="CanAdjustSetpointsAirflowYes" name="CanAdjustSetpointsAirflow" value="Yes">
-                                <label for="CanAdjustSetpointsAirflowYes">Yes</label>
-                            </div>
-                            <div class="radio-option">
-                                <input type="radio" id="CanAdjustSetpointsAirflowNo" name="CanAdjustSetpointsAirflow" value="No">
-                                <label for="CanAdjustSetpointsAirflowNo">No</label>
-                            </div>
-                            <div class="radio-option">
-                                <input type="radio" id="CanAdjustSetpointsAirflowDontKnow" name="CanAdjustSetpointsAirflow" value="Don't know">
-                                <label for="CanAdjustSetpointsAirflowDontKnow">Don't know</label>
-                            </div>
+                    <div id="OtherProtocolDiv" class="conditional-field">
+                        <div class="form-row">
+                            <label for="OtherProtocol" class="form-label">Other Protocol <span class="tooltip"><span class="tooltiptext">Specify the protocol if 'Other' is selected.</span></span></label>
+                            <input type="text" id="OtherProtocol" name="OtherProtocol" class="form-control" placeholder="e.g., KNX">
                         </div>
                     </div>
                     <div class="form-row">
-                        <label class="form-label tooltip">BACnet Integration Approved?<span class="tooltiptext">IT approval for integrating with BACnet protocol.</span></label>
-                        <div class="radio-group">
-                            <div class="radio-option">
-                                <input type="radio" id="BACnetApprovedYes" name="BACnetApproved" value="Yes">
-                                <label for="BACnetApprovedYes">Yes</label>
-                            </div>
-                            <div class="radio-option">
-                                <input type="radio" id="BACnetApprovedNo" name="BACnetApproved" value="No">
-                                <label for="BACnetApprovedNo">No</label>
-                            </div>
-                            <div class="radio-option">
-                                <input type="radio" id="BACnetApprovedDontKnow" name="BACnetApproved" value="Don't know">
-                                <label for="BACnetApprovedDontKnow">Don't know</label>
-                            </div>
-                        </div>
+                        <label for="BMSCapabilities" class="form-label">BMS Capabilities <span class="tooltip"><span class="tooltiptext">Describe what the BMS can control or monitor (e.g., setpoints, data logging).</span></span></label>
+                        <input type="text" id="BMSCapabilities" name="BMSCapabilities" class="form-control" placeholder="e.g., Temperature setpoints, airflow monitoring">
+                    </div>
+                    
+                    <!-- BMS Technical Parameters -->
+                    <h3>BMS Technical Parameters</h3>
+                    <div class="form-row">
+                        <label for="FanSpeed" class="form-label">Fan Speed (%) <span class="tooltip"><span class="tooltiptext">Current fan speed percentage, typically 0-100%.</span></span></label>
+                        <input type="number" id="FanSpeed" name="FanSpeed" class="form-control" min="0" max="100">
                     </div>
                     <div class="form-row">
-                        <label class="form-label tooltip">Has Standby Mode?<span class="tooltiptext">Does the BMS have an occupied standby mode programmed?</span></label>
-                        <div class="radio-group">
-                            <div class="radio-option">
-                                <input type="radio" id="HasStandbyModeYes" name="HasStandbyMode" value="Yes">
-                                <label for="HasStandbyModeYes">Yes</label>
-                            </div>
-                            <div class="radio-option">
-                                <input type="radio" id="HasStandbyModeNo" name="HasStandbyMode" value="No">
-                                <label for="HasStandbyModeNo">No</label>
-                            </div>
-                            <div class="radio-option">
-                                <input type="radio" id="HasStandbyModeDontKnow" name="HasStandbyMode" value="Don't know">
-                                <label for="HasStandbyModeDontKnow">Don't know</label>
-                            </div>
-                        </div>
+                        <label for="OutdoorAirDamperPosition" class="form-label">Outdoor Air Damper Position (%) <span class="tooltip"><span class="tooltiptext">Position of the outdoor air damper, typically 0-100%.</span></span></label>
+                        <input type="number" id="OutdoorAirDamperPosition" name="OutdoorAirDamperPosition" class="form-control" min="0" max="100">
                     </div>
                     <div class="form-row">
-                        <label class="form-label tooltip">Has Data Logging?<span class="tooltiptext">Can the BMS log data for zonal airflow, AHU power, etc.?</span></label>
-                        <div class="radio-group">
-                            <div class="radio-option">
-                                <input type="radio" id="HasDataLoggingYes" name="HasDataLogging" value="Yes">
-                                <label for="HasDataLoggingYes">Yes</label>
-                            </div>
-                            <div class="radio-option">
-                                <input type="radio" id="HasDataLoggingNo" name="HasDataLogging" value="No">
-                                <label for="HasDataLoggingNo">No</label>
-                            </div>
-                            <div class="radio-option">
-                                <input type="radio" id="HasDataLoggingDontKnow" name="HasDataLogging" value="Don't know">
-                                <label for="HasDataLoggingDontKnow">Don't know</label>
-                            </div>
-                        </div>
+                        <label for="SupplyAirTemperature" class="form-label">Supply Air Temperature (°F) <span class="tooltip"><span class="tooltiptext">Temperature of air supplied by the HVAC system, in °F.</span></span></label>
+                        <input type="number" id="SupplyAirTemperature" name="SupplyAirTemperature" class="form-control" step="0.1">
                     </div>
                     <div class="form-row">
-                        <label for="BMSVendorModelVersion" class="form-label tooltip">BMS Vendor, Model, Version<span class="tooltiptext">Provide the vendor, model, and version of the BMS if known.</span></label>
-                        <input type="text" id="BMSVendorModelVersion" name="BMSVendorModelVersion" class="form-control">
+                        <label for="OutdoorAirTemperature" class="form-label">Outdoor Air Temperature (°F) <span class="tooltip"><span class="tooltiptext">Current outdoor air temperature, in °F.</span></span></label>
+                        <input type="number" id="OutdoorAirTemperature" name="OutdoorAirTemperature" class="form-control" step="0.1">
                     </div>
                     <div class="form-row">
-                        <label for="BMSCondition" class="form-label tooltip">BMS Condition<span class="tooltiptext">Overall condition of the BMS system.</span></label>
-                        <select id="BMSCondition" name="BMSCondition" class="form-control">
-                            <option value="">Select...</option>
-                            <option value="Excellent">Excellent</option>
-                            <option value="Good">Good</option>
-                            <option value="Fair">Fair</option>
-                            <option value="Poor">Poor</option>
-                        </select>
+                        <label for="SupplyAirFlowRate" class="form-label">Supply Air Flow Rate (CFM) <span class="tooltip"><span class="tooltiptext">Flow rate of supply air, in cubic feet per minute (CFM).</span></span></label>
+                        <input type="number" id="SupplyAirFlowRate" name="SupplyAirFlowRate" class="form-control" min="0">
                     </div>
                     <div class="form-row">
-                        <label for="FanSpeed" class="form-label tooltip">Fan Speed<span class="tooltiptext">The speed of the supply fan, typically in % or RPM. Key for energy modeling.</span></label>
-                        <input type="text" id="FanSpeed" name="FanSpeed" class="form-control">
+                        <label for="VAVDamperPositions" class="form-label">VAV Damper Positions (%) <span class="tooltip"><span class="tooltiptext">Positions of VAV dampers, typically 0-100%, indicating zone demand.</span></span></label>
+                        <input type="text" id="VAVDamperPositions" name="VAVDamperPositions" class="form-control" placeholder="e.g., Zone 1: 50%, Zone 2: 75%">
                     </div>
                     <div class="form-row">
-                        <label for="OutdoorAirDamperPosition" class="form-label tooltip">Outdoor Air Damper Position<span class="tooltiptext">Position of the outdoor air damper, in %. Affects ventilation load.</span></label>
-                        <input type="text" id="OutdoorAirDamperPosition" name="OutdoorAirDamperPosition" class="form-control">
+                        <label for="ZoneTemperatureSetpoints" class="form-label">Zone Temperature Setpoints (°F) <span class="tooltip"><span class="tooltiptext">Temperature setpoints for zones, in °F (e.g., Zone 1: 72°F).</span></span></label>
+                        <input type="text" id="ZoneTemperatureSetpoints" name="ZoneTemperatureSetpoints" class="form-control" placeholder="e.g., Zone 1: 72°F, Zone 2: 70°F">
                     </div>
                     <div class="form-row">
-                        <label for="SupplyAirTemperature" class="form-label tooltip">Supply Air Temperature<span class="tooltiptext">Temperature of the air supplied by the AHU, in °F.</span></label>
-                        <input type="text" id="SupplyAirTemperature" name="SupplyAirTemperature" class="form-control">
+                        <label for="OccupancyData" class="form-label">Occupancy Data <span class="tooltip"><span class="tooltiptext">Available occupancy data, such as CO2 levels or occupant counts.</span></span></label>
+                        <input type="text" id="OccupancyData" name="OccupancyData" class="form-control" placeholder="e.g., CO2 levels, motion sensor counts">
                     </div>
                     <div class="form-row">
-                        <label for="OutdoorAirTemperature" class="form-label tooltip">Outdoor Air Temperature<span class="tooltiptext">Current outdoor air temperature, in °F.</span></label>
-                        <input type="text" id="OutdoorAirTemperature" name="OutdoorAirTemperature" class="form-control">
-                    </div>
-                    <div class="form-row">
-                        <label for="SupplyAirFlowRate" class="form-label tooltip">Supply Air Flow Rate<span class="tooltiptext">Flow rate of supply air, in CFM. Critical for airflow calculations.</span></label>
-                        <input type="text" id="SupplyAirFlowRate" name="SupplyAirFlowRate" class="form-control">
-                    </div>
-                    <div class="form-row">
-                        <label for="VAVDamperPositions" class="form-label tooltip">VAV Damper Positions<span class="tooltiptext">Positions of VAV dampers, in %. Indicates zone demand.</span></label>
-                        <input type="text" id="VAVDamperPositions" name="VAVDamperPositions" class="form-control">
-                    </div>
-                    <div class="form-row">
-                        <label for="ZoneTemperatureSetpoints" class="form-label tooltip">Zone Temperature Setpoints<span class="tooltiptext">Temperature setpoints for zones, in °F.</span></label>
-                        <input type="text" id="ZoneTemperatureSetpoints" name="ZoneTemperatureSetpoints" class="form-control">
-                    </div>
-                    <div class="form-row">
-                        <label for="OccupancyData" class="form-label tooltip">Occupancy Data<span class="tooltiptext">Occupancy data, such as CO2 levels or occupant counts.</span></label>
-                        <input type="text" id="OccupancyData" name="OccupancyData" class="form-control">
-                    </div>
-                    <div class="form-row">
-                        <label for="WholeBuildingElectricityConsumption" class="form-label tooltip">Whole Building Electricity Consumption<span class="tooltiptext">Total electricity consumption of the building, in kWh.</span></label>
-                        <input type="text" id="WholeBuildingElectricityConsumption" name="WholeBuildingElectricityConsumption" class="form-control">
+                        <label for="WholeBuildingElectricityConsumption" class="form-label">Whole Building Electricity Consumption (kWh) <span class="tooltip"><span class="tooltiptext">Total electricity consumption of the building, in kilowatt-hours.</span></span></label>
+                        <input type="number" id="WholeBuildingElectricityConsumption" name="WholeBuildingElectricityConsumption" class="form-control" min="0">
                     </div>
                 </div>
-                <div class="form-row">
-                    <label class="form-label tooltip">Defined Entry/Exit Points?<span class="tooltiptext">Are there clearly defined entry and exit points for the pilot area (e.g., doors, turnstiles)?</span></label>
-                    <div class="radio-group">
-                        <div class="radio-option">
-                            <input type="radio" id="DefinedEntryExitPointsYes" name="DefinedEntryExitPoints" value="Yes">
-                            <label for="DefinedEntryExitPointsYes">Yes</label>
-                        </div>
-                        <div class="radio-option">
-                            <input type="radio" id="DefinedEntryExitPointsNo" name="DefinedEntryExitPoints" value="No">
-                            <label for="DefinedEntryExitPointsNo">No</label>
-                        </div>
-                        <div class="radio-option">
-                            <input type="radio" id="DefinedEntryExitPointsDontKnow" name="DefinedEntryExitPoints" value="Don't know">
-                            <label for="DefinedEntryExitPointsDontKnow">Don't know</label>
-                        </div>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <label class="form-label tooltip">WiFi or Ethernet Available?<span class="tooltiptext">Is WiFi or Ethernet available for sensor connectivity?</span></label>
-                    <div class="radio-group">
-                        <div class="radio-option">
-                            <input type="radio" id="NetworkAvailableYes" name="NetworkAvailable" value="Yes">
-                            <label for="NetworkAvailableYes">Yes</label>
-                        </div>
-                        <div class="radio-option">
-                            <input type="radio" id="NetworkAvailableNo" name="NetworkAvailable" value="No">
-                            <label for="NetworkAvailableNo">No</label>
-                        </div>
-                        <div class="radio-option">
-                            <input type="radio" id="NetworkAvailableDontKnow" name="NetworkAvailable" value="Don't know">
-                            <label for="NetworkAvailableDontKnow">Don't know</label>
-                        </div>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <label class="form-label tooltip">Energy Reduction Targets?<span class="tooltiptext">Does the building have specific goals to reduce energy consumption?</span></label>
-                    <div class="radio-group">
-                        <div class="radio-option">
-                            <input type="radio" id="EnergyTargetsYes" name="EnergyTargets" value="Yes">
-                            <label for="EnergyTargetsYes">Yes</label>
-                        </div>
-                        <div class="radio-option">
-                            <input type="radio" id="EnergyTargetsNo" name="EnergyTargets" value="No">
-                            <label for="EnergyTargetsNo">No</label>
-                        </div>
-                        <div class="radio-option">
-                            <input type="radio" id="EnergyTargetsDontKnow" name="EnergyTargets" value="Don't know">
-                            <label for="EnergyTargetsDontKnow">Don't know</label>
-                        </div>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <label class="form-label required tooltip">Can We Install Occupancy Sensors in the Pilot Area?<span class="tooltiptext">Occupancy sensors (e.g., CO2 or motion sensors) will be installed in the pilot area to monitor usage for O-DCV. Permission from building management is needed.</span></label>
-                    <div class="radio-group">
-                        <div class="radio-option">
-                            <input type="radio" id="CanInstallSensorsYes" name="CanInstallSensors" value="Yes" required>
-                            <label for="CanInstallSensorsYes">Yes</label>
-                        </div>
-                        <div class="radio-option">
-                            <input type="radio" id="CanInstallSensorsNo" name="CanInstallSensors" value="No">
-                            <label for="CanInstallSensorsNo">No</label>
-                        </div>
-                        <div class="radio-option">
-                            <input type="radio" id="CanInstallSensorsDontKnow" name="CanInstallSensors" value="Don't know">
-                            <label for="CanInstallSensorsDontKnow">Don't know</label>
-                        </div>
-                    </div>
-                    <div class="description">This requires permission from building management for installation in the pilot area (e.g., on ceilings or walls).</div>
-                </div>
-                <div class="form-row">
-                    <label class="form-label required tooltip">Can You Share HVAC Data with R-Zero for Energy Analysis?<span class="tooltiptext">R-Zero needs HVAC data (e.g., airflow rates, temperature settings, energy usage) to calculate energy savings for the O-DCV pilot.</span></label>
-                    <div class="radio-group">
-                        <div class="radio-option">
-                            <input type="radio" id="CanShareHVACDataYes" name="CanShareHVACData" value="Yes" required>
-                            <label for="CanShareHVACDataYes">Yes</label>
-                        </div>
-                        <div class="radio-option">
-                            <input type="radio" id="CanShareHVACDataNo" name="CanShareHVACData" value="No">
-                            <label for="CanShareHVACDataNo">No</label>
-                        </div>
-                        <div class="radio-option">
-                            <input type="radio" id="CanShareHVACDataDontKnow" name="CanShareHVACData" value="Don't know">
-                            <label for="CanShareHVACDataDontKnow">Don't know</label>
-                        </div>
-                    </div>
-                    <div class="description">This includes data like airflow rates, temperature settings, and energy usage, shared securely with R-Zero.</div>
-                </div>
-                <div class="form-row">
-                    <label for="OccupancyStatus" class="form-label tooltip">Occupancy Status<span class="tooltiptext">Who occupies the space: Owner, Tenant, Both, or Unknown?</span></label>
-                    <select id="OccupancyStatus" name="OccupancyStatus" class="form-control">
-                        <option value="">Select...</option>
-                        <option value="Owner">Owner</option>
-                        <option value="Tenant">Tenant</option>
-                        <option value="Both">Both</option>
-                        <option value="Unknown">Unknown</option>
-                    </select>
-                </div>
-                <div class="form-row">
-                    <label class="form-label tooltip">Permit Image Sensors?<span class="tooltiptext">Would you permit installation of image-based sensors?</span></label>
-                    <div class="radio-group">
-                        <div class="radio-option">
-                            <input type="radio" id="PermitImageSensorsYes" name="PermitImageSensors" value="Yes">
-                            <label for="PermitImageSensorsYes">Yes</label>
-                        </div>
-                        <div class="radio-option">
-                            <input type="radio" id="PermitImageSensorsNo" name="PermitImageSensors" value="No">
-                            <label for="PermitImageSensorsNo">No</label>
-                        </div>
-                        <div class="radio-option">
-                            <input type="radio" id="PermitImageSensorsDontKnow" name="PermitImageSensors" value="Don't know">
-                            <label for="PermitImageSensorsDontKnow">Don't know</label>
-                        </div>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <label for="HVACControlManager" class="form-label tooltip">Who Manages HVAC Controls?<span class="tooltiptext">Provide the name or role of the person or team responsible for managing HVAC systems (e.g., facilities manager, building engineer).</span></label>
-                    <input type="text" id="HVACControlManager" name="HVACControlManager" class="form-control" placeholder="e.g., Facilities Manager, John Doe">
-                </div>
-                <div class="form-row">
-                    <label for="AvailableSetPoints" class="form-label tooltip">Available HVAC Set Points<span class="tooltiptext">Select the HVAC set points that can be monitored or adjusted via the BMS (e.g., temperature, CO2 levels).</span></label>
-                    <select id="AvailableSetPoints" name="AvailableSetPoints" class="form-control" multiple>
-                        <option value="Temperature">Temperature</option>
-                        <option value="Static Pressure">Static Pressure</option>
-                        <option value="CO2 Levels">CO2 Levels</option>
-                        <option value="Airflow Rate">Airflow Rate</option>
-                        <option value="Other">Other</option>
-                    </select>
-                    <div class="description">Choose all that apply. These are settings the BMS can monitor or adjust.</div>
-                </div>
-                <div id="OtherSetPointsDiv" class="conditional-field">
-                    <label for="OtherSetPoints" class="form-label">Specify Other Set Points</label>
-                    <input type="text" id="OtherSetPoints" name="OtherSetPoints" class="form-control" placeholder="e.g., Humidity">
-                </div>
-                <div class="form-row">
-                    <label for="AvailableDeviceSettings" class="form-label tooltip">Available Device Settings<span class="tooltiptext">List available device settings, e.g., fan speed, damper position.</span></label>
-                    <input type="text" id="AvailableDeviceSettings" name="AvailableDeviceSettings" class="form-control">
-                </div>
-                <div class="form-row">
-                    <label class="form-label tooltip">Is the Pilot Area Submetered for Energy Use?<span class="tooltiptext">Submetering means the pilot area has a separate meter to track energy consumption (e.g., electricity, HVAC usage).</span></label>
-                    <div class="radio-group">
-                        <div class="radio-option">
-                            <input type="radio" id="IsSubmeteredYes" name="IsSubmetered" value="Yes">
-                            <label for="IsSubmeteredYes">Yes</label>
-                        </div>
-                        <div class="radio-option">
-                            <input type="radio" id="IsSubmeteredNo" name="IsSubmetered" value="No">
-                            <label for="IsSubmeteredNo">No</label>
-                        </div>
-                        <div class="radio-option">
-                            <input type="radio" id="IsSubmeteredDontKnow" name="IsSubmetered" value="Don't know">
-                            <label for="IsSubmeteredDontKnow">Don't know</label>
-                        </div>
-                    </div>
-                    <div class="description">This helps track energy usage specifically for the pilot area.</div>
-                </div>
-                <div class="form-row">
-                    <label class="form-label tooltip">Is Energy Data Available Separately for the Pilot Area?<span class="tooltiptext">Disaggregated data means energy usage (e.g., HVAC, lighting) is tracked separately for the pilot area, not just the whole building.</span></label>
-                    <div class="radio-group">
-                        <div class="radio-option">
-                            <input type="radio" id="HasDisaggregatedDataYes" name="HasDisaggregatedData" value="Yes">
-                            <label for="HasDisaggregatedDataYes">Yes</label>
-                        </div>
-                        <div class="radio-option">
-                            <input type="radio" id="HasDisaggregatedDataNo" name="HasDisaggregatedData" value="No">
-                            <label for="HasDisaggregatedDataNo">No</label>
-                        </div>
-                        <div class="radio-option">
-                            <input type="radio" id="HasDisaggregatedDataDontKnow" name="HasDisaggregatedData" value="Don't know">
-                            <label for="HasDisaggregatedDataDontKnow">Don't know</label>
-                        </div>
-                    </div>
-                    <div class="description">This means energy usage for the pilot area is tracked separately from the whole building.</div>
-                </div>
-                <div class="form-row">
+                
+                <div class="button-group">
                     <button type="button" id="toDiscoveryBtn" class="nav-btn">Continue to Technical Discovery</button>
+                    <div id="initial-screening-status" class="status-indicator" style="display:none;"></div>
                 </div>
             </div>
 
+            <!-- Technical Discovery Section -->
             <div id="technical-discovery" class="stage-content">
                 <h2>Technical Discovery</h2>
-                <p class="section-intro">This section collects detailed information about the pilot area and HVAC systems.</p>
+                <p class="section-intro">Provide detailed information about your building's HVAC systems, pilot area, and sensor infrastructure to evaluate O-DCV feasibility.</p>
+                
                 <div class="tabset">
                     <div class="tab-buttons">
-                        <button class="tab-button active" data-tab="building-info">Building Info</button>
-                        <button class="tab-button" data-tab="hvac-systems">HVAC Systems</button>
+                        <button type="button" class="tab-button active" data-tab="building-info">Building Info</button>
+                        <button type="button" class="tab-button" data-tab="hvac-systems">HVAC Systems</button>
+                        <button type="button" class="tab-button" data-tab="sensor-infrastructure">Sensor Infrastructure</button>
+                        <button type="button" class="tab-button" data-tab="data-management">Data Management</button>
+                        <button type="button" class="tab-button" data-tab="future-aspirations">Future Aspirations</button>
                     </div>
+                    
+                    <!-- Building Info Tab -->
                     <div id="building-info" class="tab-content active">
                         <div class="form-row">
-                            <label for="BuildingAge" class="form-label tooltip">Building Age (Years)<span class="tooltiptext">Age of the building in years.</span></label>
-                            <input type="number" id="BuildingAge" name="BuildingAge" class="form-control" min="0">
+                            <label for="DiscoveryBuildingName" class="form-label">Building Name Confirmation <span class="tooltip"><span class="tooltiptext">Confirm the building name for technical discovery.</span></span></label>
+                            <input type="text" id="DiscoveryBuildingName" name="DiscoveryBuildingName" class="form-control" placeholder="Re-enter building name">
                         </div>
                         <div class="form-row">
-                            <label for="LastRenovation" class="form-label tooltip">Last Renovation (Year)<span class="tooltiptext">Year of the last major renovation, if known.</span></label>
-                            <input type="number" id="LastRenovation" name="LastRenovation" class="form-control" min="0">
+                            <label class="form-label required">Know Pilot Floor/Area? <span class="tooltip"><span class="tooltiptext">Do you know the specific floor or area for the O-DCV pilot?</span></span></label>
+                            <div class="radio-group" id="KnowPilotFloorGroup">
+                                <!-- Will be populated from JSON -->
+                            </div>
+                        </div>
+                        <div id="KnowPilotFloorYesDiv" class="conditional-field">
+                            <div class="form-row">
+                                <label for="PilotArea" class="form-label">Pilot Area <span class="tooltip"><span class="tooltiptext">Specify the floor or area for the pilot (e.g., '3rd Floor, West Wing').</span></span></label>
+                                <input type="text" id="PilotArea" name="PilotFloor" class="form-control" placeholder="e.g., 3rd Floor, West Wing">
+                            </div>
+                            <div class="form-row">
+                                <label for="PilotSqFt" class="form-label">Pilot Area Square Footage <span class="tooltip"><span class="tooltiptext">Square footage of the pilot area.</span></span></label>
+                                <input type="number" id="PilotSqFt" name="PilotFloorSquareFootage" class="form-control" min="0">
+                            </div>
                         </div>
                     </div>
+                    
+                    <!-- HVAC Systems Tab -->
                     <div id="hvac-systems" class="tab-content">
+                        <div class="form-row">
+                            <label for="AHUCount" class="form-label">Number of Air Handling Units (AHUs) <span class="tooltip"><span class="tooltiptext">Total number of AHUs in the building.</span></span></label>
+                            <input type="number" id="AHUCount" name="AHUCount" class="form-control" min="0">
+                        </div>
+                        
                         <div id="ahuList" class="dynamic-list">
+                            <p>Note: You can add up to 3 AHUs as needed.</p>
                             <div class="dynamic-item">
                                 <div class="form-row">
-                                    <label for="AHUName1" class="form-label tooltip">AHU Name 1<span class="tooltiptext">Name or identifier of the first Air Handling Unit serving the pilot floor.</span></label>
-                                    <input type="text" id="AHUName1" name="AHUName1" class="form-control">
+                                    <label for="AHUName1" class="form-label">AHU Name 1 <span class="tooltip"><span class="tooltiptext">Name or identifier of the first Air Handling Unit (e.g., AHU-1).</span></span></label>
+                                    <input type="text" id="AHUName1" name="AHUName1" class="form-control" placeholder="e.g., AHU-1">
                                 </div>
                                 <div class="form-row">
-                                    <label for="AHUCapacity1" class="form-label tooltip">AHU Capacity 1 (CFM)<span class="tooltiptext">Capacity of the first AHU in CFM.</span></label>
+                                    <label for="AHUCapacity1" class="form-label">AHU Capacity 1 (CFM) <span class="tooltip"><span class="tooltiptext">Capacity of the first AHU in cubic feet per minute (CFM).</span></span></label>
                                     <input type="number" id="AHUCapacity1" name="AHUCapacity1" class="form-control" min="0">
                                 </div>
                                 <div class="form-row">
-                                    <label for="AHUCondition1" class="form-label tooltip">AHU Condition 1<span class="tooltiptext">Physical condition of the first AHU.</span></label>
+                                    <label for="AHUCondition1" class="form-label">AHU Condition 1 <span class="tooltip"><span class="tooltiptext">Physical condition of the first AHU.</span></span></label>
                                     <select id="AHUCondition1" name="AHUCondition1" class="form-control">
                                         <option value="">Select...</option>
-                                        <option value="Excellent">Excellent</option>
-                                        <option value="Good">Good</option>
-                                        <option value="Fair">Fair</option>
-                                        <option value="Poor">Poor</option>
+                                        <!-- Will be populated from JSON -->
                                     </select>
                                 </div>
                                 <div class="form-row">
-                                    <label for="AHUDedicatedOrShared1" class="form-label tooltip">AHU Dedicated or Shared 1<span class="tooltiptext">Is the first AHU dedicated to the pilot floor or shared?</span></label>
+                                    <label for="AHUDedicatedOrShared1" class="form-label">AHU Dedicated or Shared 1 <span class="tooltip"><span class="tooltiptext">Is the first AHU dedicated to the pilot area or shared across areas?</span></span></label>
                                     <select id="AHUDedicatedOrShared1" name="AHUDedicatedOrShared1" class="form-control">
                                         <option value="">Select...</option>
-                                        <option value="Dedicated">Dedicated</option>
-                                        <option value="Shared">Shared</option>
-                                        <option value="Unknown">Unknown</option>
+                                        <!-- Will be populated from JSON -->
                                     </select>
                                 </div>
                                 <div class="form-row">
-                                    <label for="AHUSpeedControl1" class="form-label tooltip">AHU Speed Control 1<span class="tooltiptext">How is the speed of the first AHU controlled?</span></label>
+                                    <label for="AHUSpeedControl1" class="form-label">AHU Speed Control 1 <span class="tooltip"><span class="tooltiptext">How is the speed of the first AHU controlled?</span></span></label>
                                     <select id="AHUSpeedControl1" name="AHUSpeedControl1" class="form-control">
                                         <option value="">Select...</option>
-                                        <option value="VFD">VFD</option>
-                                        <option value="BMS">BMS</option>
-                                        <option value="Manual">Manual</option>
-                                        <option value="Other">Other</option>
+                                        <!-- Will be populated from JSON -->
                                     </select>
                                 </div>
                                 <div class="form-row">
-                                    <label class="form-label tooltip">Speed Mapped to OA CFM 1?<span class="tooltiptext">Are the speed settings of the first AHU mapped to the CFM of outside air delivered?</span></label>
-                                    <div class="radio-group">
-                                        <div class="radio-option">
-                                            <input type="radio" id="SpeedMappedToOACFM1Yes" name="SpeedMappedToOACFM1" value="Yes">
-                                            <label for="SpeedMappedToOACFM1Yes">Yes</label>
-                                        </div>
-                                        <div class="radio-option">
-                                            <input type="radio" id="SpeedMappedToOACFM1No" name="SpeedMappedToOACFM1" value="No">
-                                            <label for="SpeedMappedToOACFM1No">No</label>
-                                        </div>
-                                        <div class="radio-option">
-                                            <input type="radio" id="SpeedMappedToOACFM1DontKnow" name="SpeedMappedToOACFM1" value="Don't know">
-                                            <label for="SpeedMappedToOACFM1DontKnow">Don't know</label>
-                                        </div>
+                                    <label class="form-label">Speed Mapped to OA CFM 1? <span class="tooltip"><span class="tooltiptext">Are the speed settings of the first AHU mapped to outside air CFM?</span></span></label>
+                                    <div class="radio-group" id="SpeedMappedToOACFM1Group">
+                                        <!-- Will be populated from JSON -->
                                     </div>
                                 </div>
                                 <button type="button" class="remove-btn">Remove AHU</button>
                             </div>
                         </div>
+                        
                         <button type="button" id="addAHU" class="add-btn">Add AHU</button>
+                        
+                        <div class="form-row">
+                            <label for="AHUModels" class="form-label">AHU Models <span class="tooltip"><span class="tooltiptext">List the model numbers of the AHUs (e.g., 'Trane T-Series, Carrier 39M').</span></span></label>
+                            <input type="text" id="AHUModels" name="AHUModels" class="form-control" placeholder="e.g., Trane T-Series, Carrier 39M">
+                        </div>
+                        <div class="form-row">
+                            <label for="TerminalUnitTypes" class="form-label">Terminal Unit Types <span class="tooltip"><span class="tooltiptext">Types of terminal units used (e.g., VAV boxes, fan-powered boxes).</span></span></label>
+                            <input type="text" id="TerminalUnitTypes" name="TerminalUnitTypes" class="form-control" placeholder="e.g., VAV boxes, fan-powered boxes">
+                        </div>
+                        <div id="OtherTerminalUnitDiv" class="conditional-field">
+                            <div class="form-row">
+                                <label for="OtherTerminalUnit" class="form-label">Other Terminal Unit <span class="tooltip"><span class="tooltiptext">Specify if other terminal unit types are used.</span></span></label>
+                                <input type="text" id="OtherTerminalUnit" name="OtherTerminalUnit" class="form-control" placeholder="e.g., Radiant panels">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Sensor Infrastructure Tab -->
+                    <div id="sensor-infrastructure" class="tab-content">
+                        <div class="form-row">
+                            <label class="form-label required">Has WiFi? <span class="tooltip"><span class="tooltiptext">Is WiFi available for sensor connectivity in the building?</span></span></label>
+                            <div class="radio-group" id="NetworkAvailableGroup">
+                                <!-- Will be populated from JSON -->
+                            </div>
+                        </div>
+                        <div id="HasWifiYesDiv" class="conditional-field">
+                            <div class="form-row">
+                                <label class="form-label">2.4GHz WiFi Available? <span class="tooltip"><span class="tooltiptext">Is 2.4GHz WiFi available for sensor connectivity?</span></span></label>
+                                <div class="radio-group" id="Wifi24GHzGroup">
+                                    <!-- Will be populated from JSON -->
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <label class="form-label">Has IT Restrictions? <span class="tooltip"><span class="tooltiptext">Are there IT restrictions that may affect sensor connectivity?</span></span></label>
+                                <div class="radio-group" id="HasITRestrictionsGroup">
+                                    <!-- Will be populated from JSON -->
+                                </div>
+                            </div>
+                            <div id="HasITRestrictionsYesDiv" class="conditional-field">
+                                <div class="form-row">
+                                    <label for="ITRestrictionDetails" class="form-label">IT Restriction Details <span class="tooltip"><span class="tooltiptext">Describe any IT restrictions (e.g., firewall settings, guest network requirements).</span></span></label>
+                                    <input type="text" id="ITRestrictionDetails" name="ITRestrictionDetails" class="form-control" placeholder="e.g., Requires guest network access">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <label for="OtherWifi" class="form-label">Other WiFi Details <span class="tooltip"><span class="tooltiptext">Any additional WiFi details (e.g., signal strength, coverage areas).</span></span></label>
+                                <input type="text" id="OtherWifi" name="OtherWifi" class="form-control" placeholder="e.g., Strong signal in main areas">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Data Management Tab -->
+                    <div id="data-management" class="tab-content">
+                        <div class="form-row">
+                            <label class="form-label">Supply Air Temperature Data Available? <span class="tooltip"><span class="tooltiptext">Is Supply Air Temperature (SAT) data available via BMS or sensors?</span></span></label>
+                            <div class="radio-group" id="SatAvailableGroup">
+                                <!-- Will be populated from JSON -->
+                            </div>
+                        </div>
+                        <div id="SatNotesDiv" class="conditional-field">
+                            <div class="form-row">
+                                <label for="SatNotes" class="form-label">Supply Air Temperature Notes <span class="tooltip"><span class="tooltiptext">Additional details about SAT data availability (e.g., sensor locations).</span></span></label>
+                                <textarea id="SatNotes" name="SatNotes" class="form-control" rows="4" placeholder="e.g., Sensors in main AHU"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <label class="form-label">Return Air Temperature Data Available? <span class="tooltip"><span class="tooltiptext">Is Return Air Temperature (RAT) data available via BMS or sensors?</span></span></label>
+                            <div class="radio-group" id="RatAvailableGroup">
+                                <!-- Will be populated from JSON -->
+                            </div>
+                        </div>
+                        <div id="RatNotesDiv" class="conditional-field">
+                            <div class="form-row">
+                                <label for="RatNotes" class="form-label">Return Air Temperature Notes <span class="tooltip"><span class="tooltiptext">Additional details about RAT data availability.</span></span></label>
+                                <textarea id="RatNotes" name="RatNotes" class="form-control" rows="4" placeholder="e.g., Limited RAT sensors in zones"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <label class="form-label">Outdoor Air Temperature Data Available? <span class="tooltip"><span class="tooltiptext">Is Outdoor Air Temperature (OAT) data available via BMS or sensors?</span></span></label>
+                            <div class="radio-group" id="OatAvailableGroup">
+                                <!-- Will be populated from JSON -->
+                            </div>
+                        </div>
+                        <div id="OatNotesDiv" class="conditional-field">
+                            <div class="form-row">
+                                <label for="OatNotes" class="form-label">Outdoor Air Temperature Notes <span class="tooltip"><span class="tooltiptext">Additional details about OAT data availability.</span></span></label>
+                                <textarea id="OatNotes" name="OatNotes" class="form-control" rows="4" placeholder="e.g., External OAT sensor installed"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Future Aspirations Tab -->
+                    <div id="future-aspirations" class="tab-content">
+                        <div class="form-row">
+                            <label for="HVACCompatibility" class="form-label">HVAC Compatibility <span class="tooltip"><span class="tooltiptext">Is the HVAC system compatible with O-DCV requirements?</span></span></label>
+                            <select id="HVACCompatibility" name="HVACCompatibility" class="form-control">
+                                <option value="">Select...</option>
+                                <!-- Will be populated from JSON -->
+                            </select>
+                        </div>
+                        <div class="form-row">
+                            <label for="ProjectViability" class="form-label">Project Viability <span class="tooltip"><span class="tooltiptext">Overall feasibility of implementing an O-DCV pilot.</span></span></label>
+                            <select id="ProjectViability" name="ProjectViability" class="form-control">
+                                <option value="">Select...</option>
+                                <!-- Will be populated from JSON -->
+                            </select>
+                        </div>
+                        <div class="form-row">
+                            <label for="InstallationFeasibility" class="form-label">Installation Feasibility <span class="tooltip"><span class="tooltiptext">How feasible is it to install O-DCV sensors and systems?</span></span></label>
+                            <select id="InstallationFeasibility" name="InstallationFeasibility" class="form-control">
+                                <option value="">Select...</option>
+                                <!-- Will be populated from JSON -->
+                            </select>
+                        </div>
+                        <div class="form-row">
+                            <label for="IsBetaCandidate" class="form-label">Is this building a good beta candidate? <span class="tooltip"><span class="tooltiptext">Based on your assessment, is this building suitable for an initial O-DCV deployment?</span></span></label>
+                            <select id="IsBetaCandidate" name="IsBetaCandidate" class="form-control">
+                                <option value="">Select...</option>
+                                <!-- Will be populated from JSON -->
+                            </select>
+                        </div>
                     </div>
                 </div>
-                <div class="form-row">
-                    <label class="form-label required tooltip">Know Pilot Floor?<span class="tooltiptext">Do you know which floor or area will be used for the pilot?</span></label>
-                    <div class="radio-group">
-                        <div class="radio-option">
-                            <input type="radio" id="KnowPilotFloorYes" name="KnowPilotFloor" value="Yes" required>
-                            <label for="KnowPilotFloorYes">Yes</label>
-                        </div>
-                        <div class="radio-option">
-                            <input type="radio" id="KnowPilotFloorNo" name="KnowPilotFloor" value="No">
-                            <label for="KnowPilotFloorNo">No</label>
-                        </div>
-                        <div class="radio-option">
-                            <input type="radio" id="KnowPilotFloorDontKnow" name="KnowPilotFloor" value="Don't know">
-                            <label for="KnowPilotFloorDontKnow">Don't know</label>
-                        </div>
-                    </div>
-                </div>
-                <div id="KnowPilotFloorYesDiv" class="conditional-field">
-                    <div class="form-row">
-                        <label for="PilotFloor" class="form-label tooltip">Pilot Floor<span class="tooltiptext">Specify the floor or area for the pilot, e.g., '3rd Floor'.</span></label>
-                        <input type="text" id="PilotFloor" name="PilotFloor" class="form-control">
-                    </div>
-                    <div class="form-row">
-                        <label for="PilotFloorSquareFootage" class="form-label tooltip">Pilot Floor Square Footage<span class="tooltiptext">Square footage of the pilot floor or area.</span></label>
-                        <input type="number" id="PilotFloorSquareFootage" name="PilotFloorSquareFootage" class="form-control" min="0">
-                    </div>
-                    <div class="form-row">
-                        <label for="NumberOfZones" class="form-label tooltip">Number of Zones<span class="tooltiptext">Number of HVAC zones in the pilot area.</span></label>
-                        <input type="number" id="NumberOfZones" name="NumberOfZones" class="form-control" min="0">
-                    </div>
-                    <div class="form-row">
-                        <label for="EntryExitPointsPerZone" class="form-label tooltip">Entry/Exit Points per Zone<span class="tooltiptext">Describe entry/exit points for each zone, e.g., '2 doors, 1 window'.</span></label>
-                        <input type="text" id="EntryExitPointsPerZone" name="EntryExitPointsPerZone" class="form-control">
-                    </div>
-                    <div class="form-row">
-                        <label for="ZoneSquareFootage" class="form-label tooltip">Zone Square Footage<span class="tooltiptext">Square footage of each zone, e.g., 'Zone 1: 5000, Zone 2: 3000'.</span></label>
-                        <input type="text" id="ZoneSquareFootage" name="ZoneSquareFootage" class="form-control">
-                    </div>
-                    <div class="form-row">
-                        <label for="EntryExitTypes" class="form-label tooltip">Entry/Exit Types<span class="tooltiptext">Describe the types of entry/exit points in the pilot area, e.g., doors, turnstiles.</span></label>
-                        <input type="text" id="EntryExitTypes" name="EntryExitTypes" class="form-control">
-                    </div>
-                    <div class="form-row">
-                        <label class="form-label tooltip">Entry/Exit Width<span class="tooltiptext">Are the entry/exit points ≤70" wide?</span></label>
-                        <div class="radio-group">
-                            <div class="radio-option">
-                                <input type="radio" id="EntryExitWidthLTE70" name="EntryExitWidth" value="≤70">
-                                <label for="EntryExitWidthLTE70">≤70"</label>
-                            </div>
-                            <div class="radio-option">
-                                <input type="radio" id="EntryExitWidthGT70" name="EntryExitWidth" value=">70">
-                                <label for="EntryExitWidthGT70">>70"</label>
-                            </div>
-                            <div class="radio-option">
-                                <input type="radio" id="EntryExitWidthUnknown" name="EntryExitWidth" value="Unknown">
-                                <label for="EntryExitWidthUnknown">Unknown</label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <label class="form-label tooltip">Suitable Mounting Surface?<span class="tooltiptext">Is there a suitable surface for mounting sensors?</span></label>
-                        <div class="radio-group">
-                            <div class="radio-option">
-                                <input type="radio" id="SuitableMountingSurfaceYes" name="SuitableMountingSurface" value="Yes">
-                                <label for="SuitableMountingSurfaceYes">Yes</label>
-                            </div>
-                            <div class="radio-option">
-                                <input type="radio" id="SuitableMountingSurfaceNo" name="SuitableMountingSurface" value="No">
-                                <label for="SuitableMountingSurfaceNo">No</label>
-                            </div>
-                            <div class="radio-option">
-                                <input type="radio" id="SuitableMountingSurfaceDontKnow" name="SuitableMountingSurface" value="Don't know">
-                                <label for="SuitableMountingSurfaceDontKnow">Don't know</label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <button type="button" id="backToScreeningBtn" class="nav-btn">Back to Initial Screening</button>
+                
+                <div class="button-group">
+                    <button type="button" id="backToScreeningBtn" class="nav-btn secondary-btn">Back to Initial Screening</button>
                     <button type="button" id="toSiteAssessmentBtn" class="nav-btn">Continue to Site Assessment</button>
+                    <div id="technical-discovery-status" class="status-indicator" style="display:none;"></div>
                 </div>
             </div>
 
+            <!-- Site Assessment Section -->
             <div id="site-assessment" class="stage-content">
                 <h2>Site Assessment</h2>
-                <p class="section-intro">This section captures observations from your site visit, including photos.</p>
+                <p class="section-intro">Capture observations from your site visit, including photos and final notes, to complete the O-DCV assessment.</p>
+                
                 <div class="form-row">
-                    <label for="SiteVisitDate" class="form-label required tooltip">Site Visit Date<span class="tooltiptext">Date of the site visit for assessment.</span></label>
-                    <input type="date" id="SiteVisitDate" name="SiteVisitDate" class="form-control" required>
+                    <label for="SurveyBuildingName" class="form-label">Building Name Confirmation <span class="tooltip"><span class="tooltiptext">Confirm the building name for the site assessment.</span></span></label>
+                    <input type="text" id="SurveyBuildingName" name="SurveyBuildingName" class="form-control" placeholder="Re-enter building name">
                 </div>
                 <div class="form-row">
-                    <label for="InspectorName" class="form-label required tooltip">Inspector Name<span class="tooltiptext">Name of the person conducting the site assessment.</span></label>
-                    <input type="text" id="InspectorName" name="InspectorName" class="form-control" required>
+                    <label for="SurveyDate" class="form-label required">Survey Date <span class="tooltip"><span class="tooltiptext">Date of the site visit for the assessment.</span></span></label>
+                    <input type="date" id="SurveyDate" name="SiteVisitDate" class="form-control" required>
                 </div>
                 <div class="form-row">
-                    <label class="form-label tooltip">Photos (up to 5, max 10MB each)<span class="tooltiptext">Upload photos of key areas like AHUs, entry points, or BMS interfaces. Max 10MB each.</span></label>
-                    <div class="photo-group">
-                        <input type="file" id="photo_1" name="photo_1" accept="image/*" class="photo-upload">
-                        <label for="description_1">Description for Photo 1</label>
-                        <input type="text" id="description_1" name="description_1" class="form-control" placeholder="e.g., AHU1">
-                    </div>
-                    <div class="photo-group">
-                        <input type="file" id="photo_2" name="photo_2" accept="image/*" class="photo-upload">
-                        <label for="description_2">Description for Photo 2</label>
-                        <input type="text" id="description_2" name="description_2" class="form-control" placeholder="e.g., Entry Point">
-                    </div>
-                    <div class="photo-group">
-                        <input type="file" id="photo_3" name="photo_3" accept="image/*" class="photo-upload">
-                        <label for="description_3">Description for Photo 3</label>
-                        <input type="text" id="description_3" name="description_3" class="form-control">
-                    </div>
-                    <div class="photo-group">
-                        <input type="file" id="photo_4" name="photo_4" accept="image/*" class="photo-upload">
-                        <label for="description_4">Description for Photo 4</label>
-                        <input type="text" id="description_4" name="description_4" class="form-control">
-                    </div>
-                    <div class="photo-group">
-                        <input type="file" id="photo_5" name="photo_5" accept="image/*" class="photo-upload">
-                        <label for="description_5">Description for Photo 5</label>
-                        <input type="text" id="description_5" name="description_5" class="form-control">
-                    </div>
+                    <label for="InspectorName" class="form-label required">Inspector Name <span class="tooltip"><span class="tooltiptext">Name of the person conducting the site assessment.</span></span></label>
+                    <input type="text" id="InspectorName" name="InspectorName" class="form-control" required placeholder="e.g., Jane Smith">
                 </div>
                 <div class="form-row">
-                    <label for="WiFiSignalStrength" class="form-label tooltip">WiFi Signal Strength<span class="tooltiptext">WiFi signal strength at potential sensor locations.</span></label>
-                    <select id="WiFiSignalStrength" name="WiFiSignalStrength" class="form-control">
+                    <label for="ClientContact" class="form-label">Client Contact <span class="tooltip"><span class="tooltiptext">Contact details of the client representative present during the survey.</span></span></label>
+                    <input type="text" id="ClientContact" name="ClientContact" class="form-control" placeholder="e.g., John Doe, john@example.com">
+                </div>
+                
+                <!-- AHU Assessment Section -->
+                <h3>AHU Assessment</h3>
+                <div class="form-row">
+                    <label for="AHULocation1" class="form-label">AHU Location 1 <span class="tooltip"><span class="tooltiptext">Location of the first AHU (e.g., rooftop, mechanical room).</span></span></label>
+                    <input type="text" id="AHULocation1" name="AHULocation_1" class="form-control" placeholder="e.g., Rooftop">
+                </div>
+                <div class="form-row">
+                    <label for="SiteAHUCondition1" class="form-label">AHU Condition 1 <span class="tooltip"><span class="tooltiptext">Physical condition of the first AHU.</span></span></label>
+                    <select id="SiteAHUCondition1" name="SiteAHUCondition_1" class="form-control">
                         <option value="">Select...</option>
-                        <option value="Strong">Strong</option>
-                        <option value="Medium">Medium</option>
-                        <option value="Weak">Weak</option>
-                        <option value="None">None</option>
+                        <!-- Will be populated from JSON -->
                     </select>
                 </div>
                 <div class="form-row">
-                    <label for="AdditionalNotes" class="form-label tooltip">Additional Notes<span class="tooltiptext">Any additional observations or comments.</span></label>
-                    <textarea id="AdditionalNotes" name="AdditionalNotes" class="form-control" rows="4"></textarea>
+                    <label for="AHUNotes1" class="form-label">AHU Notes 1 <span class="tooltip"><span class="tooltiptext">Additional observations about the first AHU.</span></span></label>
+                    <textarea id="AHUNotes1" name="AHUNotes_1" class="form-control" rows="4" placeholder="e.g., Recently serviced, good condition"></textarea>
+                </div>
+                
+                <!-- Test Locations Section -->
+                <h3>Test Locations</h3>
+                <div class="form-row">
+                    <label for="TestLocation1" class="form-label">Test Location 1 <span class="tooltip"><span class="tooltiptext">Location where tests were conducted (e.g., main lobby).</span></span></label>
+                    <input type="text" id="TestLocation1" name="TestLocation_1" class="form-control" placeholder="e.g., Main lobby">
                 </div>
                 <div class="form-row">
-                    <button type="button" id="backToDiscoveryBtn" class="nav-btn">Back to Technical Discovery</button>
-                    <button type="submit" id="submitFormBtn" class="nav-btn">Submit Assessment</button>
+                    <label for="TestWiFiStrength1" class="form-label">Test WiFi Strength 1 <span class="tooltip"><span class="tooltiptext">WiFi signal strength at the test location (e.g., Strong, Weak).</span></span></label>
+                    <select id="TestWiFiStrength1" name="TestWiFiStrength_1" class="form-control">
+                        <option value="">Select...</option>
+                        <!-- Will be populated from JSON -->
+                    </select>
                 </div>
-                <div id="message" class="form-row"></div>
+                <div class="form-row">
+                    <label for="TestResults1" class="form-label">Test Results 1 <span class="tooltip"><span class="tooltiptext">Results or observations from tests at the location.</span></span></label>
+                    <textarea id="TestResults1" name="TestResults_1" class="form-control" rows="4" placeholder="e.g., Stable WiFi, good sensor connectivity"></textarea>
+                </div>
+                
+                <!-- Photo Documentation Section -->
+                <h3>Photo Documentation</h3>
+                <div id="photoList" class="dynamic-list">
+                    <p>Note: Add up to 5 photos (max 10MB each) to document your site visit. Include descriptions for clarity.</p>
+                    <div class="dynamic-item">
+                        <div class="form-row">
+                            <label for="photo_1" class="form-label">Photo 1 <span class="tooltip"><span class="tooltiptext">Upload a photo (e.g., AHU, sensor location). Max 10MB.</span></span></label>
+                            <input type="file" id="photo_1" name="photo_1" accept="image/*" class="photo-upload">
+                        </div>
+                        <div class="form-row">
+                            <label for="description_1" class="form-label">Description for Photo 1 <span class="tooltip"><span class="tooltiptext">Describe what this photo shows (e.g., 'Main AHU in mechanical room').</span></span></label>
+                            <input type="text" id="description_1" name="description_1" class="form-control" placeholder="e.g., Main AHU in mechanical room">
+                        </div>
+                        <img class="photo-preview" alt="Photo Preview">
+                        <button type="button" class="remove-btn">Remove Photo</button>
+                    </div>
+                </div>
+                <button type="button" id="addPhoto" class="add-btn">Add Photo</button>
+                
+                <!-- Final Notes Section -->
+                <h3>Final Notes</h3>
+                <div class="form-row">
+                    <label for="AdditionalNotes" class="form-label">Additional Notes <span class="tooltip"><span class="tooltiptext">Any final observations or comments from the site visit.</span></span></label>
+                    <textarea id="AdditionalNotes" name="AdditionalNotes" class="form-control" rows="4" placeholder="e.g., Additional HVAC upgrades planned for next year"></textarea>
+                </div>
+                
+                <div class="button-group">
+                    <button type="button" id="backToDiscoveryBtn" class="nav-btn secondary-btn">Back to Technical Discovery</button>
+                    <button type="submit" id="submitFormBtn" class="nav-btn">Submit Assessment</button>
+                    <div id="site-assessment-status" class="status-indicator" style="display:none;"></div>
+                </div>
             </div>
         </form>
     </div>
 
+    <!-- JSON data and form functionality -->
     <script>
-        const progressSteps = document.querySelectorAll('.progress-step');
-        const stages = document.querySelectorAll('.stage-content');
-        const tabButtons = document.querySelectorAll('.tab-button');
-        const tabContents = document.querySelectorAll('.tab-content');
+        // Form Options JSON - You can replace this with an external file if preferred
+        const formOptions = {
+            "buildingTypes": [
+                "Office",
+                "Education",
+                "Healthcare",
+                "Retail",
+                "Hospitality",
+                "Residential",
+                "Industrial",
+                "Other"
+            ],
+            "buildingUsages": [
+                "Office (Daytime)",
+                "Education (School Hours)",
+                "Healthcare (24/7)",
+                "Retail (Business Hours)",
+                "Hospitality (Variable)",
+                "Residential (Evening/Night)",
+                "Industrial (Shift-Based)",
+                "Mixed",
+                "Other"
+            ],
+            "yesNoUnknown": [
+                "Yes",
+                "No",
+                "Don't know"
+            ],
+            "conditionOptions": [
+                "Excellent",
+                "Good",
+                "Fair",
+                "Poor"
+            ],
+            "dedicatedSharedOptions": [
+                "Dedicated",
+                "Shared",
+                "Unknown"
+            ],
+            "speedControlOptions": [
+                "Variable Frequency Drive (VFD)",
+                "Building Management System (BMS)",
+                "Manual",
+                "Other"
+            ],
+            "bmsManufacturers": [
+                "Johnson Controls",
+                "Siemens",
+                "Honeywell",
+                "Schneider Electric",
+                "Other"
+            ],
+            "bmsProtocols": [
+                "BACnet",
+                "Modbus",
+                "LonWorks",
+                "Other",
+                "None"
+            ],
+            "compatibilityOptions": [
+                "Fully Compatible",
+                "Partially Compatible",
+                "Not Compatible",
+                "Unknown"
+            ],
+            "feasibilityOptions": [
+                "High",
+                "Medium",
+                "Low",
+                "Unknown"
+            ],
+            "betaCandidateOptions": [
+                "Yes",
+                "Maybe",
+                "No"
+            ],
+            "wifiStrengthOptions": [
+                "Strong",
+                "Medium",
+                "Weak",
+                "None"
+            ]
+        };
 
-        function navigateToStep(stepId) {
-            stages.forEach(stage => stage.classList.remove('active'));
-            document.getElementById(stepId).classList.add('active');
-            progressSteps.forEach(step => {
-                step.classList.remove('active');
-                if (step.dataset.step === stepId) step.classList.add('active');
+        // Add the more detailed JSON options from the second JSON if needed
+        // You can uncomment this section if you want to use the expanded options
+        /*
+        const extendedFormOptions = {
+            "bms_vendors": [
+                "Honeywell",
+                "Siemens",
+                "Johnson Controls",
+                "Schneider Electric",
+                "Carrier",
+                "Trane",
+                "Bosch",
+                "ABB",
+                "Delta Controls",
+                "Distech Controls",
+                "KMC Controls",
+                "Lynxspring",
+                "Automated Logic",
+                "Tridium",
+                "Alerton",
+                "Satchwell",
+                "Trend",
+                "Invensys",
+                "Allen-Bradley",
+                "Andover Controls",
+                "Other"
+            ],
+            // Additional detailed options as needed
+        };
+        
+        // Merge the options if needed
+        Object.assign(formOptions, extendedFormOptions);
+        */
+
+        // Function to populate select options from JSON
+        function populateSelectOptions(selectId, optionsArray) {
+            const selectElement = document.getElementById(selectId);
+            if (!selectElement) return;
+            
+            // Keep the first option (Select...)
+            const firstOption = selectElement.options[0];
+            selectElement.innerHTML = '';
+            selectElement.appendChild(firstOption);
+            
+            // Add options from JSON
+            optionsArray.forEach(option => {
+                const optionElement = document.createElement('option');
+                optionElement.value = option;
+                optionElement.textContent = option;
+                selectElement.appendChild(optionElement);
             });
         }
-
-        function validateSection(sectionId) {
-            const section = document.getElementById(sectionId);
-            const requiredFields = section.querySelectorAll('[required]');
-            let isValid = true;
-            const missingFields = [];
-
-            requiredFields.forEach(field => {
-                if (field.type === 'radio') {
-                    const radioGroup = section.querySelectorAll(`input[name="${field.name}"]`);
-                    const isChecked = Array.from(radioGroup).some(radio => radio.checked);
-                    if (!isChecked) {
-                        isValid = false;
-                        missingFields.push(field.name);
-                    }
-                } else if (!field.value.trim()) {
-                    isValid = false;
-                    missingFields.push(field.name);
-                }
+        
+        // Function to populate radio buttons from JSON
+        function populateRadioOptions(groupId, optionsArray, nameAttribute) {
+            const groupElement = document.getElementById(groupId);
+            if (!groupElement) return;
+            
+            groupElement.innerHTML = '';
+            
+            // Add radio options from JSON
+            optionsArray.forEach((option, index) => {
+                const radioOption = document.createElement('div');
+                radioOption.className = 'radio-option';
+                
+                const inputId = `${groupId}${option.replace(/\s+/g, '')}`;
+                
+                const input = document.createElement('input');
+                input.type = 'radio';
+                input.id = inputId;
+                input.name = nameAttribute;
+                input.value = option;
+                if (index === 0) input.required = groupElement.closest('.form-row').querySelector('.form-label').classList.contains('required');
+                
+                const label = document.createElement('label');
+                label.htmlFor = inputId;
+                label.textContent = option;
+                
+                radioOption.appendChild(input);
+                radioOption.appendChild(label);
+                groupElement.appendChild(radioOption);
             });
-
-            if (!isValid) alert(`Please fill in all required fields: ${missingFields.join(', ')}`);
-            return isValid;
         }
-
-        function toggleSections() {
-            const buildingType = document.getElementById('BuildingType').value;
-            document.getElementById('OtherBuildingTypeDiv').classList.toggle('show', buildingType === 'Other');
-
-            const hasVAV = document.querySelector('input[name="HasVAV"]:checked')?.value;
-            document.getElementById('HasVAVYesDiv').classList.toggle('show', hasVAV === 'Yes');
-
-            const hasBMS = document.querySelector('input[name="HasBMS"]:checked')?.value;
-            document.getElementById('HasBMSYesDiv').classList.toggle('show', hasBMS === 'Yes');
-
-            const knowPilotFloor = document.querySelector('input[name="KnowPilotFloor"]:checked')?.value;
-            document.getElementById('KnowPilotFloorYesDiv').classList.toggle('show', knowPilotFloor === 'Yes');
-
-            const availableSetPoints = Array.from(document.getElementById('AvailableSetPoints').selectedOptions).map(opt => opt.value);
-            document.getElementById('OtherSetPointsDiv').classList.toggle('show', availableSetPoints.includes('Other'));
-        }
-
-        document.getElementById('BuildingType').addEventListener('change', toggleSections);
-        document.querySelectorAll('input[name="HasVAV"]').forEach(input => input.addEventListener('change', toggleSections));
-        document.querySelectorAll('input[name="HasBMS"]').forEach(input => input.addEventListener('change', toggleSections));
-        document.querySelectorAll('input[name="KnowPilotFloor"]').forEach(input => input.addEventListener('change', toggleSections));
-        document.getElementById('AvailableSetPoints').addEventListener('change', toggleSections);
-
-        progressSteps.forEach(step => {
-            step.addEventListener('click', () => {
-                const currentStep = document.querySelector('.stage-content.active').id;
-                const targetStep = step.dataset.step;
-                if (currentStep === targetStep) return;
-                if (currentStep === 'initial-screening' && targetStep !== 'initial-screening' && !validateSection('initial-screening')) return;
-                if (currentStep === 'technical-discovery' && targetStep === 'site-assessment' && !validateSection('technical-discovery')) return;
-                navigateToStep(targetStep);
-            });
-        });
-
-        document.getElementById('toDiscoveryBtn').addEventListener('click', () => {
-            if (validateSection('initial-screening')) {
-                navigateToStep('technical-discovery');
-                progressSteps[0].classList.add('completed');
-            }
-        });
-
-        document.getElementById('toSiteAssessmentBtn').addEventListener('click', () => {
-            if (validateSection('technical-discovery')) {
-                navigateToStep('site-assessment');
-                progressSteps[1].classList.add('completed');
-            }
-        });
-
-        document.getElementById('backToScreeningBtn').addEventListener('click', () => navigateToStep('initial-screening'));
-        document.getElementById('backToDiscoveryBtn').addEventListener('click', () => navigateToStep('technical-discovery'));
-
-        tabButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                tabButtons.forEach(btn => btn.classList.remove('active'));
-                tabContents.forEach(content => content.classList.remove('active'));
-                button.classList.add('active');
-                document.getElementById(button.dataset.tab).classList.add('active');
-            });
-        });
-
-        document.getElementById('addAHU').addEventListener('click', function() {
+        
+        // Function to create a new AHU with populated dropdowns
+        function addAHU(ahuNumber) {
             const ahuList = document.getElementById('ahuList');
-            const ahuCount = ahuList.querySelectorAll('.dynamic-item').length;
-            if (ahuCount < 2) {
-                const template = `
-                    <div class="dynamic-item">
-                        <div class="form-row">
-                            <label for="AHUName2" class="form-label tooltip">AHU Name 2<span class="tooltiptext">Name or identifier of the second AHU serving the pilot floor, if applicable.</span></label>
-                            <input type="text" id="AHUName2" name="AHUName2" class="form-control">
-                        </div>
-                        <div class="form-row">
-                            <label for="AHUCapacity2" class="form-label tooltip">AHU Capacity 2 (CFM)<span class="tooltiptext">Capacity of the second AHU in CFM.</span></label>
-                            <input type="number" id="AHUCapacity2" name="AHUCapacity2" class="form-control" min="0">
-                        </div>
-                        <div class="form-row">
-                            <label for="AHUCondition2" class="form-label tooltip">AHU Condition 2<span class="tooltiptext">Physical condition of the second AHU.</span></label>
-                            <select id="AHUCondition2" name="AHUCondition2" class="form-control">
-                                <option value="">Select...</option>
-                                <option value="Excellent">Excellent</option>
-                                <option value="Good">Good</option>
-                                <option value="Fair">Fair</option>
-                                <option value="Poor">Poor</option>
-                            </select>
-                        </div>
-                        <div class="form-row">
-                            <label for="AHUDedicatedOrShared2" class="form-label tooltip">AHU Dedicated or Shared 2<span class="tooltiptext">Is the second AHU dedicated to the pilot floor or shared?</span></label>
-                            <select id="AHUDedicatedOrShared2" name="AHUDedicatedOrShared2" class="form-control">
-                                <option value="">Select...</option>
-                                <option value="Dedicated">Dedicated</option>
-                                <option value="Shared">Shared</option>
-                                <option value="Unknown">Unknown</option>
-                            </select>
-                        </div>
-                        <div class="form-row">
-                            <label for="AHUSpeedControl2" class="form-label tooltip">AHU Speed Control 2<span class="tooltiptext">How is the speed of the second AHU controlled?</span></label>
-                            <select id="AHUSpeedControl2" name="AHUSpeedControl2" class="form-control">
-                                <option value="">Select...</option>
-                                <option value="VFD">VFD</option>
-                                <option value="BMS">BMS</option>
-                                <option value="Manual">Manual</option>
-                                <option value="Other">Other</option>
-                            </select>
-                        </div>
-                        <div class="form-row">
-                            <label class="form-label tooltip">Speed Mapped to OA CFM 2?<span class="tooltiptext">Are the speed settings of the second AHU mapped to the CFM of outside air delivered?</span></label>
-                            <div class="radio-group">
-                                <div class="radio-option">
-                                    <input type="radio" id="SpeedMappedToOACFM2Yes" name="SpeedMappedToOACFM2" value="Yes">
-                                    <label for="SpeedMappedToOACFM2Yes">Yes</label>
-                                </div>
-                                <div class="radio-option">
-                                    <input type="radio" id="SpeedMappedToOACFM2No" name="SpeedMappedToOACFM2" value="No">
-                                    <label for="SpeedMappedToOACFM2No">No</label>
-                                </div>
-                                <div class="radio-option">
-                                    <input type="radio" id="SpeedMappedToOACFM2DontKnow" name="SpeedMappedToOACFM2" value="Don't know">
-                                    <label for="SpeedMappedToOACFM2DontKnow">Don't know</label>
-                                </div>
-                            </div>
-                        </div>
-                        <button type="button" class="remove-btn">Remove AHU</button>
-                    </div>`;
-                ahuList.insertAdjacentHTML('beforeend', template);
-                if (ahuCount + 1 >= 2) this.disabled = true;
+            
+            const newAHU = document.createElement('div');
+            newAHU.className = 'dynamic-item';
+            newAHU.innerHTML = `
+                <div class="form-row">
+                    <label for="AHUName${ahuNumber}" class="form-label">AHU Name ${ahuNumber} <span class="tooltip"><span class="tooltiptext">Name or identifier of the Air Handling Unit (e.g., AHU-${ahuNumber}).</span></span></label>
+                    <input type="text" id="AHUName${ahuNumber}" name="AHUName${ahuNumber}" class="form-control" placeholder="e.g., AHU-${ahuNumber}">
+                </div>
+                <div class="form-row">
+                    <label for="AHUCapacity${ahuNumber}" class="form-label">AHU Capacity ${ahuNumber} (CFM) <span class="tooltip"><span class="tooltiptext">Capacity in cubic feet per minute (CFM).</span></span></label>
+                    <input type="number" id="AHUCapacity${ahuNumber}" name="AHUCapacity${ahuNumber}" class="form-control" min="0">
+                </div>
+                <div class="form-row">
+                    <label for="AHUCondition${ahuNumber}" class="form-label">AHU Condition ${ahuNumber} <span class="tooltip"><span class="tooltiptext">Physical condition of the AHU.</span></span></label>
+                    <select id="AHUCondition${ahuNumber}" name="AHUCondition${ahuNumber}" class="form-control">
+                        <option value="">Select...</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <label for="AHUDedicatedOrShared${ahuNumber}" class="form-label">AHU Dedicated or Shared ${ahuNumber} <span class="tooltip"><span class="tooltiptext">Is this AHU dedicated to a specific area or shared?</span></span></label>
+                    <select id="AHUDedicatedOrShared${ahuNumber}" name="AHUDedicatedOrShared${ahuNumber}" class="form-control">
+                        <option value="">Select...</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <label for="AHUSpeedControl${ahuNumber}" class="form-label">AHU Speed Control ${ahuNumber} <span class="tooltip"><span class="tooltiptext">How is the speed of this AHU controlled?</span></span></label>
+                    <select id="AHUSpeedControl${ahuNumber}" name="AHUSpeedControl${ahuNumber}" class="form-control">
+                        <option value="">Select...</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <label class="form-label">Speed Mapped to OA CFM ${ahuNumber}? <span class="tooltip"><span class="tooltiptext">Are the speed settings of this AHU mapped to outside air CFM?</span></span></label>
+                    <div class="radio-group" id="SpeedMappedToOACFM${ahuNumber}Group">
+                    </div>
+                </div>
+                <button type="button" class="remove-btn">Remove AHU</button>
+            `;
+            
+            ahuList.appendChild(newAHU);
+            
+            // Populate the new AHU dropdowns
+            populateSelectOptions(`AHUCondition${ahuNumber}`, formOptions.conditionOptions);
+            populateSelectOptions(`AHUDedicatedOrShared${ahuNumber}`, formOptions.dedicatedSharedOptions);
+            populateSelectOptions(`AHUSpeedControl${ahuNumber}`, formOptions.speedControlOptions);
+            populateRadioOptions(`SpeedMappedToOACFM${ahuNumber}Group`, formOptions.yesNoUnknown, `SpeedMappedToOACFM${ahuNumber}`);
+            
+            saveFormData();
+        }
+        
+        // Populate all form options from JSON
+        function populateAllFormOptions() {
+            // Initial Screening section
+            populateSelectOptions('BuildingType', formOptions.buildingTypes);
+            populateSelectOptions('BuildingUsage', formOptions.buildingUsages);
+            
+            // Radio Groups
+            populateRadioOptions('HasVAVGroup', formOptions.yesNoUnknown, 'HasVAV');
+            populateRadioOptions('HasVFDGroup', formOptions.yesNoUnknown, 'HasVFD');
+            populateRadioOptions('HasBMSGroup', formOptions.yesNoUnknown, 'HasBMS');
+            
+            // BMS Selects
+            populateSelectOptions('BMSManufacturer', formOptions.bmsManufacturers);
+            populateSelectOptions('BMSProtocol', formOptions.bmsProtocols);
+            
+            // Technical Discovery section
+            populateRadioOptions('KnowPilotFloorGroup', formOptions.yesNoUnknown, 'KnowPilotFloor');
+            
+            // HVAC Systems
+            populateSelectOptions('AHUCondition1', formOptions.conditionOptions);
+            populateSelectOptions('AHUDedicatedOrShared1', formOptions.dedicatedSharedOptions);
+            populateSelectOptions('AHUSpeedControl1', formOptions.speedControlOptions);
+            populateRadioOptions('SpeedMappedToOACFM1Group', formOptions.yesNoUnknown, 'SpeedMappedToOACFM1');
+            
+            // Sensor Infrastructure
+            populateRadioOptions('NetworkAvailableGroup', formOptions.yesNoUnknown, 'NetworkAvailable');
+            populateRadioOptions('Wifi24GHzGroup', formOptions.yesNoUnknown, 'Wifi24GHz');
+            populateRadioOptions('HasITRestrictionsGroup', formOptions.yesNoUnknown, 'HasITRestrictions');
+            
+            // Data Management
+            populateRadioOptions('SatAvailableGroup', formOptions.yesNoUnknown, 'SatAvailable');
+            populateRadioOptions('RatAvailableGroup', formOptions.yesNoUnknown, 'RatAvailable');
+            populateRadioOptions('OatAvailableGroup', formOptions.yesNoUnknown, 'OatAvailable');
+            
+            // Future Aspirations
+            populateSelectOptions('HVACCompatibility', formOptions.compatibilityOptions);
+            populateSelectOptions('ProjectViability', formOptions.feasibilityOptions);
+            populateSelectOptions('InstallationFeasibility', formOptions.feasibilityOptions);
+            populateSelectOptions('IsBetaCandidate', formOptions.betaCandidateOptions);
+            
+            // Site Assessment
+            populateSelectOptions('SiteAHUCondition1', formOptions.conditionOptions);
+            populateSelectOptions('TestWiFiStrength1', formOptions.wifiStrengthOptions);
+        }
+        
+        // Load Google Places API
+        function loadGooglePlacesAPI() {
+            const script = document.createElement('script');
+            script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyBtu6-M1KU_vkLFt7R36vazW_IVtcYa6FQ&libraries=places&callback=initPlacesAutocomplete';
+            script.defer = true;
+            script.async = true;
+            document.head.appendChild(script);
+        }
+
+        // Initialize Google Places Autocomplete
+        function initPlacesAutocomplete() {
+            try {
+                const addressInput = document.getElementById('BuildingAddress');
+                if (addressInput && google && google.maps && google.maps.places) {
+                    const autocomplete = new google.maps.places.Autocomplete(addressInput, {
+                        types: ['address']
+                    });
+                    autocomplete.addListener('place_changed', function() {
+                        const place = autocomplete.getPlace();
+                        if (!place.geometry) return;
+                        addressInput.value = place.formatted_address;
+                    });
+                    console.log("Address autocomplete initialized");
+                }
+            } catch (e) {
+                console.error("Error initializing Places Autocomplete:", e);
             }
-        });
+        }
 
-        document.getElementById('ahuList').addEventListener('click', function(e) {
-            if (e.target.classList.contains('remove-btn')) {
-                e.target.parentElement.remove();
-                document.getElementById('addAHU').disabled = false;
-            }
-        });
+        // Initialize the form
+        document.addEventListener('DOMContentLoaded', function() {
+            // Populate form options from JSON
+            populateAllFormOptions();
+            
+            // Cache DOM elements
+            const $form = document.getElementById('assessmentForm');
+            const $statusIndicators = {
+                initialScreening: document.getElementById('initial-screening-status'),
+                technicalDiscovery: document.getElementById('technical-discovery-status'),
+                siteAssessment: document.getElementById('site-assessment-status')
+            };
+            
+            // Form state
+            let formState = {
+                currentStep: 'initial-screening',
+                ahuCount: 1,
+                photoCount: 1,
+                isDirty: false,
+                lastSaved: null
+            };
 
-        document.getElementById('assessmentForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-            let isValid = true;
-
-            const requiredFields = document.querySelectorAll('[required]');
-            requiredFields.forEach(field => {
-                if (field.type === 'radio') {
-                    const radioGroup = document.querySelectorAll(`input[name="${field.name}"]`);
-                    if (!Array.from(radioGroup).some(radio => radio.checked)) {
-                        isValid = false;
-                        field.style.borderColor = 'var(--error)';
+            // Load Google Places API
+            loadGooglePlacesAPI();
+            
+            // Tab navigation
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-tab');
+                    document.querySelectorAll('.tab-button').forEach(tab => tab.classList.remove('active'));
+                    this.classList.add('active');
+                    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+            
+            // Section navigation
+            document.getElementById('toDiscoveryBtn').addEventListener('click', function() {
+                if (validateSection('initial-screening')) {
+                    navigateToStep('technical-discovery');
+                    document.querySelector('.progress-step[data-step="initial-screening"]').classList.add('completed');
+                }
+            });
+            
+            document.getElementById('toSiteAssessmentBtn').addEventListener('click', function() {
+                if (validateSection('technical-discovery')) {
+                    navigateToStep('site-assessment');
+                    document.querySelector('.progress-step[data-step="technical-discovery"]').classList.add('completed');
+                }
+            });
+            
+            document.getElementById('backToScreeningBtn').addEventListener('click', function() {
+                navigateToStep('initial-screening');
+            });
+            
+            document.getElementById('backToDiscoveryBtn').addEventListener('click', function() {
+                navigateToStep('technical-discovery');
+            });
+            
+            // Progress step navigation
+            document.querySelectorAll('.progress-step').forEach(step => {
+                step.addEventListener('click', function() {
+                    const stepId = this.getAttribute('data-step');
+                    const currentStep = document.querySelector('.stage-content.active').id;
+                    
+                    if (currentStep === stepId) return;
+                    if (currentStep === 'initial-screening' && stepId !== 'initial-screening') {
+                        if (!validateSection('initial-screening')) return;
                     }
-                } else if (!field.value.trim()) {
-                    isValid = false;
-                    field.style.borderColor = 'var(--error)';
-                } else {
-                    field.style.borderColor = 'var(--border)';
-                }
+                    if (currentStep === 'technical-discovery' && stepId === 'site-assessment') {
+                        if (!validateSection('technical-discovery')) return;
+                    }
+                    
+                    navigateToStep(stepId);
+                });
             });
-
-            const email = document.getElementById('ContactEmail');
-            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailPattern.test(email.value)) {
-                isValid = false;
-                email.style.borderColor = 'var(--error)';
+            
+            // Navigation function
+            function navigateToStep(stepId) {
+                // Update form state
+                formState.currentStep = stepId;
+                saveFormData();
+                
+                // Update UI
+                document.querySelectorAll('.stage-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                document.getElementById(stepId).classList.add('active');
+                
+                document.querySelectorAll('.progress-step').forEach(step => {
+                    step.classList.remove('active');
+                });
+                document.querySelector(`.progress-step[data-step="${stepId}"]`).classList.add('active');
+                
+                // Auto-populate building name confirmation fields
+                const buildingName = document.getElementById('BuildingName').value;
+                if (buildingName) {
+                    const discoveryBuildingName = document.getElementById('DiscoveryBuildingName');
+                    const surveyBuildingName = document.getElementById('SurveyBuildingName');
+                    if (discoveryBuildingName) discoveryBuildingName.value = buildingName;
+                    if (surveyBuildingName) surveyBuildingName.value = buildingName;
+                }
+                
+                // Scroll to top of the form
+                window.scrollTo({ top: $form.offsetTop - 20, behavior: 'smooth' });
             }
-
-            const photoInputs = ['photo_1', 'photo_2', 'photo_3', 'photo_4', 'photo_5'];
-            photoInputs.forEach(id => {
-                const photo = document.getElementById(id);
-                if (photo.files.length > 0 && photo.files[0].size > 10 * 1024 * 1024) {
+            
+            // Form validation
+            function validateSection(sectionId) {
+                const section = document.getElementById(sectionId);
+                const requiredFields = section.querySelectorAll('[required]');
+                let isValid = true;
+                const missingFields = [];
+                
+                // Reset validation state
+                section.querySelectorAll('.form-control').forEach(field => {
+                    field.classList.remove('invalid');
+                    const errorMessage = field.parentNode.querySelector('.error-message');
+                    if (errorMessage) errorMessage.remove();
+                });
+                
+                // Validate required fields
+                requiredFields.forEach(field => {
+                    if (field.type === 'radio') {
+                        const radioGroup = section.querySelectorAll(`input[name="${field.name}"]`);
+                        const isChecked = Array.from(radioGroup).some(radio => radio.checked);
+                        
+                        if (!isChecked) {
+                            isValid = false;
+                            const fieldLabel = field.closest('.form-row').querySelector('.form-label').textContent.trim();
+                            missingFields.push(fieldLabel);
+                            
+                            // Add error styling
+                            if (!field.closest('.form-row').querySelector('.error-message')) {
+                                const errorDiv = document.createElement('div');
+                                errorDiv.className = 'error-message';
+                                errorDiv.textContent = 'Please select an option';
+                                field.closest('.form-row').appendChild(errorDiv);
+                            }
+                        }
+                    } else if (!field.value.trim()) {
+                        isValid = false;
+                        field.classList.add('invalid');
+                        const fieldLabel = field.closest('.form-row').querySelector('.form-label').textContent.trim();
+                        missingFields.push(fieldLabel);
+                        
+                        // Add error styling
+                        if (!field.parentNode.querySelector('.error-message')) {
+                            const errorDiv = document.createElement('div');
+                            errorDiv.className = 'error-message';
+                            errorDiv.textContent = 'This field is required';
+                            field.insertAdjacentElement('afterend', errorDiv);
+                        }
+                    }
+                });
+                
+                // Validate email field
+                const emailField = section.querySelector('input[type="email"]');
+                if (emailField && emailField.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailField.value)) {
                     isValid = false;
-                    photo.style.borderColor = 'var(--error)';
-                    alert(`Photo ${id} exceeds 10MB limit.`);
+                    emailField.classList.add('invalid');
+                    
+                    if (!emailField.parentNode.querySelector('.error-message')) {
+                        const errorDiv = document.createElement('div');
+                        errorDiv.className = 'error-message';
+                        errorDiv.textContent = 'Please enter a valid email address';
+                        emailField.insertAdjacentElement('afterend', errorDiv);
+                    }
                 }
-            });
-
-            if (!isValid) {
-                document.getElementById('message').innerHTML = '<div class="error-message">Please fill all required fields correctly.</div>';
-                return;
+                
+                // Show status message
+                if (!isValid) {
+                    showStatusMessage(sectionId, 'error', 'Please correct the highlighted fields before continuing.');
+                }
+                
+                return isValid;
             }
-
-            const formData = new FormData(this);
-            document.getElementById('message').innerHTML = '<div class="success-message">Submitting...</div>';
-
-            fetch(this.action, {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.result === 'success') {
-                    document.getElementById('message').innerHTML = '<div class="success-message">Form submitted successfully!</div>';
-                    this.reset();
-                    toggleSections();
-                    progressSteps.forEach(step => step.classList.remove('completed'));
-                    navigateToStep('initial-screening');
-                } else {
-                    document.getElementById('message').innerHTML = `<div class="error-message">Submission failed: ${data.error}</div>`;
+            
+            // Status message display
+            function showStatusMessage(sectionId, type, message) {
+                const statusKey = sectionId === 'initial-screening' ? 'initialScreening' : 
+                                sectionId === 'technical-discovery' ? 'technicalDiscovery' : 'siteAssessment';
+                
+                const indicator = $statusIndicators[statusKey];
+                if (!indicator) return;
+                
+                if (!message) {
+                    indicator.style.display = 'none';
+                    return;
                 }
-            })
-            .catch(error => {
-                document.getElementById('message').innerHTML = '<div class="error-message">Submission failed. Please try again.</div>';
+                
+                indicator.className = 'status-indicator ' + type;
+                indicator.textContent = message;
+                indicator.style.display = 'block';
+                
+                // Auto-hide success messages after 3 seconds
+                if (type === 'success') {
+                    setTimeout(() => {
+                        indicator.style.display = 'none';
+                    }, 3000);
+                }
+            }
+            
+            // Conditional field toggling
+            function setupConditionalFields() {
+                const conditionalFields = [
+                    { trigger: '#BuildingType', target: '#OtherBuildingTypeDiv', condition: () => document.getElementById('BuildingType').value === 'Other' },
+                    { trigger: '#BuildingUsage', target: '#OtherBuildingUsageDiv', condition: () => document.getElementById('BuildingUsage').value === 'Other' },
+                    { trigger: 'input[name="HasVAV"]', target: '#HasVAVYesDiv', condition: () => document.querySelector('input[name="HasVAV"]:checked')?.value === 'Yes' },
+                    { trigger: 'input[name="HasVFD"]', target: '#HasVFDYesDiv', condition: () => document.querySelector('input[name="HasVFD"]:checked')?.value === 'Yes' },
+                    { trigger: 'input[name="HasBMS"]', target: '#HasBMSYesDiv', condition: () => document.querySelector('input[name="HasBMS"]:checked')?.value === 'Yes' },
+                    { trigger: '#BMSManufacturer', target: '#OtherBMSSystemDiv', condition: () => document.getElementById('BMSManufacturer').value === 'Other' },
+                    { trigger: '#BMSProtocol', target: '#OtherProtocolDiv', condition: () => document.getElementById('BMSProtocol').value === 'Other' },
+                    { trigger: 'input[name="KnowPilotFloor"]', target: '#KnowPilotFloorYesDiv', condition: () => document.querySelector('input[name="KnowPilotFloor"]:checked')?.value === 'Yes' },
+                    { trigger: 'input[name="NetworkAvailable"]', target: '#HasWifiYesDiv', condition: () => document.querySelector('input[name="NetworkAvailable"]:checked')?.value === 'Yes' },
+                    { trigger: 'input[name="HasITRestrictions"]', target: '#HasITRestrictionsYesDiv', condition: () => document.querySelector('input[name="HasITRestrictions"]:checked')?.value === 'Yes' },
+                    { trigger: 'input[name="SatAvailable"]', target: '#SatNotesDiv', condition: () => document.querySelector('input[name="SatAvailable"]:checked')?.value === 'Yes' },
+                    { trigger: 'input[name="RatAvailable"]', target: '#RatNotesDiv', condition: () => document.querySelector('input[name="RatAvailable"]:checked')?.value === 'Yes' },
+                    { trigger: 'input[name="OatAvailable"]', target: '#OatNotesDiv', condition: () => document.querySelector('input[name="OatAvailable"]:checked')?.value === 'Yes' }
+                ];
+                
+                // Add event listeners
+                conditionalFields.forEach(field => {
+                    const triggerElements = document.querySelectorAll(field.trigger);
+                    triggerElements.forEach(el => {
+                        el.addEventListener('change', () => {
+                            toggleConditionalField(field.target, field.condition());
+                        });
+                    });
+                    
+                    // Set initial state
+                    toggleConditionalField(field.target, field.condition());
+                });
+            }
+            
+            // Toggle conditional field
+            function toggleConditionalField(targetSelector, shouldShow) {
+                const target = document.querySelector(targetSelector);
+                if (!target) return;
+                
+                if (shouldShow) {
+                    target.classList.add('show');
+                } else {
+                    target.classList.remove('show');
+                }
+            }
+            
+            // Dynamic AHU handling
+            function setupDynamicAHUs() {
+                const addAHUBtn = document.getElementById('addAHU');
+                if (!addAHUBtn) return;
+                
+                addAHUBtn.addEventListener('click', function() {
+                    if (formState.ahuCount < 3) {
+                        formState.ahuCount++;
+                        addAHU(formState.ahuCount);
+                        
+                        if (formState.ahuCount >= 3) {
+                            addAHUBtn.disabled = true;
+                        }
+                    }
+                });
+                
+                // Remove AHU button
+                document.getElementById('ahuList').addEventListener('click', function(e) {
+                    if (e.target.classList.contains('remove-btn')) {
+                        e.target.closest('.dynamic-item').remove();
+                        formState.ahuCount--;
+                        
+                        if (formState.ahuCount < 3) {
+                            addAHUBtn.disabled = false;
+                        }
+                        
+                        saveFormData();
+                    }
+                });
+            }
+            
+            // Dynamic Photos handling
+            function setupDynamicPhotos() {
+                const addPhotoBtn = document.getElementById('addPhoto');
+                if (!addPhotoBtn) return;
+                
+                addPhotoBtn.addEventListener('click', function() {
+                    if (formState.photoCount < 5) {
+                        formState.photoCount++;
+                        addPhoto(formState.photoCount);
+                        
+                        if (formState.photoCount >= 5) {
+                            addPhotoBtn.disabled = true;
+                        }
+                    }
+                });
+                
+                // Remove Photo button
+                document.getElementById('photoList').addEventListener('click', function(e) {
+                    if (e.target.classList.contains('remove-btn')) {
+                        e.target.closest('.dynamic-item').remove();
+                        formState.photoCount--;
+                        
+                        if (formState.photoCount < 5) {
+                            addPhotoBtn.disabled = false;
+                        }
+                    }
+                });
+                
+                // Photo preview
+                document.getElementById('photoList').addEventListener('change', function(e) {
+                    if (e.target.classList.contains('photo-upload')) {
+                        const file = e.target.files[0];
+                        const preview = e.target.closest('.dynamic-item').querySelector('.photo-preview');
+                        
+                        if (file && preview) {
+                            // Validate file type and size
+                            if (!file.type.match('image.*')) {
+                                showStatusMessage('site-assessment', 'error', 'Please upload image files only (JPG, PNG, etc.)');
+                                e.target.value = '';
+                                return;
+                            }
+                            
+                            if (file.size > 10 * 1024 * 1024) { // 10MB limit
+                                showStatusMessage('site-assessment', 'error', 'File size exceeds 10MB limit. Please upload a smaller image.');
+                                e.target.value = '';
+                                return;
+                            }
+                            
+                            preview.src = URL.createObjectURL(file);
+                            preview.style.display = 'block';
+                        }
+                    }
+                });
+            }
+            
+            // Add new photo
+            function addPhoto(photoNumber) {
+                const photoList = document.getElementById('photoList');
+                
+                const newPhoto = document.createElement('div');
+                newPhoto.className = 'dynamic-item';
+                newPhoto.innerHTML = `
+                    <div class="form-row">
+                        <label for="photo_${photoNumber}" class="form-label">Photo ${photoNumber} <span class="tooltip"><span class="tooltiptext">Upload a photo (e.g., AHU, sensor location). Max 10MB.</span></span></label>
+                        <input type="file" id="photo_${photoNumber}" name="photo_${photoNumber}" accept="image/*" class="photo-upload">
+                    </div>
+                    <div class="form-row">
+                        <label for="description_${photoNumber}" class="form-label">Description for Photo ${photoNumber} <span class="tooltip"><span class="tooltiptext">Describe what this photo shows (e.g., 'Main AHU in mechanical room').</span></span></label>
+                        <input type="text" id="description_${photoNumber}" name="description_${photoNumber}" class="form-control" placeholder="e.g., Main AHU in mechanical room">
+                    </div>
+                    <img class="photo-preview" alt="Photo Preview">
+                    <button type="button" class="remove-btn">Remove Photo</button>
+                `;
+                
+                photoList.appendChild(newPhoto);
+            }
+            
+            // Form data persistence
+            function saveFormData() {
+                // Don't save if localStorage isn't available
+                if (!window.localStorage) return;
+                
+                // Clear any existing timeout
+                if (window.saveTimeout) {
+                    clearTimeout(window.saveTimeout);
+                }
+                
+                // Set a new timeout to save data
+                window.saveTimeout = setTimeout(() => {
+                    const formData = {};
+                    
+                    // Collect form fields
+                    $form.querySelectorAll('input, select, textarea').forEach(el => {
+                        const name = el.getAttribute('name');
+                        if (!name || el.type === 'file') return;
+                        
+                        if (el.type === 'radio' || el.type === 'checkbox') {
+                            if (el.checked) formData[name] = el.value;
+                        } else {
+                            formData[name] = el.value;
+                        }
+                    });
+                    
+                    // Add form state
+                    formData._formState = {
+                        currentStep: formState.currentStep,
+                        ahuCount: formState.ahuCount,
+                        photoCount: formState.photoCount,
+                        lastSaved: new Date().toISOString()
+                    };
+                    
+                    // Save to localStorage
+                    try {
+                        localStorage.setItem('odcvFormDraft', JSON.stringify(formData));
+                        formState.lastSaved = new Date();
+                        formState.isDirty = false;
+                        
+                        // Show confirmation
+                        const timeString = formState.lastSaved.toLocaleTimeString();
+                        showStatusMessage(formState.currentStep, 'info', `Draft saved at ${timeString}`);
+                        
+                        // Auto-hide message after 3 seconds
+                        setTimeout(() => {
+                            showStatusMessage(formState.currentStep, null);
+                        }, 3000);
+                    } catch (e) {
+                        console.error('Error saving form data:', e);
+                    }
+                }, 1000);
+            }
+            
+            // Load saved form data
+            function loadFormData() {
+                if (!window.localStorage) return;
+                
+                try {
+                    const draft = localStorage.getItem('odcvFormDraft');
+                    if (!draft) return;
+                    
+                    const data = JSON.parse(draft);
+                    
+                    // Restore form state
+                    if (data._formState) {
+                        formState = {
+                            ...formState,
+                            ...data._formState,
+                            lastSaved: data._formState.lastSaved ? new Date(data._formState.lastSaved) : null
+                        };
+                        
+                        // Navigate to correct step
+                        document.querySelectorAll('.stage-content').forEach(content => {
+                            content.classList.remove('active');
+                        });
+                        const targetStep = document.getElementById(formState.currentStep);
+                        if (targetStep) targetStep.classList.add('active');
+                        
+                        document.querySelectorAll('.progress-step').forEach(step => {
+                            step.classList.remove('active');
+                        });
+                        const targetProgress = document.querySelector(`.progress-step[data-step="${formState.currentStep}"]`);
+                        if (targetProgress) targetProgress.classList.add('active');
+                        
+                        delete data._formState;
+                    }
+                    
+                    // Populate fields
+                    Object.keys(data).forEach(key => {
+                        const field = document.querySelector(`[name="${key}"]`);
+                        if (!field) return;
+                        
+                        if (field.type === 'radio' || field.type === 'checkbox') {
+                            const fieldWithValue = document.querySelector(`[name="${key}"][value="${data[key]}"]`);
+                            if (fieldWithValue) fieldWithValue.checked = true;
+                        } else {
+                            field.value = data[key];
+                        }
+                    });
+                    
+                    // Create additional AHUs if needed
+                    for (let i = 2; i <= formState.ahuCount; i++) {
+                        addAHU(i);
+                    }
+                    
+                    // Create additional photos if needed
+                    for (let i = 2; i <= formState.photoCount; i++) {
+                        addPhoto(i);
+                    }
+                    
+                    // Show notification
+                    if (formState.lastSaved) {
+                        const timeAgo = getTimeAgo(formState.lastSaved);
+                        showStatusMessage(formState.currentStep, 'info', `Draft restored from ${timeAgo}`);
+                        
+                        setTimeout(() => {
+                            showStatusMessage(formState.currentStep, null);
+                        }, 5000);
+                    }
+                } catch (e) {
+                    console.error('Error loading form data:', e);
+                }
+            }
+            
+            // Format time ago
+            function getTimeAgo(date) {
+                const seconds = Math.floor((new Date() - date) / 1000);
+                
+                if (seconds < 60) return 'just now';
+                if (seconds < 3600) return `${Math.floor(seconds / 60)} minutes ago`;
+                if (seconds < 86400) return `${Math.floor(seconds / 3600)} hours ago`;
+                
+                return date.toLocaleDateString();
+            }
+            
+            // Form submission
+            $form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Validate final section
+                if (!validateSection('site-assessment')) {
+                    return;
+                }
+                
+                // Confirm submission
+                if (!confirm('Are you sure you want to submit the assessment? This cannot be undone.')) {
+                    return;
+                }
+                
+                // Update UI
+                const submitBtn = document.getElementById('submitFormBtn');
+                submitBtn.innerHTML = '<span class="loading"></span>Submitting...';
+                submitBtn.disabled = true;
+                showStatusMessage('site-assessment', 'info', 'Submitting form...');
+                
+                // Submit form data
+                const formData = new FormData(this);
+                
+                fetch(this.action, {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.result === 'success') {
+                        // Success handling
+                        showStatusMessage('site-assessment', 'success', 'Form submitted successfully! Thank you for your assessment.');
+                        
+                        // Clear saved data
+                        localStorage.removeItem('odcvFormDraft');
+                        
+                        // Reset form
+                        $form.reset();
+                        
+                        // Reset form state
+                        formState = {
+                            currentStep: 'initial-screening',
+                            ahuCount: 1,
+                            photoCount: 1,
+                            isDirty: false,
+                            lastSaved: null
+                        };
+                        
+                        // Navigate back to first step
+                        setTimeout(function() {
+                            navigateToStep('initial-screening');
+                            document.querySelectorAll('.progress-step').forEach(step => {
+                                step.classList.remove('completed');
+                            });
+                            submitBtn.innerHTML = 'Submit Assessment';
+                            submitBtn.disabled = false;
+                        }, 3000);
+                    } else {
+                        // Error handling
+                        showStatusMessage('site-assessment', 'error', `Submission failed: ${data.error || 'Unknown error'}`);
+                        submitBtn.innerHTML = 'Submit Assessment';
+                        submitBtn.disabled = false;
+                    }
+                })
+                .catch(error => {
+                    console.error('Submission error:', error);
+                    showStatusMessage('site-assessment', 'error', 'Submission failed. Please check your connection and try again.');
+                    submitBtn.innerHTML = 'Submit Assessment';
+                    submitBtn.disabled = false;
+                });
             });
+            
+            // Track form changes
+            $form.addEventListener('input', function() {
+                formState.isDirty = true;
+                saveFormData();
+            });
+            
+            $form.addEventListener('change', function() {
+                formState.isDirty = true;
+                saveFormData();
+            });
+            
+            // Before unload warning
+            window.addEventListener('beforeunload', function(e) {
+                if (formState.isDirty) {
+                    e.preventDefault();
+                    e.returnValue = 'You have unsaved changes. Are you sure you want to leave?';
+                    return e.returnValue;
+                }
+            });
+            
+            // Set today's date for survey date
+            const surveyDateInput = document.getElementById('SurveyDate');
+            if (surveyDateInput) {
+                const today = new Date().toISOString().split('T')[0];
+                surveyDateInput.value = today;
+            }
+            
+            // Initialize form components
+            setupConditionalFields();
+            setupDynamicAHUs();
+            setupDynamicPhotos();
+            loadFormData();
         });
-
-        toggleSections(); // Initialize conditional fields
     </script>
 </body>
 </html>
