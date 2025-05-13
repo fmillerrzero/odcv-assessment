@@ -38,7 +38,7 @@
 
         /* Make Google Places dropdown appear correctly */
         .pac-container {
-            z-index: 10000;
+            z-index: 10000 !important;
         }
 
         body {
@@ -681,6 +681,30 @@
         #prevBtn.active-nav-btn:hover {
             background-color: #025b78;
         }
+        
+        /* FIX: Address input field styling to ensure it displays properly */
+        #address {
+            width: 100% !important;
+            z-index: 1;
+            position: relative;
+            padding: 0.85rem 1rem !important;
+            min-height: 52px;
+        }
+        
+        /* FIX: Ensure Google autocomplete suggestions appear below the field */
+        .pac-container {
+            z-index: 9999 !important;
+        }
+        
+        /* FIX: Add a toggle for manual address entry */
+        .manual-address-toggle {
+            display: inline-block;
+            margin-top: 8px;
+            font-size: 0.85rem;
+            color: var(--primary-color);
+            cursor: pointer;
+            text-decoration: underline;
+        }
     </style>
 </head>
 
@@ -767,7 +791,9 @@
                     <h3>Building</h3>
                     <div class="form-group">
                         <label for="address" class="required-field">Address</label>
-                        <input type="text" id="address" name="address" required autocomplete="off" style="padding-left:12px !important;">
+                        <input type="text" id="address" name="address" required>
+                        <!-- FIX: Add manual address toggle -->
+                        <span class="manual-address-toggle" id="toggleManualAddress">Enter address manually</span>
                     </div>
                     <div class="form-group">
                         <label for="buildingType" class="required-field">Type</label>
@@ -1167,20 +1193,92 @@
         </form>
     </div>
 
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDvGee7gI4jQO3OjGXhtkMmWRP865F2kAU&libraries=places&callback=initAutocomplete" async defer></script>
+    <!-- FIX: Modified Google Maps script -->
     <script>
+        // Initialize Google Places Autocomplete with improved handling
         function initAutocomplete() {
             const addressField = document.getElementById('address');
+            let autocomplete = null;
+            let manualMode = false;
+            
+            const toggleManualAddress = document.getElementById('toggleManualAddress');
+            
             if (addressField && window.google && window.google.maps && window.google.maps.places) {
-                const autocomplete = new google.maps.places.Autocomplete(addressField, {types: ['address']});
+                // Create the autocomplete instance
+                autocomplete = new google.maps.places.Autocomplete(addressField, {
+                    types: ['address'],
+                    componentRestrictions: { country: ["us", "ca"] } // Limiting to US and Canada for better results
+                });
+                
+                // Keep track of the user's input
+                let userInput = '';
+                addressField.addEventListener('input', function() {
+                    userInput = this.value;
+                });
+                
+                // Handle place selection
                 autocomplete.addListener('place_changed', function() {
                     const place = autocomplete.getPlace();
                     if (place && place.formatted_address) {
                         addressField.value = place.formatted_address;
+                    } else {
+                        // If no place is found, keep the user's input
+                        addressField.value = userInput;
                     }
                 });
+                
+                // Toggle manual address entry
+                toggleManualAddress.addEventListener('click', function() {
+                    if (!manualMode) {
+                        // Disable autocomplete
+                        google.maps.event.clearInstanceListeners(addressField);
+                        addressField.placeholder = "Enter address manually";
+                        this.textContent = "Enable address suggestions";
+                        manualMode = true;
+                    } else {
+                        // Re-enable autocomplete
+                        autocomplete = new google.maps.places.Autocomplete(addressField, {
+                            types: ['address'],
+                            componentRestrictions: { country: ["us", "ca"] }
+                        });
+                        addressField.placeholder = "";
+                        this.textContent = "Enter address manually";
+                        manualMode = false;
+                        
+                        // Restore place_changed listener
+                        autocomplete.addListener('place_changed', function() {
+                            const place = autocomplete.getPlace();
+                            if (place && place.formatted_address) {
+                                addressField.value = place.formatted_address;
+                            }
+                        });
+                    }
+                });
+            } else {
+                // Hide the toggle if Google Maps API isn't available
+                if (toggleManualAddress) {
+                    toggleManualAddress.style.display = 'none';
+                }
             }
         }
+
+        // Load Google Maps API with callback
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if Google Maps script already exists
+            if (!document.getElementById('google-maps-script')) {
+                const script = document.createElement('script');
+                script.id = 'google-maps-script';
+                script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyDvGee7gI4jQO3OjGXhtkMmWRP865F2kAU&libraries=places&callback=initAutocomplete';
+                script.async = true;
+                script.defer = true;
+                document.head.appendChild(script);
+            } else {
+                // If script exists, try to initialize autocomplete directly
+                if (typeof google !== 'undefined' && google.maps && google.maps.places) {
+                    initAutocomplete();
+                }
+            }
+        });
     </script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
