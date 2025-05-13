@@ -36,6 +36,26 @@
             --box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
+        /* Clean address field styles */
+        .clean-field {
+            padding-left: 12px !important; /* Prevent any icons from pushing text */
+            background-image: none !important; /* Remove any background images */
+            background-color: #fafbfc !important; /* Set standard background */
+            text-indent: 0 !important; /* Ensure text starts at the beginning */
+            position: relative !important; /* Ensure proper positioning */
+        }
+        
+        /* Ensure no pseudo-elements are added */
+        .clean-field:before,
+        .clean-field:after {
+            display: none !important;
+        }
+        
+        /* Make Google Places dropdown appear correctly */
+        .pac-container {
+            z-index: 10000;
+        }
+
         body {
             font-family: var(--font-family);
             background-color:#f4fbfd;
@@ -762,7 +782,7 @@
                     <h3>Building</h3>
                     <div class="form-group">
                         <label for="address" class="required-field">Address</label>
-                        <input type="text" id="address" name="address" required autocomplete="off" style="overflow: visible; text-overflow: clip;">
+                        <input type="text" id="address" name="address" required class="form-control clean-field">
                     </div>
                     <div class="form-group">
                         <label for="buildingType" class="required-field">Type</label>
@@ -1163,58 +1183,46 @@
     </div>
 
     <script>
-        function initAutocomplete() {
-            const addressInput = document.getElementById("address");
-            if (!addressInput) {
+        function initCleanAutocomplete() {
+            const addressField = document.getElementById('address');
+            if (!addressField) {
                 console.warn("Address input field not found");
                 return;
             }
             
-            // Add specific CSS fix to prevent text cutoff
-            addressInput.style.overflow = "visible";
-            addressInput.style.textOverflow = "clip";
+            // Replace the field to remove any bound event handlers or data
+            const newAddressField = addressField.cloneNode(false);
+            if (addressField.parentNode) {
+                addressField.parentNode.replaceChild(newAddressField, addressField);
+            }
             
-            // Prevent default browser autocomplete from interfering
-            addressInput.setAttribute("autocomplete", "new-address");
-            
-            // Only initialize Google Places if the API is available
+            // Initialize Google Places autocomplete
             if (window.google && window.google.maps && window.google.maps.places) {
                 try {
-                    // Create autocomplete with minimal options to avoid issues
-                    const autocomplete = new google.maps.places.Autocomplete(addressInput, {
-                        types: ["address"],
-                        fields: ["formatted_address"],
-                        componentRestrictions: { country: "us" }
+                    const autocomplete = new google.maps.places.Autocomplete(newAddressField, {
+                        types: ['address'],
+                        componentRestrictions: { country: 'us' }
                     });
                     
-                    // Use a simpler place changed handler
-                    autocomplete.addListener("place_changed", function() {
+                    // Simple handler for place selection
+                    autocomplete.addListener('place_changed', function() {
                         const place = autocomplete.getPlace();
                         if (place && place.formatted_address) {
-                            // Use simple value assignment instead of complex manipulation
-                            addressInput.value = place.formatted_address;
-                            // Trigger standard change event
-                            addressInput.dispatchEvent(new Event("change"));
+                            newAddressField.value = place.formatted_address;
+                            newAddressField.dispatchEvent(new Event('change', { bubbles: true }));
                         }
                     });
                     
-                    // Prevent form submission on enter when selecting from dropdown
-                    addressInput.addEventListener("keydown", function(e) {
-                        if (e.key === "Enter" && document.querySelector(".pac-container:visible")) {
-                            e.preventDefault();
-                        }
-                    });
-                    
-                    console.log("Address autocomplete successfully initialized");
+                    console.log('Clean autocomplete successfully initialized');
                 } catch (error) {
-                    console.error("Error initializing autocomplete:", error);
+                    console.error('Error initializing clean autocomplete:', error);
                 }
             } else {
-                console.warn("Google Maps Places API not available - using standard text input");
+                console.warn('Google Maps Places API not available - using standard text input');
             }
         }
     </script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDvGee7gI4jQO3OjGXhtkMmWRP865F2kAU&libraries=places&callback=initAutocomplete" async defer></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDvGee7gI4jQO3OjGXhtkMmWRP865F2kAU&libraries=places&callback=initCleanAutocomplete" async defer></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             // R-Zero Branding Configuration
