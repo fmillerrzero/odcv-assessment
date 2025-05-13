@@ -767,7 +767,7 @@
                     <h3>Building</h3>
                     <div class="form-group">
                         <label for="address" class="required-field">Address</label>
-                        <input type="text" id="address" name="address" required style="padding-left:12px !important;">
+                        <input type="text" id="address" name="address" required autocomplete="off" style="padding-left:12px !important;">
                     </div>
                     <div class="form-group">
                         <label for="buildingType" class="required-field">Type</label>
@@ -1167,16 +1167,20 @@
         </form>
     </div>
 
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDvGee7gI4jQO3OjGXhtkMmWRP865F2kAU&libraries=places" async defer></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDvGee7gI4jQO3OjGXhtkMmWRP865F2kAU&libraries=places&callback=initAutocomplete" async defer></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            setTimeout(function() {
-                const addressField = document.getElementById('address');
-                if (addressField && window.google && window.google.maps && window.google.maps.places) {
-                    new google.maps.places.Autocomplete(addressField, {types: ['address']});
-                }
-            }, 1000);
-        });
+        function initAutocomplete() {
+            const addressField = document.getElementById('address');
+            if (addressField && window.google && window.google.maps && window.google.maps.places) {
+                const autocomplete = new google.maps.places.Autocomplete(addressField, {types: ['address']});
+                autocomplete.addListener('place_changed', function() {
+                    const place = autocomplete.getPlace();
+                    if (place && place.formatted_address) {
+                        addressField.value = place.formatted_address;
+                    }
+                });
+            }
+        }
     </script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
