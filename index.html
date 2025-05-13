@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -693,17 +694,30 @@
         
         /* FIX: Ensure Google autocomplete suggestions appear below the field */
         .pac-container {
-            z-index: 9999 !important;
+            z-index: 10000 !important;
         }
         
-        /* FIX: Add a toggle for manual address entry */
-        .manual-address-toggle {
-            display: inline-block;
-            margin-top: 8px;
+        /* FIX: Add CSS for address toggle controls */
+        #addressControls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 6px;
             font-size: 0.85rem;
+        }
+
+        #addressMode {
             color: var(--primary-color);
-            cursor: pointer;
+            font-style: italic;
+        }
+
+        .address-toggle {
+            background: none;
+            border: none;
+            color: var(--primary-color);
             text-decoration: underline;
+            padding: 0;
+            cursor: pointer;
+            font-size: 0.85rem;
         }
     </style>
 </head>
@@ -791,9 +805,11 @@
                     <h3>Building</h3>
                     <div class="form-group">
                         <label for="address" class="required-field">Address</label>
-                        <input type="text" id="address" name="address" required>
-                        <!-- FIX: Add manual address toggle -->
-                        <span class="manual-address-toggle" id="toggleManualAddress">Enter address manually</span>
+                        <input type="text" id="address" name="address" required autocomplete="new-address">
+                        <div id="addressControls">
+                            <span id="addressMode">Autocomplete enabled</span>
+                            <button type="button" id="toggleAddressMode" class="address-toggle">Switch to manual entry</button>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="buildingType" class="required-field">Type</label>
@@ -1193,72 +1209,87 @@
         </form>
     </div>
 
-    <!-- FIX: Modified Google Maps script -->
+    <!-- Modified Google Maps script with improved address field implementation -->
     <script>
         // Initialize Google Places Autocomplete with improved handling
         function initAutocomplete() {
             const addressField = document.getElementById('address');
+            const toggleBtn = document.getElementById('toggleAddressMode');
+            const modeIndicator = document.getElementById('addressMode');
+            
+            let autocompleteEnabled = true;
             let autocomplete = null;
-            let manualMode = false;
             
-            const toggleManualAddress = document.getElementById('toggleManualAddress');
-            
-            if (addressField && window.google && window.google.maps && window.google.maps.places) {
-                // Create the autocomplete instance
+            // Function to enable autocomplete
+            function enableAutocomplete() {
+                // Set attribute to prevent browser autocomplete from interfering
+                addressField.setAttribute('autocomplete', 'new-address');
+                
+                // Initialize Google Places Autocomplete
                 autocomplete = new google.maps.places.Autocomplete(addressField, {
                     types: ['address'],
-                    componentRestrictions: { country: ["us", "ca"] } // Limiting to US and Canada for better results
+                    componentRestrictions: { country: ["us", "ca"] }
                 });
                 
-                // Keep track of the user's input
-                let userInput = '';
+                // Store original input value when user types
+                let userTypedValue = '';
                 addressField.addEventListener('input', function() {
-                    userInput = this.value;
+                    userTypedValue = this.value;
                 });
                 
                 // Handle place selection
                 autocomplete.addListener('place_changed', function() {
                     const place = autocomplete.getPlace();
-                    if (place && place.formatted_address) {
-                        addressField.value = place.formatted_address;
-                    } else {
-                        // If no place is found, keep the user's input
-                        addressField.value = userInput;
+                    if (!place.geometry) {
+                        // User entered text but didn't select a suggestion
+                        addressField.value = userTypedValue;
+                        return;
                     }
+                    // User selected a place from dropdown
+                    addressField.value = place.formatted_address || userTypedValue;
                 });
                 
-                // Toggle manual address entry
-                toggleManualAddress.addEventListener('click', function() {
-                    if (!manualMode) {
-                        // Disable autocomplete
-                        google.maps.event.clearInstanceListeners(addressField);
-                        addressField.placeholder = "Enter address manually";
-                        this.textContent = "Enable address suggestions";
-                        manualMode = true;
+                // Update UI
+                toggleBtn.textContent = 'Switch to manual entry';
+                modeIndicator.textContent = 'Autocomplete enabled';
+                autocompleteEnabled = true;
+            }
+            
+            // Function to disable autocomplete
+            function disableAutocomplete() {
+                if (autocomplete) {
+                    // Remove all Google Maps event listeners
+                    google.maps.event.clearInstanceListeners(addressField);
+                    autocomplete = null;
+                }
+                
+                // Set standard autocomplete attribute to "off"
+                addressField.setAttribute('autocomplete', 'off');
+                
+                // Update UI
+                toggleBtn.textContent = 'Enable address suggestions';
+                modeIndicator.textContent = 'Manual entry mode';
+                autocompleteEnabled = false;
+            }
+            
+            // Toggle button click handler
+            if (toggleBtn) {
+                toggleBtn.addEventListener('click', function() {
+                    if (autocompleteEnabled) {
+                        disableAutocomplete();
                     } else {
-                        // Re-enable autocomplete
-                        autocomplete = new google.maps.places.Autocomplete(addressField, {
-                            types: ['address'],
-                            componentRestrictions: { country: ["us", "ca"] }
-                        });
-                        addressField.placeholder = "";
-                        this.textContent = "Enter address manually";
-                        manualMode = false;
-                        
-                        // Restore place_changed listener
-                        autocomplete.addListener('place_changed', function() {
-                            const place = autocomplete.getPlace();
-                            if (place && place.formatted_address) {
-                                addressField.value = place.formatted_address;
-                            }
-                        });
+                        enableAutocomplete();
                     }
                 });
+            }
+            
+            // Initialize autocomplete on page load
+            if (addressField && window.google && window.google.maps && window.google.maps.places) {
+                enableAutocomplete();
             } else {
-                // Hide the toggle if Google Maps API isn't available
-                if (toggleManualAddress) {
-                    toggleManualAddress.style.display = 'none';
-                }
+                // Google API not loaded or element not found
+                if (toggleBtn) toggleBtn.style.display = 'none';
+                if (modeIndicator) modeIndicator.textContent = 'Manual address entry';
             }
         }
 
@@ -2689,3 +2720,4 @@
     </script>
 </body>
 </html>
+```
