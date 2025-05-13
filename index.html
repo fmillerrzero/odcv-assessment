@@ -1162,7 +1162,23 @@
         </form>
     </div>
 
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDvGee7gI4jQO3OjGXhtkMmWRP865F2kAU&libraries=places&callback=initAutocomplete" defer></script>
+    <script>
+        function initAutocomplete() {
+            const addressInput = document.getElementById("address");
+            if (!addressInput) return;
+            
+            if (window.google?.maps?.places) {
+                const autocomplete = new google.maps.places.Autocomplete(addressInput, {
+                    types: ["address"],
+                    componentRestrictions: { country: "us" }
+                });
+                console.log("Autocomplete initialized.");
+            } else {
+                console.warn("Google Maps Places library not available.");
+            }
+        }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDvGee7gI4jQO3OjGXhtkMmWRP865F2kAU&libraries=places&callback=initAutocomplete" async defer></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             // R-Zero Branding Configuration
@@ -1303,33 +1319,6 @@
             setupHashNavigation();
             setupThousandsSeparator();
             restoreFormData();
-
-            // Initialize Google Places Autocomplete function - FIXED VERSION
-            window.initAutocomplete = function() {
-                const input = document.getElementById('address');
-                if (input && window.google && window.google.maps && window.google.maps.places) {
-                    const autocomplete = new google.maps.places.Autocomplete(input, {
-                        types: ['address'],
-                        componentRestrictions: { country: 'us' }
-                    });
-                    
-                    autocomplete.addListener('place_changed', () => {
-                        // Simply trigger a change event when a place is selected
-                        input.dispatchEvent(new Event('change'));
-                    });
-                } else {
-                    // Fallback for when Google Maps API fails to load
-                    enableAddressFallback();
-                }
-            };
-
-            function enableAddressFallback() {
-                const input = document.getElementById('address');
-                if (input) {
-                    // Visual indicator that autocomplete is not available
-                    input.style.backgroundColor = '#fff8e6';
-                }
-            }
 
             // Check URL hash on initial load to determine which step to show
             const initialStep = getStepFromHash() || formState.currentStep;
