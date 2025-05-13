@@ -762,7 +762,7 @@
                     <h3>Building</h3>
                     <div class="form-group">
                         <label for="address" class="required-field">Address</label>
-                        <input type="text" id="address" name="address" required>
+                        <input type="text" id="address" name="address" required autocomplete="off" style="overflow: visible; text-overflow: clip;">
                     </div>
                     <div class="form-group">
                         <label for="buildingType" class="required-field">Type</label>
@@ -1165,16 +1165,52 @@
     <script>
         function initAutocomplete() {
             const addressInput = document.getElementById("address");
-            if (!addressInput) return;
+            if (!addressInput) {
+                console.warn("Address input field not found");
+                return;
+            }
             
-            if (window.google?.maps?.places) {
-                const autocomplete = new google.maps.places.Autocomplete(addressInput, {
-                    types: ["address"],
-                    componentRestrictions: { country: "us" }
-                });
-                console.log("Autocomplete initialized.");
+            // Add specific CSS fix to prevent text cutoff
+            addressInput.style.overflow = "visible";
+            addressInput.style.textOverflow = "clip";
+            
+            // Prevent default browser autocomplete from interfering
+            addressInput.setAttribute("autocomplete", "new-address");
+            
+            // Only initialize Google Places if the API is available
+            if (window.google && window.google.maps && window.google.maps.places) {
+                try {
+                    // Create autocomplete with minimal options to avoid issues
+                    const autocomplete = new google.maps.places.Autocomplete(addressInput, {
+                        types: ["address"],
+                        fields: ["formatted_address"],
+                        componentRestrictions: { country: "us" }
+                    });
+                    
+                    // Use a simpler place changed handler
+                    autocomplete.addListener("place_changed", function() {
+                        const place = autocomplete.getPlace();
+                        if (place && place.formatted_address) {
+                            // Use simple value assignment instead of complex manipulation
+                            addressInput.value = place.formatted_address;
+                            // Trigger standard change event
+                            addressInput.dispatchEvent(new Event("change"));
+                        }
+                    });
+                    
+                    // Prevent form submission on enter when selecting from dropdown
+                    addressInput.addEventListener("keydown", function(e) {
+                        if (e.key === "Enter" && document.querySelector(".pac-container:visible")) {
+                            e.preventDefault();
+                        }
+                    });
+                    
+                    console.log("Address autocomplete successfully initialized");
+                } catch (error) {
+                    console.error("Error initializing autocomplete:", error);
+                }
             } else {
-                console.warn("Google Maps Places library not available.");
+                console.warn("Google Maps Places API not available - using standard text input");
             }
         }
     </script>
