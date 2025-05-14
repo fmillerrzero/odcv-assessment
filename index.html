@@ -422,26 +422,6 @@
             border-left: 4px solid var(--primary-color);
         }
 
-        /* Reset message styling */
-        .reset-message {
-            color: var(--success-color);
-            font-size: 0.8rem;
-            margin-left: 8px;
-            display: inline-block;
-            animation: fadeOut 2s forwards;
-            animation-delay: 1s;
-        }
-
-        @keyframes fadeOut {
-            from {
-                opacity: 1;
-            }
-
-            to {
-                opacity: 0;
-            }
-        }
-
         /* Radio button group styling */
         .radio-group {
             display: flex;
@@ -683,40 +663,32 @@
         }
         
         /* FIX: Address input field styling to ensure it displays properly */
-        #address {
+        #address, gmp-place-autocomplete {
             width: 100% !important;
             z-index: 1;
             position: relative;
-            padding: 0.85rem 1rem !important;
             min-height: 52px;
         }
         
-        /* FIX: Ensure Google autocomplete suggestions appear below the field */
-        .pac-container {
-            z-index: 10000 !important;
+        /* Disabled button styling */
+        button:disabled {
+            background-color: var(--secondary-color) !important;
+            opacity: 0.6;
+            cursor: not-allowed;
         }
         
-        /* FIX: Add controls for address field */
-        #addressControls {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 6px;
-            font-size: 0.85rem;
+        /* Input error highlighting */
+        input.validation-error, 
+        select.validation-error,
+        textarea.validation-error,
+        .radio-option.validation-error {
+            border: 1px solid var(--error);
+            background-color: rgba(229, 62, 62, 0.05);
         }
-
-        #addressMode {
-            color: var(--primary-color);
-            font-style: italic;
-        }
-
-        .address-toggle {
-            background: none;
-            border: none;
-            color: var(--primary-color);
-            text-decoration: underline;
-            padding: 0;
-            cursor: pointer;
-            font-size: 0.85rem;
+        
+        /* Hidden with display:none */
+        .hidden {
+            display: none !important;
         }
     </style>
 </head>
@@ -744,15 +716,15 @@
                     <h3>Contact</h3>
                     <div class="form-group">
                         <label for="name" class="required-field">Name</label>
-                        <input type="text" id="name" name="name" required>
+                        <input type="text" id="name" name="name" required autocomplete="name">
                     </div>
                     <div class="form-group">
                         <label for="email" class="required-field">Email</label>
-                        <input type="email" id="email" name="email" required>
+                        <input type="email" id="email" name="email" required autocomplete="email">
                     </div>
                     <div class="form-group">
                         <label for="phone">Phone</label>
-                        <input type="tel" id="phone" name="phone">
+                        <input type="tel" id="phone" name="phone" autocomplete="tel">
                     </div>
                 </div>
                 <div class="form-section">
@@ -785,7 +757,7 @@
                     </div>
                     <div class="form-group">
                         <label for="organization" class="required-field">Employer</label>
-                        <input type="text" id="organization" name="organization" required>
+                        <input type="text" id="organization" name="organization" required autocomplete="organization">
                     </div>
                     <div class="form-group">
                         <label for="orgType" class="required-field">Organization Type</label>
@@ -804,11 +776,8 @@
                     <h3>Building</h3>
                     <div class="form-group">
                         <label for="address" class="required-field">Address</label>
-                        <input type="text" id="address" name="address" required autocomplete="new-address">
-                        <div id="addressControls">
-                            <span id="addressMode">Autocomplete enabled</span>
-                            <button type="button" id="toggleAddressMode" class="address-toggle">Switch to manual entry</button>
-                        </div>
+                        <gmp-place-autocomplete id="address" placeholder="Enter an address" country="us,ca" types="address"></gmp-place-autocomplete>
+                        <input type="hidden" name="address" id="addressValue" required>
                     </div>
                     <div class="form-group">
                         <label for="buildingType" class="required-field">Type</label>
@@ -837,11 +806,11 @@
                     </div>
                     <div class="form-group">
                         <label for="squareFootage" class="required-field">Square Footage</label>
-                        <input type="number" id="squareFootage" name="squareFootage" min="0" required>
+                        <input type="number" id="squareFootage" name="squareFootage" min="0" required autocomplete="off">
                     </div>
                     <div class="form-group">
                         <label for="floors" class="required-field">Number of Floors</label>
-                        <input type="number" id="floors" name="floors" min="1" required>
+                        <input type="number" id="floors" name="floors" min="1" required autocomplete="off">
                     </div>
                 </div>
             </fieldset>
@@ -969,32 +938,24 @@
                         <label>Which data points are available in your BMS? <span class="info-tooltip" data-tooltip="These data points are critical for the virtual metering approach, which allows us to measure energy savings without installing additional hardware.">i</span></label>
                         <div class="checkbox-group">
                             <div class="checkbox-option">
-                                <input type="checkbox" id="bmsDataFanSpeed" name="bmsDataPoints" value="Fan Speed">
-                                <label for="bmsDataFanSpeed">Fan Speed</label>
+                                <input type="checkbox" id="bmsDataSupplyAirflow" name="bmsDataPoints" value="Supply Airflow">
+                                <label for="bmsDataSupplyAirflow">Supply Airflow <span class="info-tooltip" data-tooltip="Example: 3,200 CFM. The measured volume of air actually flowing through the duct system, captured by sensors rather than setpoints. Used to convert Outdoor Air percentage to actual volume.">i</span></label>
                             </div>
                             <div class="checkbox-option">
-                                <input type="checkbox" id="bmsDataStaticPressure" name="bmsDataPoints" value="Supply Duct Static Pressure">
-                                <label for="bmsDataStaticPressure">Supply Duct Static Pressure</label>
+                                <input type="checkbox" id="bmsDataFanSpeed" name="bmsDataPoints" value="Supply Fan Speed Setting">
+                                <label for="bmsDataFanSpeed">Supply Fan Speed Setting <span class="info-tooltip" data-tooltip="Example: 47 Hz. Used to estimate fan energy consumption (fan power is proportional to the cube of speed).">i</span></label>
                             </div>
                             <div class="checkbox-option">
                                 <input type="checkbox" id="bmsDataOADamper" name="bmsDataPoints" value="OA Damper Position">
-                                <label for="bmsDataOADamper">OA Damper Position</label>
-                            </div>
-                            <div class="checkbox-option">
-                                <input type="checkbox" id="bmsDataVAVDamper" name="bmsDataPoints" value="VAV Damper Positions">
-                                <label for="bmsDataVAVDamper">VAV Damper Positions</label>
+                                <label for="bmsDataOADamper">OA Damper Position <span class="info-tooltip" data-tooltip="Example: 68% open. Indicates the outdoor air intake level for managing ventilation load.">i</span></label>
                             </div>
                             <div class="checkbox-option">
                                 <input type="checkbox" id="bmsDataSupplyTemp" name="bmsDataPoints" value="Supply Air Temperature">
-                                <label for="bmsDataSupplyTemp">Supply Air Temperature</label>
+                                <label for="bmsDataSupplyTemp">Supply Air Temperature <span class="info-tooltip" data-tooltip="Example: 55°F. Shows the temperature of air delivered to the occupied spaces, indicating thermal energy delivery.">i</span></label>
                             </div>
                             <div class="checkbox-option">
-                                <input type="checkbox" id="bmsDataReturnTemp" name="bmsDataPoints" value="Return Air Temperature">
-                                <label for="bmsDataReturnTemp">Return Air Temperature</label>
-                            </div>
-                            <div class="checkbox-option">
-                                <input type="checkbox" id="bmsDataMixedTemp" name="bmsDataPoints" value="Mixed Air Temperature">
-                                <label for="bmsDataMixedTemp">Mixed Air Temperature</label>
+                                <input type="checkbox" id="bmsDataZoneTempSetpoint" name="bmsDataPoints" value="Zone Temperature Setpoint">
+                                <label for="bmsDataZoneTempSetpoint">Zone Temperature Setpoint <span class="info-tooltip" data-tooltip="Example: 65°F. Determines heating or cooling settings to maintain comfort within the building zones.">i</span></label>
                             </div>
                         </div>
                     </div>
@@ -1006,12 +967,12 @@
 
                     <div class="form-group">
                         <label for="ahuCount">Number of AHUs</label>
-                        <input type="number" id="ahuCount" name="ahuCount" min="0">
+                        <input type="number" id="ahuCount" name="ahuCount" min="0" autocomplete="off">
                     </div>
 
                     <div class="form-group">
                         <label for="floorsPerAHU">How many floors each AHU serves</label>
-                        <input type="text" id="floorsPerAHU" name="floorsPerAHU">
+                        <input type="text" id="floorsPerAHU" name="floorsPerAHU" autocomplete="off">
                     </div>
 
                     <div class="form-group">
@@ -1068,7 +1029,7 @@
 
                     <div class="form-group">
                         <label for="terminalUnitCount">Number of terminal units</label>
-                        <input type="number" id="terminalUnitCount" name="terminalUnitCount" min="0">
+                        <input type="number" id="terminalUnitCount" name="terminalUnitCount" min="0" autocomplete="off">
                     </div>
 
                     <div class="form-group">
@@ -1137,12 +1098,12 @@
                     <div id="knowPilotFloorYesDiv" class="conditional-section">
                         <div class="form-group">
                             <label for="pilotFloors">Pilot Floor(s)</label>
-                            <input type="text" id="pilotFloors" name="pilotFloors">
+                            <input type="text" id="pilotFloors" name="pilotFloors" autocomplete="off">
                         </div>
 
                         <div class="form-group">
                             <label for="pilotAreaSquareFootage">Pilot Area Square Footage</label>
-                            <input type="number" id="pilotAreaSquareFootage" name="pilotAreaSquareFootage" min="0">
+                            <input type="number" id="pilotAreaSquareFootage" name="pilotAreaSquareFootage" min="0" autocomplete="off">
                         </div>
 
                         <div class="form-group">
@@ -1202,114 +1163,12 @@
                     <button type="button" id="prevBtn">Previous</button>
                     <button type="button" id="demoBtn" class="demo-btn">Load Demo Data</button>
                 </div>
-                <button type="button" id="nextBtn">Next</button>
-                <button type="submit" id="submitBtn" style="display: none;">Submit</button>
+                <button type="button" id="nextBtn" disabled>Next</button>
+                <button type="submit" id="submitBtn" style="display: none;" disabled>Submit</button>
             </div>
         </form>
     </div>
 
-    <!-- Modified Google Maps script with improved address field implementation -->
-    <script>
-        // Initialize Google Places Autocomplete with improved handling
-        function initAutocomplete() {
-            const addressField = document.getElementById('address');
-            const toggleBtn = document.getElementById('toggleAddressMode');
-            const modeIndicator = document.getElementById('addressMode');
-            
-            let autocompleteEnabled = true;
-            let autocomplete = null;
-            
-            // Function to enable autocomplete
-            function enableAutocomplete() {
-                // Set attribute to prevent browser autocomplete from interfering
-                addressField.setAttribute('autocomplete', 'new-address');
-                
-                // Initialize Google Places Autocomplete
-                autocomplete = new google.maps.places.Autocomplete(addressField, {
-                    types: ['address'],
-                    componentRestrictions: { country: ["us", "ca"] }
-                });
-                
-                // Store original input value when user types
-                let userTypedValue = '';
-                addressField.addEventListener('input', function() {
-                    userTypedValue = this.value;
-                });
-                
-                // Handle place selection
-                autocomplete.addListener('place_changed', function() {
-                    const place = autocomplete.getPlace();
-                    if (!place.geometry) {
-                        // User entered text but didn't select a suggestion
-                        addressField.value = userTypedValue;
-                        return;
-                    }
-                    // User selected a place from dropdown
-                    addressField.value = place.formatted_address || userTypedValue;
-                });
-                
-                // Update UI
-                toggleBtn.textContent = 'Switch to manual entry';
-                modeIndicator.textContent = 'Autocomplete enabled';
-                autocompleteEnabled = true;
-            }
-            
-            // Function to disable autocomplete
-            function disableAutocomplete() {
-                if (autocomplete) {
-                    // Remove all Google Maps event listeners
-                    google.maps.event.clearInstanceListeners(addressField);
-                    autocomplete = null;
-                }
-                
-                // Set standard autocomplete attribute to "off"
-                addressField.setAttribute('autocomplete', 'off');
-                
-                // Update UI
-                toggleBtn.textContent = 'Enable address suggestions';
-                modeIndicator.textContent = 'Manual entry mode';
-                autocompleteEnabled = false;
-            }
-            
-            // Toggle button click handler
-            if (toggleBtn) {
-                toggleBtn.addEventListener('click', function() {
-                    if (autocompleteEnabled) {
-                        disableAutocomplete();
-                    } else {
-                        enableAutocomplete();
-                    }
-                });
-            }
-            
-            // Initialize autocomplete on page load
-            if (addressField && window.google && window.google.maps && window.google.maps.places) {
-                enableAutocomplete();
-            } else {
-                // Google API not loaded or element not found
-                if (toggleBtn) toggleBtn.style.display = 'none';
-                if (modeIndicator) modeIndicator.textContent = 'Manual address entry';
-            }
-        }
-
-        // Load Google Maps API with callback
-        document.addEventListener('DOMContentLoaded', function() {
-            // Check if Google Maps script already exists
-            if (!document.getElementById('google-maps-script')) {
-                const script = document.createElement('script');
-                script.id = 'google-maps-script';
-                script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyDvGee7gI4jQO3OjGXhtkMmWRP865F2kAU&libraries=places&callback=initAutocomplete';
-                script.async = true;
-                script.defer = true;
-                document.head.appendChild(script);
-            } else {
-                // If script exists, try to initialize autocomplete directly
-                if (typeof google !== 'undefined' && google.maps && google.maps.places) {
-                    initAutocomplete();
-                }
-            }
-        });
-    </script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             // R-Zero Branding Configuration
@@ -1425,7 +1284,7 @@
                 "York": ["Solution™ Series", "York Custom AHU", "YK", "YZ", "Other York"],
                 "Goodman": ["Commercial Series", "Other Goodman"],
                 "McQuay": ["Vision", "Skyline", "Other McQuay"],
-                "Other": ["Specify in notes"]
+                "Other": ["Other"]
             };
 
             // Define Terminal Unit manufacturer → model relationships
@@ -1437,7 +1296,7 @@
                 "Honeywell": ["Spyder Series", "Other Honeywell"],
                 "Price Industries": ["SDV Series", "SDVQ Series", "MCV Series", "FDV Series", "Other Price"],
                 "Nailor": ["Series 3000", "Series 3500", "Series 3600", "Series 3800", "Other Nailor"],
-                "Other": ["Specify in notes"]
+                "Other": ["Other"]
             };
 
             setupNavigation();
@@ -1449,11 +1308,48 @@
             setupProgressClicks();
             setupHashNavigation();
             setupThousandsSeparator();
+            setupAddressField();
             restoreFormData();
+            updateButtonDisplay();
 
             // Check URL hash on initial load to determine which step to show
             const initialStep = getStepFromHash() || formState.currentStep;
             updateStep(initialStep);
+
+            function setupAddressField() {
+                // Wait for the Google Places API to load
+                window.initMap = function() {
+                    const addressField = document.querySelector('gmp-place-autocomplete');
+                    if (!addressField) return;
+                    
+                    addressField.addEventListener('gmp-placeautocomplete:place_changed', () => {
+                        const selectedAddress = addressField.getFormattedAddress();
+                        document.getElementById('addressValue').value = selectedAddress;
+                        
+                        // Clear validation error if present
+                        addressField.classList.remove('validation-error');
+                        
+                        // Validate form step to update button state
+                        validateFormStep();
+                    });
+                    
+                    // Allow manual entry by monitoring changes
+                    addressField.addEventListener('input', () => {
+                        document.getElementById('addressValue').value = addressField.getFormattedAddress() || addressField.value;
+                        validateFormStep();
+                    });
+                };
+                
+                // Load Google Maps API
+                if (!document.getElementById('google-maps-script')) {
+                    const script = document.createElement('script');
+                    script.id = 'google-maps-script';
+                    script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyDvGee7gI4jQO3OjGXhtkMmWRP865F2kAU&libraries=places&callback=initMap';
+                    script.async = true;
+                    script.defer = true;
+                    document.head.appendChild(script);
+                }
+            }
 
             function setupNavigation() {
                 prevBtn.addEventListener('click', () => {
@@ -1461,6 +1357,7 @@
                         formState.currentStep--;
                         updateStep(formState.currentStep);
                         updateUrlHash(formState.currentStep);
+                        updateButtonDisplay();
                     }
                 });
                 nextBtn.addEventListener('click', () => {
@@ -1470,16 +1367,24 @@
                         if (formState.currentStep <= 4) {
                             updateStep(formState.currentStep);
                             updateUrlHash(formState.currentStep);
+                            updateButtonDisplay();
                         } else {
                             showReviewStep();
                             updateUrlHash('review');
+                            updateButtonDisplay();
                         }
+                    } else {
+                        // Highlight all required fields that are not filled
+                        highlightIncompleteFields(formState.currentStep);
                     }
                 });
                 submitBtn.addEventListener('click', (e) => {
                     e.preventDefault();
                     if (validateStep(3)) {
                         submitForm();
+                    } else {
+                        // Highlight all required fields that are not filled
+                        highlightIncompleteFields(formState.currentStep);
                     }
                 });
             }
@@ -1495,6 +1400,7 @@
                             formState.currentStep = targetStep;
                             updateStep(targetStep);
                             updateUrlHash(targetStep);
+                            updateButtonDisplay();
                         } 
                         // For Implementation Details (step 3), only allow if HVAC System is completed
                         else if (targetStep === 3) {
@@ -1505,6 +1411,7 @@
                                 formState.currentStep = targetStep;
                                 updateStep(targetStep);
                                 updateUrlHash(targetStep);
+                                updateButtonDisplay();
                             } else {
                                 // Show message that HVAC systems need to be completed first
                                 showStatus('Please complete the HVAC System questions first.', 'error');
@@ -1515,6 +1422,7 @@
                             formState.currentStep = targetStep;
                             updateStep(targetStep);
                             updateUrlHash(targetStep);
+                            updateButtonDisplay();
                         }
                     });
                 });
@@ -1547,6 +1455,7 @@
                         
                         formState.currentStep = stepFromHash;
                         updateStep(stepFromHash);
+                        updateButtonDisplay();
                     }
                 });
             }
@@ -1620,6 +1529,9 @@
                 nextBtn.style.display = step < 4 ? 'inline-block' : 'none';
                 submitBtn.style.display = (step === 4) ? 'inline-block' : 'none';
 
+                // Show Demo button only on step 1
+                demoBtn.style.display = step === 1 ? 'inline-block' : 'none';
+
                 if (step >= 4) {
                     nextBtn.style.display = 'none';
                 }
@@ -1631,6 +1543,9 @@
                 }
 
                 window.scrollTo({ top: 0, behavior: 'smooth' });
+                
+                // Update button state based on validation
+                validateFormStep();
             }
          
             function setupConditionalFields() {
@@ -1642,6 +1557,7 @@
                         
                         toggleConditionalSection(bmsDetailsSection, this.value === 'Yes');
                         toggleConditionalSection(bmsDataPointsSection, this.value === 'Yes');
+                        validateFormStep();
                     });
                 });
 
@@ -1651,6 +1567,7 @@
                         const ahuDetailsSection = document.getElementById('ahuDetailsSection');
                         
                         toggleConditionalSection(ahuDetailsSection, this.value === 'Yes');
+                        validateFormStep();
                     });
                 });
 
@@ -1659,6 +1576,7 @@
                     radio.addEventListener('change', function () {
                         const terminalUnitDetailsSection = document.getElementById('terminalUnitDetailsSection');
                         toggleConditionalSection(terminalUnitDetailsSection, this.value === 'Yes');
+                        validateFormStep();
                     });
                 });
 
@@ -1667,6 +1585,7 @@
                     radio.addEventListener('change', function () {
                         const pilotDetailsYesSection = document.getElementById('knowPilotFloorYesDiv');
                         toggleConditionalSection(pilotDetailsYesSection, this.value === 'Yes');
+                        validateFormStep();
                     });
                 });
 
@@ -1702,15 +1621,10 @@
                 if (bmsManufacturer && bmsPlatform) {
                     bmsManufacturer.addEventListener('change', function () {
                         updateBMSPlatforms(this.value);
-
-                        // Show reset notification
-                        showResetNotification(this, 'Platform options updated');
+                        validateFormStep();
                     });
 
-                    bmsPlatform.addEventListener('change', function () {
-                        // Show reset notification
-                        showResetNotification(this, 'Options updated');
-                    });
+                    bmsPlatform.addEventListener('change', validateFormStep);
                 }
 
                 // AHU Manufacturer -> Model
@@ -1720,9 +1634,7 @@
                 if (ahuManufacturer && ahuModel) {
                     ahuManufacturer.addEventListener('change', function () {
                         updateAHUModels(this.value);
-
-                        // Show reset notification
-                        showResetNotification(this, 'Model options updated');
+                        validateFormStep();
                     });
                 }
 
@@ -1733,30 +1645,8 @@
                 if (terminalUnitManufacturer && terminalUnitModel) {
                     terminalUnitManufacturer.addEventListener('change', function () {
                         updateTerminalUnitModels(this.value);
-
-                        // Show reset notification
-                        showResetNotification(this, 'Model options updated');
+                        validateFormStep();
                     });
-                }
-
-                // Function to show a temporary reset notification
-                function showResetNotification(element, message) {
-                    // Remove any existing notification
-                    const existingNotification = element.parentNode.querySelector('.reset-message');
-                    if (existingNotification) {
-                        existingNotification.remove();
-                    }
-
-                    // Create and add the notification
-                    const notification = document.createElement('span');
-                    notification.className = 'reset-message';
-                    notification.textContent = message;
-                    element.insertAdjacentElement('afterend', notification);
-
-                    // Remove the notification after a few seconds
-                    setTimeout(() => {
-                        notification.remove();
-                    }, 3000);
                 }
             }
 
@@ -1873,59 +1763,91 @@
                 }
             }
 
-            // Modified validation to only show errors when clicking Next
+            // Setup form validation
             function setupValidation() {
-                // Only clear errors on input, don't validate on blur
+                // Add event listeners to all form fields
                 form.querySelectorAll('input, select, textarea').forEach(field => {
-                    field.addEventListener('input', () => {
-                        clearError(field);
-                    });
-
-                    // Special handling for required dropdowns
-                    if (field.tagName === 'SELECT' && field.required) {
-                        field.addEventListener('change', () => {
-                            clearError(field);
-                        });
-                    }
-                });
-
-                // Add validation for square footage per floor ratio
-                const squareFootage = document.getElementById('squareFootage');
-                const floors = document.getElementById('floors');
-                if (squareFootage && floors) {
-                    squareFootage.addEventListener('input', () => {
-                        clearError(squareFootage);
+                    field.addEventListener('input', function() {
+                        this.classList.remove('validation-error');
+                        validateFormStep();
                     });
                     
-                    floors.addEventListener('input', () => {
-                        clearError(floors);
+                    field.addEventListener('change', function() {
+                        this.classList.remove('validation-error');
+                        validateFormStep();
                     });
+                });
+                
+                // Special handling for radio buttons
+                form.querySelectorAll('input[type="radio"]').forEach(radio => {
+                    radio.addEventListener('change', function() {
+                        // Remove validation-error class from all radio options in the same group
+                        const name = this.name;
+                        document.querySelectorAll(`.radio-option input[name="${name}"]`).forEach(r => {
+                            r.closest('.radio-option').classList.remove('validation-error');
+                        });
+                        validateFormStep();
+                    });
+                });
+            }
+
+            // Validate the current form step and update button state
+            function validateFormStep() {
+                const currentStepElem = document.querySelector(`.form-step:not([style*="display: none"])`);
+                if (!currentStepElem) return;
+                
+                const isValid = validateStep(formState.currentStep, false);
+                
+                // Update next/submit button state
+                if (formState.currentStep < 4) {
+                    nextBtn.disabled = !isValid;
+                    nextBtn.classList.toggle('btn-custom', isValid);
+                } else {
+                    submitBtn.disabled = !isValid;
+                    submitBtn.classList.toggle('btn-custom', isValid);
                 }
             }
 
-            function validateField(field) {
+            function validateField(field, highlightErrors = false) {
                 // Only validate if required and not disabled or hidden
                 if (field.disabled || field.closest('.conditional-section')?.style.display === 'none' ||
                     (field.closest('.conditional-section') && !field.closest('.conditional-section').classList.contains('show'))) {
                     return true;
                 }
 
+                // For address field (either the gmp component or the hidden value)
+                if (field.id === 'addressValue' && field.hasAttribute('required')) {
+                    const isEmpty = !field.value.trim();
+                    if (isEmpty && highlightErrors) {
+                        // Find the visible address field and highlight it
+                        const visibleAddressField = document.querySelector('gmp-place-autocomplete');
+                        if (visibleAddressField) {
+                            visibleAddressField.classList.add('validation-error');
+                        }
+                    }
+                    return !isEmpty;
+                }
+
                 // Check if field is required and empty
                 if (field.required && !field.value.trim()) {
-                    showError(field, "This field is required.");
+                    if (highlightErrors) {
+                        field.classList.add('validation-error');
+                    }
                     return false;
                 }
 
                 // Check email format if it's an email field
                 if (field.type === "email" && field.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(field.value)) {
-                    showError(field, "Please enter a valid email.");
+                    if (highlightErrors) {
+                        field.classList.add('validation-error');
+                    }
                     return false;
                 }
 
                 return true;
             }
 
-            function validateStep(step) {
+            function validateStep(step, highlightErrors = false) {
                 let isValid = true;
                 const currentStep = document.querySelector(`.form-step:nth-child(${step})`);
                 
@@ -1952,18 +1874,18 @@
                         
                         if (!isChecked) {
                             isValid = false;
-                            // Get parent form-group to show error
-                            const formGroup = field.closest('.form-group');
-                            if (formGroup) {
-                                const label = formGroup.querySelector('label');
-                                if (label) {
-                                    showError(radioGroup[0], `Please select an option for ${label.textContent.replace('*', '').trim()}`);
-                                } else {
-                                    showError(radioGroup[0], "Please select an option");
-                                }
+                            
+                            if (highlightErrors) {
+                                // Highlight all radio options in this group
+                                radioGroup.forEach(radio => {
+                                    const radioOption = radio.closest('.radio-option');
+                                    if (radioOption) {
+                                        radioOption.classList.add('validation-error');
+                                    }
+                                });
                             }
                         }
-                    } else if (!validateField(field)) {
+                    } else if (!validateField(field, highlightErrors)) {
                         isValid = false;
                     }
                 });
@@ -1977,7 +1899,16 @@
                         const hasVfd = document.querySelector('input[name="hasVfd"]:checked');
                         if (!hasVfd) {
                             isValid = false;
-                            showError(document.getElementById('hasVfdAll'), 'Please select an option for VFD usage.');
+                            
+                            if (highlightErrors) {
+                                // Highlight all VFD radio options
+                                document.querySelectorAll('input[name="hasVfd"]').forEach(radio => {
+                                    const radioOption = radio.closest('.radio-option');
+                                    if (radioOption) {
+                                        radioOption.classList.add('validation-error');
+                                    }
+                                });
+                            }
                         }
                     }
                 }
@@ -1990,27 +1921,19 @@
                     if (squareFootage && floors && 
                         squareFootage.value && floors.value && 
                         squareFootage.value / floors.value < 100) {
-                        showError(squareFootage, 'Square footage per floor seems unusually low.');
                         isValid = false;
+                        
+                        if (highlightErrors) {
+                            squareFootage.classList.add('validation-error');
+                        }
                     }
                 }
                 
                 return isValid;
             }
 
-            function showError(field, message) {
-                clearError(field);
-                field.classList.add('error');
-                const error = document.createElement('div');
-                error.className = 'error';
-                error.textContent = message;
-                field.parentElement.appendChild(error);
-            }
-
-            function clearError(field) {
-                field.classList.remove('error');
-                const error = field.parentElement.querySelector('.error');
-                if (error) error.remove();
+            function highlightIncompleteFields(step) {
+                validateStep(step, true);
             }
 
             function showStatus(message, type) {
@@ -2151,6 +2074,9 @@
                     ]
                 };
 
+                // Special handling for address field (get value from hidden field)
+                formValues['address'] = document.getElementById('addressValue').value;
+
                 // Collect all values first
                 for (let [key, value] of formData) {
                     if (value && value !== '' && !key.includes('file')) {
@@ -2217,6 +2143,12 @@
             }
 
             function submitForm() {
+                // Get address from the Google Places autocomplete component
+                const addressField = document.querySelector('gmp-place-autocomplete');
+                if (addressField) {
+                    document.getElementById('addressValue').value = addressField.getFormattedAddress() || addressField.value;
+                }
+
                 // Strip commas from squareFootage before submission
                 const squareFootageField = document.getElementById('squareFootage');
                 if (squareFootageField) {
@@ -2327,6 +2259,9 @@
                     const formData = new FormData(form);
                     const data = {};
                     for (let [key, value] of formData) {
+                        // Skip address field - don't save to localStorage
+                        if (key === 'address') continue;
+                        
                         // Strip commas from squareFootage before saving to localStorage
                         if (key === 'squareFootage' && value) {
                             value = value.replace(/,/g, '');
@@ -2339,6 +2274,12 @@
                         document.querySelectorAll('input[name="bmsDataPoints"]:checked')
                     ).map(cb => cb.value);
                     data.bmsDataPoints = checkboxValues;
+                    
+                    // Add address from hidden field
+                    const addressValueField = document.getElementById('addressValue');
+                    if (addressValueField && addressValueField.value) {
+                        data.address = addressValueField.value;
+                    }
                     
                     data.currentStep = formState.currentStep;
                     data.completedSteps = formState.completedSteps;
@@ -2410,6 +2351,12 @@
                                         checkbox.checked = true;
                                     }
                                 });
+                            } else if (key === 'address') {
+                                // For address field, set hidden input value
+                                const addressValueField = document.getElementById('addressValue');
+                                if (addressValueField) {
+                                    addressValueField.value = value;
+                                }
                             } else {
                                 const field = form.querySelector(`[name="${key}"]`);
                                 if (field) {
@@ -2553,6 +2500,12 @@
                 });
             }
 
+            // Update button display (show demo button only on step 1)
+            function updateButtonDisplay() {
+                demoBtn.style.display = formState.currentStep === 1 ? 'inline-block' : 'none';
+                validateFormStep();
+            }
+
             // Modified setupDemoMode to not populate address field
             function setupDemoMode() {
                 demoBtn.addEventListener('click', () => {
@@ -2564,7 +2517,6 @@
                         jobTitle: 'hvac_engineer',
                         organization: 'Demo Corp',
                         orgType: 'Owner',
-                        // Intentionally omitting the address field
                         buildingType: 'office',
                         buildingOperatingHours: 'standard',
                         squareFootage: '10000',
@@ -2590,7 +2542,7 @@
                         expectedBenefits: 'Reduce energy costs by 20% while maintaining comfort.'
                     };
 
-                    // Apply demo data to form
+                    // Apply demo data to form fields
                     Object.entries(demoData).forEach(([key, value]) => {
                         const field = form.querySelector(`[name="${key}"]`);
                         if (field) {
@@ -2607,115 +2559,15 @@
                         }
                     });
 
-                    // Check multiple checkboxes for BMS data points
-                    const bmsDataPoints = [
-                        'Fan Speed',
-                        'Supply Duct Static Pressure',
-                        'OA Damper Position',
-                        'Supply Air Temperature',
-                        'Return Air Temperature'
-                    ];
-                    
-                    bmsDataPoints.forEach(dataPoint => {
-                        const checkbox = document.querySelector(`input[name="bmsDataPoints"][value="${dataPoint}"]`);
-                        if (checkbox) {
-                            checkbox.checked = true;
-                        }
-                    });
-
                     // Initialize cascading dropdowns with demo values
                     initCascadingValues();
-                });
-            }
-        });
-
-        document.addEventListener('DOMContentLoaded', function () {
-            const nextBtn = document.getElementById('nextBtn');
-            const prevBtn = document.getElementById('prevBtn');
-            
-            function getVisibleStep() {
-                return document.querySelector('.form-step:not([style*="display: none"])');
-            }
-
-            function validateVisibleStep() {
-                const currentStep = getVisibleStep();
-                if (!currentStep) return;
-
-                const requiredFields = currentStep.querySelectorAll('[required]');
-                let isValid = true;
-                const checkedRadioGroups = new Set();
-
-                requiredFields.forEach(field => {
-                    if (field.type === 'radio') {
-                        if (!checkedRadioGroups.has(field.name)) {
-                            const radios = currentStep.querySelectorAll(`input[type="radio"][name="${field.name}"]`);
-                            const oneChecked = Array.from(radios).some(r => r.checked);
-                            if (!oneChecked) {
-                                isValid = false;
-                                // Don't add error class here, only check
-                            }
-                            checkedRadioGroups.add(field.name);
-                        }
-                    } else {
-                        if (!field.value.trim()) {
-                            isValid = false;
-                            // Don't add error class here, only check
-                        }
-                    }
-                });
-
-                if (isValid) {
-                    nextBtn.removeAttribute('disabled');
-                    nextBtn.classList.add('btn-custom');
-                    // Add active class to previous button when form is valid
-                    prevBtn.classList.add('active-nav-btn');
-                } else {
-                    nextBtn.removeAttribute('disabled'); // Still allow clicking, validation happens on click
-                    nextBtn.classList.add('btn-custom');
-                    // Keep previous button active
-                    prevBtn.classList.add('active-nav-btn');
-                }
-            }
-
-            function bindValidationListeners(step) {
-                const fields = step.querySelectorAll('input, select, textarea');
-                fields.forEach(field => {
-                    // Only handle clearing errors on input, not validation
-                    field.addEventListener('input', () => {
-                        field.classList.remove('error');
-                        const errorMsg = field.parentElement.querySelector('.error');
-                        if (errorMsg) errorMsg.remove();
-                    });
                     
-                    field.addEventListener('change', () => {
-                        field.classList.remove('error');
-                        const errorMsg = field.parentElement.querySelector('.error');
-                        if (errorMsg) errorMsg.remove();
-                    });
+                    // Update button state
+                    validateFormStep();
                 });
-            }
-
-            // Observe runtime display changes to re-bind and re-validate
-            const observer = new MutationObserver(() => {
-                const currentStep = getVisibleStep();
-                if (currentStep) {
-                    bindValidationListeners(currentStep);
-                    validateVisibleStep();
-                }
-            });
-
-            const allSteps = document.querySelectorAll('.form-step');
-            allSteps.forEach(step => {
-                observer.observe(step, { attributes: true, attributeFilter: ['style'] });
-            });
-
-            // Initial setup
-            const currentStep = getVisibleStep();
-            if (currentStep) {
-                bindValidationListeners(currentStep);
-                validateVisibleStep();
             }
         });
     </script>
+    <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDvGee7gI4jQO3OjGXhtkMmWRP865F2kAU&libraries=places&callback=initMap"></script>
 </body>
 </html>
