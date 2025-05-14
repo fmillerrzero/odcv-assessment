@@ -8,6 +8,9 @@
     <title>O-DCV Assessment Form | R-Zero</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- Add Google Maps Web Components library -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDvGee7gI4jQO3OjGXhtkMmWRP865F2kAU&libraries=places"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@googlemaps/extended-component-library"></script>
     <style>
         :root {
             --primary: #00769d;
@@ -663,11 +666,25 @@
         }
         
         /* FIX: Address input field styling to ensure it displays properly */
-        #address, gmp-place-autocomplete {
+        gmp-place-autocomplete {
             width: 100% !important;
             z-index: 1;
             position: relative;
             min-height: 52px;
+            display: block;
+        }
+        
+        /* Style for the place autocomplete input inside the component */
+        gmp-place-autocomplete input {
+            width: 100%;
+            padding: 0.85rem 1rem;
+            box-sizing: border-box;
+            border: 1px solid #e0e5ec;
+            border-radius: var(--radius-sm);
+            font-size: 1rem;
+            font-family: var(--font-family);
+            background-color: #fafbfc;
+            color: var(--text);
         }
         
         /* Disabled button styling */
@@ -681,7 +698,8 @@
         input.validation-error, 
         select.validation-error,
         textarea.validation-error,
-        .radio-option.validation-error {
+        .radio-option.validation-error,
+        gmp-place-autocomplete.validation-error input {
             border: 1px solid var(--error);
             background-color: rgba(229, 62, 62, 0.05);
         }
@@ -689,6 +707,12 @@
         /* Hidden with display:none */
         .hidden {
             display: none !important;
+        }
+        
+        /* Google Place Autocomplete field specific styles */
+        .address-field-container {
+            position: relative;
+            width: 100%;
         }
     </style>
 </head>
@@ -775,9 +799,13 @@
                 <div class="form-section">
                     <h3>Building</h3>
                     <div class="form-group">
-                        <label for="address" class="required-field">Address</label>
-                        <gmp-place-autocomplete id="address" placeholder="Enter an address" country="us,ca" types="address"></gmp-place-autocomplete>
-                        <input type="hidden" name="address" id="addressValue" required>
+                        <label for="addressInput" class="required-field">Address</label>
+                        <div class="address-field-container">
+                            <gmp-place-autocomplete class="gmp-place-field" id="addressAutocomplete">
+                                <input id="addressInput" placeholder="Enter an address" required>
+                            </gmp-place-autocomplete>
+                            <input type="hidden" name="address" id="addressValue" required>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="buildingType" class="required-field">Type</label>
@@ -1299,6 +1327,9 @@
                 "Other": ["Other"]
             };
 
+            // Setup Google Maps Place Autocomplete
+            setupAddressField();
+            
             setupNavigation();
             setupConditionalFields();
             setupCascadingSelects();
@@ -1308,7 +1339,6 @@
             setupProgressClicks();
             setupHashNavigation();
             setupThousandsSeparator();
-            setupAddressField();
             restoreFormData();
             updateButtonDisplay();
 
@@ -1316,39 +1346,41 @@
             const initialStep = getStepFromHash() || formState.currentStep;
             updateStep(initialStep);
 
+            // Setup Google Maps Place Autocomplete
             function setupAddressField() {
-                // Wait for the Google Places API to load
-                window.initMap = function() {
-                    const addressField = document.querySelector('gmp-place-autocomplete');
-                    if (!addressField) return;
+                // Wait for the components to be fully loaded
+                const checkForComponents = setInterval(function() {
+                    const autocomplete = document.getElementById('addressAutocomplete');
+                    const addressInput = document.getElementById('addressInput');
                     
-                    addressField.addEventListener('gmp-placeautocomplete:place_changed', () => {
-                        const selectedAddress = addressField.getFormattedAddress();
-                        document.getElementById('addressValue').value = selectedAddress;
+                    if (autocomplete && addressInput && typeof google !== 'undefined' && google.maps && google.maps.places) {
+                        clearInterval(checkForComponents);
                         
-                        // Clear validation error if present
-                        addressField.classList.remove('validation-error');
+                        // Set restrictions to limit to US and Canada
+                        autocomplete.countries = ["us", "ca"];
                         
-                        // Validate form step to update button state
-                        validateFormStep();
-                    });
-                    
-                    // Allow manual entry by monitoring changes
-                    addressField.addEventListener('input', () => {
-                        document.getElementById('addressValue').value = addressField.getFormattedAddress() || addressField.value;
-                        validateFormStep();
-                    });
-                };
-                
-                // Load Google Maps API
-                if (!document.getElementById('google-maps-script')) {
-                    const script = document.createElement('script');
-                    script.id = 'google-maps-script';
-                    script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyDvGee7gI4jQO3OjGXhtkMmWRP865F2kAU&libraries=places&callback=initMap';
-                    script.async = true;
-                    script.defer = true;
-                    document.head.appendChild(script);
-                }
+                        // Add event listener for place selection
+                        autocomplete.addEventListener('gmp-placeselect', function() {
+                            const place = autocomplete.getPlace();
+                            if (place && place.formattedAddress) {
+                                // Update the hidden field with the formatted address
+                                document.getElementById('addressValue').value = place.formattedAddress;
+                                
+                                // Clear validation error if present
+                                addressInput.classList.remove('validation-error');
+                                
+                                // Validate form
+                                validateFormStep();
+                            }
+                        });
+                        
+                        // Allow manual entry
+                        addressInput.addEventListener('input', function() {
+                            document.getElementById('addressValue').value = this.value;
+                            validateFormStep();
+                        });
+                    }
+                }, 500);
             }
 
             function setupNavigation() {
@@ -1815,12 +1847,12 @@
                     return true;
                 }
 
-                // For address field (either the gmp component or the hidden value)
+                // For address field (the hidden field)
                 if (field.id === 'addressValue' && field.hasAttribute('required')) {
                     const isEmpty = !field.value.trim();
                     if (isEmpty && highlightErrors) {
-                        // Find the visible address field and highlight it
-                        const visibleAddressField = document.querySelector('gmp-place-autocomplete');
+                        // Find the visible address input and highlight it
+                        const visibleAddressField = document.getElementById('addressInput');
                         if (visibleAddressField) {
                             visibleAddressField.classList.add('validation-error');
                         }
@@ -2074,7 +2106,7 @@
                     ]
                 };
 
-                // Special handling for address field (get value from hidden field)
+                // Get address from the hidden field
                 formValues['address'] = document.getElementById('addressValue').value;
 
                 // Collect all values first
@@ -2143,10 +2175,13 @@
             }
 
             function submitForm() {
-                // Get address from the Google Places autocomplete component
-                const addressField = document.querySelector('gmp-place-autocomplete');
-                if (addressField) {
-                    document.getElementById('addressValue').value = addressField.getFormattedAddress() || addressField.value;
+                // Get address from the address input
+                const addressValueField = document.getElementById('addressValue');
+                const addressInput = document.getElementById('addressInput');
+                
+                // Ensure we have the latest address value
+                if (addressInput && addressInput.value && !addressValueField.value) {
+                    addressValueField.value = addressInput.value;
                 }
 
                 // Strip commas from squareFootage before submission
@@ -2258,10 +2293,8 @@
                 form.addEventListener('change', () => {
                     const formData = new FormData(form);
                     const data = {};
+                    
                     for (let [key, value] of formData) {
-                        // Skip address field - don't save to localStorage
-                        if (key === 'address') continue;
-                        
                         // Strip commas from squareFootage before saving to localStorage
                         if (key === 'squareFootage' && value) {
                             value = value.replace(/,/g, '');
@@ -2275,10 +2308,14 @@
                     ).map(cb => cb.value);
                     data.bmsDataPoints = checkboxValues;
                     
-                    // Add address from hidden field
+                    // Add address from hidden field and input
                     const addressValueField = document.getElementById('addressValue');
+                    const addressInput = document.getElementById('addressInput');
+                    
                     if (addressValueField && addressValueField.value) {
                         data.address = addressValueField.value;
+                    } else if (addressInput && addressInput.value) {
+                        data.address = addressInput.value;
                     }
                     
                     data.currentStep = formState.currentStep;
@@ -2298,6 +2335,16 @@
                         localStorage.setItem('odcvFormData', JSON.stringify(formData));
                     });
                 });
+                
+                // Special handling for address input
+                const addressInput = document.getElementById('addressInput');
+                if (addressInput) {
+                    addressInput.addEventListener('input', function() {
+                        const formData = JSON.parse(localStorage.getItem('odcvFormData') || '{}');
+                        formData.address = this.value;
+                        localStorage.setItem('odcvFormData', JSON.stringify(formData));
+                    });
+                }
             }
 
             function setupThousandsSeparator() {
@@ -2352,10 +2399,16 @@
                                     }
                                 });
                             } else if (key === 'address') {
-                                // For address field, set hidden input value
+                                // For address field, set both the hidden field and visible input
                                 const addressValueField = document.getElementById('addressValue');
+                                const addressInput = document.getElementById('addressInput');
+                                
                                 if (addressValueField) {
                                     addressValueField.value = value;
+                                }
+                                
+                                if (addressInput) {
+                                    addressInput.value = value;
                                 }
                             } else {
                                 const field = form.querySelector(`[name="${key}"]`);
@@ -2568,6 +2621,5 @@
             }
         });
     </script>
-    <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDvGee7gI4jQO3OjGXhtkMmWRP865F2kAU&libraries=places&callback=initMap"></script>
 </body>
 </html>
