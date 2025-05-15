@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1356,12 +1355,27 @@
             function navigateTo(targetStep, options = {}) {
                 const { skipValidation = false, updateHash = true } = options;
                 
+                // Debug
+                console.log(`Attempting to navigate from ${formState.currentStep} to ${targetStep}`);
+                
                 // Validate current step if moving forward
                 if (targetStep > formState.currentStep && !skipValidation) {
                     if (!validateStep(formState.currentStep)) {
                         highlightIncompleteFields(formState.currentStep);
+                        console.log(`Validation failed for step ${formState.currentStep}`);
                         return false;
                     }
+                    
+                    // If navigating to step 3, make sure HVAC questions are answered
+                    if (targetStep === 3) {
+                        const hvacCompleted = areHvacQuestionsCompleted();
+                        if (!hvacCompleted) {
+                            showStatus('Please complete the HVAC System questions first.', 'error');
+                            console.log("Failed to navigate: HVAC questions not completed");
+                            return false;
+                        }
+                    }
+                    
                     formState.completedSteps[formState.currentStep - 1] = true;
                 }
                 
@@ -1380,6 +1394,13 @@
                 
                 // Scroll to top
                 window.scrollTo({ top: 0, behavior: 'smooth' });
+                
+                // Clear any error messages
+                const statusElement = document.getElementById('form-status');
+                if (statusElement) {
+                    statusElement.style.display = 'none';
+                }
+                
                 return true;
             }
 
@@ -1453,6 +1474,7 @@
                                 
                                 // Clear validation error if present
                                 addressInput.classList.remove('validation-error');
+                                autocomplete.classList.remove('validation-error');
                                 
                                 // Validate form
                                 updateButtonStates();
@@ -1464,6 +1486,11 @@
                             document.getElementById('addressValue').value = this.value;
                             updateButtonStates();
                         });
+                        
+                        // Fix any initial styling issues
+                        if (addressInput) {
+                            addressInput.style.height = '52px';
+                        }
                     }
                 }, 500);
             }
@@ -1501,6 +1528,12 @@
                     step.addEventListener('click', () => {
                         const targetStep = parseInt(step.dataset.step);
                         
+                        // Clear any previous status messages
+                        const statusElement = document.getElementById('form-status');
+                        if (statusElement) {
+                            statusElement.style.display = 'none';
+                        }
+                        
                         // Allow backward navigation freely
                         if (targetStep < formState.currentStep) {
                             navigateTo(targetStep, { skipValidation: true });
@@ -1520,7 +1553,10 @@
                         
                         // For step 3, check if step 2 is complete AND HVAC questions answered
                         if (targetStep === 3) {
-                            if (formState.completedSteps[1] && areHvacQuestionsCompleted()) {
+                            const hvacCompleted = areHvacQuestionsCompleted();
+                            console.log("HVAC Completed Check:", hvacCompleted);
+                            
+                            if (formState.completedSteps[1] && hvacCompleted) {
                                 navigateTo(targetStep, { skipValidation: true });
                             } else {
                                 showStatus('Please complete the HVAC System questions first.', 'error');
@@ -1540,7 +1576,14 @@
                 const hasAHU = document.querySelector('input[name="hasAHU"]:checked');
                 const hasTerminalUnits = document.querySelector('input[name="hasTerminalUnits"]:checked');
                 
-                return hasBMS && hasAHU && hasTerminalUnits;
+                // Debug to console to help diagnose the issue
+                console.log("HVAC Validation:", {
+                    hasBMS: hasBMS ? hasBMS.value : null,
+                    hasAHU: hasAHU ? hasAHU.value : null,
+                    hasTerminalUnits: hasTerminalUnits ? hasTerminalUnits.value : null
+                });
+                
+                return hasBMS !== null && hasAHU !== null && hasTerminalUnits !== null;
             }
 
             // Hash-based navigation setup 
@@ -1548,6 +1591,12 @@
                 window.addEventListener('hashchange', () => {
                     const stepFromHash = getStepFromHash();
                     if (!stepFromHash || stepFromHash === formState.currentStep) return;
+                    
+                    // Clear any previous status messages
+                    const statusElement = document.getElementById('form-status');
+                    if (statusElement) {
+                        statusElement.style.display = 'none';
+                    }
                     
                     // Allow backward navigation without validation
                     if (stepFromHash < formState.currentStep) {
@@ -1563,7 +1612,10 @@
                     
                     // For step 3, require HVAC questions to be completed
                     if (stepFromHash === 3) {
-                        if (formState.completedSteps[1] && areHvacQuestionsCompleted()) {
+                        const hvacCompleted = areHvacQuestionsCompleted();
+                        console.log("Hash Navigation - HVAC Completed:", hvacCompleted);
+                        
+                        if (formState.completedSteps[1] && hvacCompleted) {
                             navigateTo(stepFromHash, { skipValidation: true, updateHash: false });
                         } else {
                             showStatus('Please complete the HVAC System questions first.', 'error');
@@ -1600,6 +1652,11 @@
             }
 
             function updateButtonStates() {
+                // Debug logging
+                console.log("Current step:", formState.currentStep);
+                console.log("Completed steps:", formState.completedSteps);
+                console.log("HVAC completed:", areHvacQuestionsCompleted());
+                
                 const step = formState.currentStep;
                 
                 // Previous button
@@ -1628,6 +1685,15 @@
                 if (!currentStepElem) return true;
                 
                 let isValid = true;
+                
+                // For step 2 (HVAC), we just need to ensure all radio buttons are selected
+                if (formState.currentStep === 2) {
+                    const hasBMS = document.querySelector('input[name="hasBMS"]:checked');
+                    const hasAHU = document.querySelector('input[name="hasAHU"]:checked');
+                    const hasTerminalUnits = document.querySelector('input[name="hasTerminalUnits"]:checked');
+                    
+                    return hasBMS !== null && hasAHU !== null && hasTerminalUnits !== null;
+                }
                 
                 // Check required fields
                 const requiredFields = currentStepElem.querySelectorAll('[required]');
@@ -1899,6 +1965,11 @@
                     // Clear validation errors on user input
                     field.addEventListener('input', function() {
                         this.classList.remove('validation-error');
+                        // Clear error messages
+                        const statusElement = document.getElementById('form-status');
+                        if (statusElement && statusElement.style.display === 'block') {
+                            statusElement.style.display = 'none';
+                        }
                     });
                 });
                 
@@ -1907,6 +1978,11 @@
                 if (addressAutoComplete) {
                     addressAutoComplete.addEventListener('gmp-placeselect', function() {
                         updateButtonStates();
+                        // Clear error messages
+                        const statusElement = document.getElementById('form-status');
+                        if (statusElement && statusElement.style.display === 'block') {
+                            statusElement.style.display = 'none';
+                        }
                     });
                 }
                 
@@ -1919,6 +1995,11 @@
                             r.closest('.radio-option').classList.remove('validation-error');
                         });
                         updateButtonStates();
+                        // Clear error messages
+                        const statusElement = document.getElementById('form-status');
+                        if (statusElement && statusElement.style.display === 'block') {
+                            statusElement.style.display = 'none';
+                        }
                     });
                 });
             }
@@ -1936,8 +2017,12 @@
                     if (isEmpty && highlightErrors) {
                         // Find the visible address input and highlight it
                         const visibleAddressField = document.getElementById('addressInput');
+                        const autocomplete = document.getElementById('addressAutocomplete');
                         if (visibleAddressField) {
                             visibleAddressField.classList.add('validation-error');
+                        }
+                        if (autocomplete) {
+                            autocomplete.classList.add('validation-error');
                         }
                     }
                     return !isEmpty;
@@ -1968,6 +2053,38 @@
                 
                 if (!currentStep) {
                     return true;
+                }
+                
+                // Special case for HVAC System step
+                if (step === 2) {
+                    const hasBMS = document.querySelector('input[name="hasBMS"]:checked');
+                    const hasAHU = document.querySelector('input[name="hasAHU"]:checked');
+                    const hasTerminalUnits = document.querySelector('input[name="hasTerminalUnits"]:checked');
+                    
+                    const hvacValid = hasBMS !== null && hasAHU !== null && hasTerminalUnits !== null;
+                    
+                    if (!hvacValid && highlightErrors) {
+                        // Highlight any missing radio groups
+                        if (!hasBMS) {
+                            document.querySelectorAll('input[name="hasBMS"]').forEach(radio => {
+                                radio.closest('.radio-option')?.classList.add('validation-error');
+                            });
+                        }
+                        
+                        if (!hasAHU) {
+                            document.querySelectorAll('input[name="hasAHU"]').forEach(radio => {
+                                radio.closest('.radio-option')?.classList.add('validation-error');
+                            });
+                        }
+                        
+                        if (!hasTerminalUnits) {
+                            document.querySelectorAll('input[name="hasTerminalUnits"]').forEach(radio => {
+                                radio.closest('.radio-option')?.classList.add('validation-error');
+                            });
+                        }
+                    }
+                    
+                    return hvacValid;
                 }
                 
                 // Validate all visible required fields in the current step
@@ -2076,6 +2193,13 @@
 
                     // Scroll to status message
                     statusElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    
+                    // Auto-hide error messages after 5 seconds
+                    if (type === 'error') {
+                        setTimeout(() => {
+                            statusElement.style.display = 'none';
+                        }, 5000);
+                    }
                 }
             }
 
