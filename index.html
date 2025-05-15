@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1049,6 +1050,24 @@
                             </div>
                         </div>
                     </div>
+                    
+                    <div class="form-group">
+                        <label class="required-field">Does your system have central outdoor air dampers? <span class="info-tooltip" data-tooltip="Dampers that control the amount of fresh air entering the HVAC system. These are essential for implementing demand-controlled ventilation.">i</span></label>
+                        <div class="radio-group" role="radiogroup">
+                            <div class="radio-option">
+                                <input type="radio" id="hasCentralOADamperYes" name="hasCentralOADamper" value="Yes" required>
+                                <label for="hasCentralOADamperYes">Yes</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="hasCentralOADamperNo" name="hasCentralOADamper" value="No">
+                                <label for="hasCentralOADamperNo">No</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="hasCentralOADamperDontKnow" name="hasCentralOADamper" value="Don't know">
+                                <label for="hasCentralOADamperDontKnow">Don't know</label>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Terminal Units Details Section (only shown if "Yes" to Terminal Units question) -->
@@ -1330,21 +1349,87 @@
             // Setup Google Maps Place Autocomplete
             setupAddressField();
             
-            setupNavigation();
-            setupConditionalFields();
-            setupCascadingSelects();
-            setupValidation();
-            setupDemoMode();
-            setupAutosave();
-            setupProgressClicks();
-            setupHashNavigation();
-            setupThousandsSeparator();
-            restoreFormData();
-            updateButtonDisplay();
+            // Initialize the form
+            initializeForm();
 
-            // Check URL hash on initial load to determine which step to show
-            const initialStep = getStepFromHash() || formState.currentStep;
-            updateStep(initialStep);
+            // === CENTRAL NAVIGATION CONTROLLER ===
+            function navigateTo(targetStep, options = {}) {
+                const { skipValidation = false, updateHash = true } = options;
+                
+                // Validate current step if moving forward
+                if (targetStep > formState.currentStep && !skipValidation) {
+                    if (!validateStep(formState.currentStep)) {
+                        highlightIncompleteFields(formState.currentStep);
+                        return false;
+                    }
+                    formState.completedSteps[formState.currentStep - 1] = true;
+                }
+                
+                // Update form state
+                formState.currentStep = targetStep;
+                
+                // Update UI
+                updateStepDisplay(targetStep);
+                updateProgressBar(targetStep);
+                updateButtonStates();
+                
+                // Update URL hash if needed
+                if (updateHash) {
+                    updateUrlHash(targetStep);
+                }
+                
+                // Scroll to top
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                return true;
+            }
+
+            // Helper function to display the correct step
+            function updateStepDisplay(step) {
+                // Hide all steps
+                steps.forEach(s => s.style.display = 'none');
+                
+                // Show correct step
+                if (step === 5) { // Review step
+                    reviewStep.style.display = 'block';
+                } else if (step <= 4) {
+                    steps[step-1].style.display = 'block';
+                }
+            }
+
+            // Helper function to update progress bar
+            function updateProgressBar(step) {
+                progressSteps.forEach((p, i) => {
+                    const stepNum = i + 1;
+                    const isActive = stepNum === step;
+                    const isCompleted = formState.completedSteps[i];
+                    const isStep3 = stepNum === 3;
+                    const hvacCompleted = areHvacQuestionsCompleted();
+                    const shouldDisableStep3 = isStep3 && !hvacCompleted;
+                    
+                    p.classList.toggle('active', isActive);
+                    p.classList.toggle('completed', isCompleted && !isActive);
+                    p.classList.toggle('disabled', shouldDisableStep3);
+                    
+                    // Update text/icon
+                    if (isActive) {
+                        p.innerHTML = `${stepNum}. ${getStepName(stepNum)}`;
+                    } else if (isCompleted) {
+                        p.innerHTML = '<i class="fas fa-check"></i>';
+                    } else {
+                        p.innerHTML = `${stepNum}. ${getStepName(stepNum)}`;
+                    }
+                });
+            }
+
+            // Helper to get step names
+            function getStepName(step) {
+                const names = [
+                    "Basic Information",
+                    "HVAC System",
+                    "Implementation Details"
+                ];
+                return names[step-1] || "";
+            }
 
             // Setup Google Maps Place Autocomplete
             function setupAddressField() {
@@ -1370,52 +1455,41 @@
                                 addressInput.classList.remove('validation-error');
                                 
                                 // Validate form
-                                validateFormStep();
+                                updateButtonStates();
                             }
                         });
                         
                         // Allow manual entry
                         addressInput.addEventListener('input', function() {
                             document.getElementById('addressValue').value = this.value;
-                            validateFormStep();
+                            updateButtonStates();
                         });
                     }
                 }, 500);
             }
 
             function setupNavigation() {
+                // Previous button
                 prevBtn.addEventListener('click', () => {
-                    if (formState.currentStep > 1) {
-                        formState.currentStep--;
-                        updateStep(formState.currentStep);
-                        updateUrlHash(formState.currentStep);
-                        updateButtonDisplay();
-                    }
+                    navigateTo(formState.currentStep - 1, { skipValidation: true });
                 });
+
+                // Next button
                 nextBtn.addEventListener('click', () => {
-                    if (validateStep(formState.currentStep)) {
-                        formState.completedSteps[formState.currentStep - 1] = true;
-                        formState.currentStep++;
-                        if (formState.currentStep <= 4) {
-                            updateStep(formState.currentStep);
-                            updateUrlHash(formState.currentStep);
-                            updateButtonDisplay();
-                        } else {
+                    if (navigateTo(formState.currentStep + 1)) {
+                        // Handle special case for reaching review step
+                        if (formState.currentStep === 4) {
                             showReviewStep();
-                            updateUrlHash('review');
-                            updateButtonDisplay();
                         }
-                    } else {
-                        // Highlight all required fields that are not filled
-                        highlightIncompleteFields(formState.currentStep);
                     }
                 });
+
+                // Submit button
                 submitBtn.addEventListener('click', (e) => {
                     e.preventDefault();
-                    if (validateStep(3)) {
+                    if (validateStep(formState.currentStep)) {
                         submitForm();
                     } else {
-                        // Highlight all required fields that are not filled
                         highlightIncompleteFields(formState.currentStep);
                     }
                 });
@@ -1427,35 +1501,35 @@
                     step.addEventListener('click', () => {
                         const targetStep = parseInt(step.dataset.step);
                         
-                        // Allow clicking into HVAC System (step 2) from anywhere
-                        if (targetStep === 2) {
-                            formState.currentStep = targetStep;
-                            updateStep(targetStep);
-                            updateUrlHash(targetStep);
-                            updateButtonDisplay();
-                        } 
-                        // For Implementation Details (step 3), only allow if HVAC System is completed
-                        else if (targetStep === 3) {
-                            // Check if HVAC questions are completed
-                            const hvacCompleted = areHvacQuestionsCompleted();
-                            
-                            if (hvacCompleted) {
-                                formState.currentStep = targetStep;
-                                updateStep(targetStep);
-                                updateUrlHash(targetStep);
-                                updateButtonDisplay();
+                        // Allow backward navigation freely
+                        if (targetStep < formState.currentStep) {
+                            navigateTo(targetStep, { skipValidation: true });
+                            return;
+                        }
+                        
+                        // Allow clicking current step (effectively refreshing it)
+                        if (targetStep === formState.currentStep) {
+                            return;
+                        }
+                        
+                        // For step 2, just check if step 1 is completed
+                        if (targetStep === 2 && formState.completedSteps[0]) {
+                            navigateTo(targetStep, { skipValidation: true });
+                            return;
+                        }
+                        
+                        // For step 3, check if step 2 is complete AND HVAC questions answered
+                        if (targetStep === 3) {
+                            if (formState.completedSteps[1] && areHvacQuestionsCompleted()) {
+                                navigateTo(targetStep, { skipValidation: true });
                             } else {
-                                // Show message that HVAC systems need to be completed first
                                 showStatus('Please complete the HVAC System questions first.', 'error');
                             }
+                            return;
                         }
-                        // Always allow clicking into step 1
-                        else if (targetStep === 1) {
-                            formState.currentStep = targetStep;
-                            updateStep(targetStep);
-                            updateUrlHash(targetStep);
-                            updateButtonDisplay();
-                        }
+                        
+                        // Default: require validation of current step
+                        navigateTo(targetStep);
                     });
                 });
             }
@@ -1471,23 +1545,37 @@
 
             // Hash-based navigation setup 
             function setupHashNavigation() {
-                // Handle browser forward/back buttons
                 window.addEventListener('hashchange', () => {
                     const stepFromHash = getStepFromHash();
-                    if (stepFromHash && stepFromHash !== formState.currentStep) {
-                        // For step 3, check if HVAC questions are completed
-                        if (stepFromHash === 3) {
-                            const hvacCompleted = areHvacQuestionsCompleted();
-                            if (!hvacCompleted) {
-                                showStatus('Please complete the HVAC System questions first.', 'error');
-                                updateUrlHash(formState.currentStep); // Revert the hash change
-                                return;
-                            }
+                    if (!stepFromHash || stepFromHash === formState.currentStep) return;
+                    
+                    // Allow backward navigation without validation
+                    if (stepFromHash < formState.currentStep) {
+                        navigateTo(stepFromHash, { skipValidation: true, updateHash: false });
+                        return;
+                    }
+                    
+                    // For step 2, allow if step 1 is completed
+                    if (stepFromHash === 2 && formState.completedSteps[0]) {
+                        navigateTo(stepFromHash, { skipValidation: true, updateHash: false });
+                        return;
+                    }
+                    
+                    // For step 3, require HVAC questions to be completed
+                    if (stepFromHash === 3) {
+                        if (formState.completedSteps[1] && areHvacQuestionsCompleted()) {
+                            navigateTo(stepFromHash, { skipValidation: true, updateHash: false });
+                        } else {
+                            showStatus('Please complete the HVAC System questions first.', 'error');
+                            updateUrlHash(formState.currentStep); // Revert hash change
                         }
-                        
-                        formState.currentStep = stepFromHash;
-                        updateStep(stepFromHash);
-                        updateButtonDisplay();
+                        return;
+                    }
+                    
+                    // Try to navigate with validation
+                    if (!navigateTo(stepFromHash, { updateHash: false })) {
+                        // If validation fails, revert the hash
+                        updateUrlHash(formState.currentStep);
                     }
                 });
             }
@@ -1511,75 +1599,81 @@
                 history.replaceState(null, null, `#${hashValue}`);
             }
 
-            function updateStep(step) {
-                // Show current step
-                steps.forEach((s, i) => {
-                    s.style.display = i + 1 === step ? 'block' : 'none';
-                });
-
-                // Handle review step separately
-                if (step === 5) {
-                    reviewStep.style.display = 'block';
-                    steps.forEach(s => s.style.display = 'none');
-                }
-
-                const stepTexts = [
-                    '1. Basic Information',
-                    '2. HVAC System',
-                    '3. Implementation Details'
-                ];
-
-                progressSteps.forEach((p, i) => {
-                    const isActive = i + 1 === step;
-                    const isCompleted = formState.completedSteps[i];
+            function updateButtonStates() {
+                const step = formState.currentStep;
+                
+                // Previous button
+                prevBtn.style.display = step === 1 ? 'none' : 'inline-block';
+                
+                // Next button
+                nextBtn.style.display = step < 4 ? 'inline-block' : 'none';
+                
+                // Enable next button only if step is valid
+                const isValid = isCurrentStepValid();
+                nextBtn.disabled = !isValid;
+                nextBtn.classList.toggle('btn-custom', isValid);
+                
+                // Submit button
+                submitBtn.style.display = step === 4 ? 'inline-block' : 'none';
+                submitBtn.disabled = !isValid;
+                submitBtn.classList.toggle('btn-custom', isValid);
+                
+                // Demo button
+                demoBtn.style.display = step === 1 ? 'inline-block' : 'none';
+            }
+            
+            // Helper function to check if current step is valid
+            function isCurrentStepValid() {
+                const currentStepElem = document.querySelector(`.form-step:not([style*="display: none"])`);
+                if (!currentStepElem) return true;
+                
+                let isValid = true;
+                
+                // Check required fields
+                const requiredFields = currentStepElem.querySelectorAll('[required]');
+                requiredFields.forEach(field => {
+                    // Skip fields in hidden conditional sections
+                    if (field.disabled || 
+                        field.closest('.conditional-section')?.style.display === 'none' ||
+                        (field.closest('.conditional-section') && !field.closest('.conditional-section').classList.contains('show'))) {
+                        return;
+                    }
                     
-                    // Check if step 3 should be disabled
-                    const isStep3 = i + 1 === 3;
-                    const hvacCompleted = areHvacQuestionsCompleted();
-                    const shouldDisableStep3 = isStep3 && !hvacCompleted;
-
-                    // Toggle classes
-                    p.classList.toggle('active', isActive);
-                    p.classList.toggle('completed', isCompleted && !isActive); // completed only if not active
-                    p.classList.toggle('disabled', shouldDisableStep3);
-
-                    // Display checkmark or name
-                    if (isActive) {
-                        // If current step (even if completed), show full text
-                        p.innerHTML = stepTexts[i];
-                    } else if (isCompleted) {
-                        // If completed and not active, show checkmark
-                        p.innerHTML = '<i class="fas fa-check"></i>';
-                    } else {
-                        // Not completed and not active, show text
-                        p.innerHTML = stepTexts[i];
+                    // For radio groups, check if any option is selected
+                    if (field.type === 'radio') {
+                        const name = field.name;
+                        const isChecked = currentStepElem.querySelector(`input[name="${name}"]:checked`) !== null;
+                        if (!isChecked) isValid = false;
+                    } 
+                    // For address field (special case)
+                    else if (field.id === 'addressValue') {
+                        if (!field.value.trim()) isValid = false;
+                    }
+                    // For all other fields
+                    else if (!field.value.trim()) {
+                        isValid = false;
                     }
                 });
-
-                // Button visibility
-                prevBtn.style.display = step === 1 ? 'none' : 'inline-block';
-                nextBtn.style.display = step < 4 ? 'inline-block' : 'none';
-                submitBtn.style.display = (step === 4) ? 'inline-block' : 'none';
-
-                // Show Demo button only on step 1
-                demoBtn.style.display = step === 1 ? 'inline-block' : 'none';
-
-                if (step >= 4) {
-                    nextBtn.style.display = 'none';
-                }
-                // Show/hide progress tracker
-                if (step === 4) {
-                    progressTracker.style.display = 'none';
-                } else {
-                    progressTracker.style.display = '';
-                }
-
-                window.scrollTo({ top: 0, behavior: 'smooth' });
                 
-                // Update button state based on validation
-                validateFormStep();
+                // Additional step-specific validations
+                if (formState.currentStep === 3) {
+                    // Check VFD question if AHUs are present
+                    const hasAHU = document.querySelector('input[name="hasAHU"]:checked')?.value;
+                    if (hasAHU === 'Yes') {
+                        if (!document.querySelector('input[name="hasVfd"]:checked')) {
+                            isValid = false;
+                        }
+                        
+                        // Check OA damper question
+                        if (!document.querySelector('input[name="hasCentralOADamper"]:checked')) {
+                            isValid = false;
+                        }
+                    }
+                }
+                
+                return isValid;
             }
-         
+
             function setupConditionalFields() {
                 // BMS conditional visibility
                 document.querySelectorAll('input[name="hasBMS"]').forEach(radio => {
@@ -1589,7 +1683,7 @@
                         
                         toggleConditionalSection(bmsDetailsSection, this.value === 'Yes');
                         toggleConditionalSection(bmsDataPointsSection, this.value === 'Yes');
-                        validateFormStep();
+                        updateButtonStates();
                     });
                 });
 
@@ -1599,7 +1693,7 @@
                         const ahuDetailsSection = document.getElementById('ahuDetailsSection');
                         
                         toggleConditionalSection(ahuDetailsSection, this.value === 'Yes');
-                        validateFormStep();
+                        updateButtonStates();
                     });
                 });
 
@@ -1608,7 +1702,7 @@
                     radio.addEventListener('change', function () {
                         const terminalUnitDetailsSection = document.getElementById('terminalUnitDetailsSection');
                         toggleConditionalSection(terminalUnitDetailsSection, this.value === 'Yes');
-                        validateFormStep();
+                        updateButtonStates();
                     });
                 });
 
@@ -1617,7 +1711,7 @@
                     radio.addEventListener('change', function () {
                         const pilotDetailsYesSection = document.getElementById('knowPilotFloorYesDiv');
                         toggleConditionalSection(pilotDetailsYesSection, this.value === 'Yes');
-                        validateFormStep();
+                        updateButtonStates();
                     });
                 });
 
@@ -1653,10 +1747,10 @@
                 if (bmsManufacturer && bmsPlatform) {
                     bmsManufacturer.addEventListener('change', function () {
                         updateBMSPlatforms(this.value);
-                        validateFormStep();
+                        updateButtonStates();
                     });
 
-                    bmsPlatform.addEventListener('change', validateFormStep);
+                    bmsPlatform.addEventListener('change', updateButtonStates);
                 }
 
                 // AHU Manufacturer -> Model
@@ -1666,7 +1760,7 @@
                 if (ahuManufacturer && ahuModel) {
                     ahuManufacturer.addEventListener('change', function () {
                         updateAHUModels(this.value);
-                        validateFormStep();
+                        updateButtonStates();
                     });
                 }
 
@@ -1677,7 +1771,7 @@
                 if (terminalUnitManufacturer && terminalUnitModel) {
                     terminalUnitManufacturer.addEventListener('change', function () {
                         updateTerminalUnitModels(this.value);
-                        validateFormStep();
+                        updateButtonStates();
                     });
                 }
             }
@@ -1797,18 +1891,24 @@
 
             // Setup form validation
             function setupValidation() {
-                // Add event listeners to all form fields
+                // Listen for all field changes
                 form.querySelectorAll('input, select, textarea').forEach(field => {
+                    field.addEventListener('input', updateButtonStates);
+                    field.addEventListener('change', updateButtonStates);
+                    
+                    // Clear validation errors on user input
                     field.addEventListener('input', function() {
                         this.classList.remove('validation-error');
-                        validateFormStep();
-                    });
-                    
-                    field.addEventListener('change', function() {
-                        this.classList.remove('validation-error');
-                        validateFormStep();
                     });
                 });
+                
+                // Special case for Google Places address field
+                const addressAutoComplete = document.getElementById('addressAutocomplete');
+                if (addressAutoComplete) {
+                    addressAutoComplete.addEventListener('gmp-placeselect', function() {
+                        updateButtonStates();
+                    });
+                }
                 
                 // Special handling for radio buttons
                 form.querySelectorAll('input[type="radio"]').forEach(radio => {
@@ -1818,26 +1918,9 @@
                         document.querySelectorAll(`.radio-option input[name="${name}"]`).forEach(r => {
                             r.closest('.radio-option').classList.remove('validation-error');
                         });
-                        validateFormStep();
+                        updateButtonStates();
                     });
                 });
-            }
-
-            // Validate the current form step and update button state
-            function validateFormStep() {
-                const currentStepElem = document.querySelector(`.form-step:not([style*="display: none"])`);
-                if (!currentStepElem) return;
-                
-                const isValid = validateStep(formState.currentStep, false);
-                
-                // Update next/submit button state
-                if (formState.currentStep < 4) {
-                    nextBtn.disabled = !isValid;
-                    nextBtn.classList.toggle('btn-custom', isValid);
-                } else {
-                    submitBtn.disabled = !isValid;
-                    submitBtn.classList.toggle('btn-custom', isValid);
-                }
             }
 
             function validateField(field, highlightErrors = false) {
@@ -1935,6 +2018,22 @@
                             if (highlightErrors) {
                                 // Highlight all VFD radio options
                                 document.querySelectorAll('input[name="hasVfd"]').forEach(radio => {
+                                    const radioOption = radio.closest('.radio-option');
+                                    if (radioOption) {
+                                        radioOption.classList.add('validation-error');
+                                    }
+                                });
+                            }
+                        }
+                        
+                        // Check OA damper question
+                        const hasOADamper = document.querySelector('input[name="hasCentralOADamper"]:checked');
+                        if (!hasOADamper) {
+                            isValid = false;
+                            
+                            if (highlightErrors) {
+                                // Highlight all OA damper radio options
+                                document.querySelectorAll('input[name="hasCentralOADamper"]').forEach(radio => {
                                     const radioOption = radio.closest('.radio-option');
                                     if (radioOption) {
                                         radioOption.classList.add('validation-error');
@@ -2087,7 +2186,7 @@
                     'AHU Details': [
                         'ahuCount', 'floorsPerAHU', 'ahuManufacturer',
                         'otherAhuManufacturer', 'ahuModel', 'otherAhuModel',
-                        'hasVfd'
+                        'hasVfd', 'hasCentralOADamper'
                     ],
                     'Terminal Units': [
                         'terminalUnitCount', 'terminalUnitType',
@@ -2472,7 +2571,6 @@
                     if (hasBMS.value === 'Yes') {
                         if (bmsDetailsSection) {
                             bmsDetailsSection.classList.add('show');
-                            bmsDetailsSection.style.display = 'block';
                             bmsDetailsSection.querySelectorAll('input, select, textarea').forEach(field => {
                                 field.disabled = false;
                             });
@@ -2480,7 +2578,6 @@
                         
                         if (bmsDataPointsSection) {
                             bmsDataPointsSection.classList.add('show');
-                            bmsDataPointsSection.style.display = 'block';
                             bmsDataPointsSection.querySelectorAll('input, select, textarea').forEach(field => {
                                 field.disabled = false;
                             });
@@ -2495,7 +2592,6 @@
                     if (hasAHU.value === 'Yes') {
                         if (ahuDetailsSection) {
                             ahuDetailsSection.classList.add('show');
-                            ahuDetailsSection.style.display = 'block';
                             ahuDetailsSection.querySelectorAll('input, select, textarea').forEach(field => {
                                 field.disabled = false;
                             });
@@ -2508,7 +2604,6 @@
                     const terminalUnitDetailsSection = document.getElementById('terminalUnitDetailsSection');
                     if (hasTerminalUnits.value === 'Yes') {
                         terminalUnitDetailsSection.classList.add('show');
-                        terminalUnitDetailsSection.style.display = 'block';
                         terminalUnitDetailsSection.querySelectorAll('input, select, textarea').forEach(field => {
                             field.disabled = false;
                         });
@@ -2553,13 +2648,6 @@
                 });
             }
 
-            // Update button display (show demo button only on step 1)
-            function updateButtonDisplay() {
-                demoBtn.style.display = formState.currentStep === 1 ? 'inline-block' : 'none';
-                validateFormStep();
-            }
-
-            // Modified setupDemoMode to not populate address field
             function setupDemoMode() {
                 demoBtn.addEventListener('click', () => {
                     form.reset();
@@ -2587,6 +2675,7 @@
                         bmsPlatform: 'Metasys',
                         bmsProtocol: 'BACnet/IP',
                         hasVfd: 'All',
+                        hasCentralOADamper: 'Yes',
                         knowPilotFloor: 'Yes',
                         pilotFloors: '1',
                         pilotAreaSquareFootage: '5000',
@@ -2612,12 +2701,39 @@
                         }
                     });
 
+                    // Set address field separately
+                    document.getElementById('addressInput').value = '123 Main St, San Francisco, CA 94105';
+                    document.getElementById('addressValue').value = '123 Main St, San Francisco, CA 94105';
+
                     // Initialize cascading dropdowns with demo values
                     initCascadingValues();
                     
                     // Update button state
-                    validateFormStep();
+                    updateButtonStates();
                 });
+            }
+
+            // Initialize the form
+            function initializeForm() {
+                setupNavigation();
+                setupConditionalFields();
+                setupCascadingSelects();
+                setupValidation();
+                setupDemoMode();
+                setupAutosave();
+                setupProgressClicks();
+                setupHashNavigation();
+                setupThousandsSeparator();
+                
+                // Restore saved data if available
+                restoreFormData();
+                
+                // Initial state update based on URL or defaults
+                const initialStep = getStepFromHash() || formState.currentStep;
+                navigateTo(initialStep, { skipValidation: true, updateHash: false });
+                
+                // Update button states on initial load
+                updateButtonStates();
             }
         });
     </script>
