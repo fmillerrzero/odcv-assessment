@@ -8,9 +8,7 @@
     <title>O-DCV Building Assessment | R-Zero</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <!-- Add Google Maps Web Components library -->
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDvGee7gI4jQO3OjGXhtkMmWRP865F2kAU&libraries=places"></script>
-    <script type="module" src="https://cdn.jsdelivr.net/npm/@googlemaps/extended-component-library"></script>
     <style>
         :root {
             --primary: #00769d;
@@ -667,37 +665,37 @@
         
         /* FIX: Address input field styling to ensure it displays properly */
         gmp-place-autocomplete {
-            width: 100% !important;
-            z-index: 1;
-            position: relative;
-            min-height: 52px;
             display: block;
+            width: 100%;
+            margin-bottom: 0;
         }
         
         /* Style for the place autocomplete input inside the component */
         gmp-place-autocomplete input {
-            width: 100%;
-            max-width: 100%;
-            box-sizing: border-box;
-            padding: 0.85rem 1rem;
-            border: 1px solid #e0e5ec;
-            border-radius: var(--radius-sm);
-            font-size: 1rem;
-            font-family: var(--font-family);
-            background-color: #fafbfc;
-            color: var(--text);
-            transition: all 0.2s ease;
+            width: 100% !important;
+            height: 50px !important; /* Match the height of other inputs */
+            padding: 0.85rem 1rem !important;
+            border: 1px solid #e0e5ec !important;
+            border-radius: 0.375rem !important; /* Match other fields */
+            font-size: 1rem !important;
+            font-family: 'Inter', sans-serif !important;
+            background-color: #fafbfc !important;
+            color: #1a202c !important;
+            appearance: none !important;
+            box-shadow: none !important;
+            outline: none !important;
+            transition: all 0.2s ease !important;
+            margin: 0 !important;
         }
         
         gmp-place-autocomplete input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 2px rgba(0, 118, 157, 0.25);
+            border-color: #00769d !important;
+            box-shadow: 0 0 0 3px rgba(0, 118, 157, 0.15) !important;
         }
         
         gmp-place-autocomplete input.validation-error {
-            border: 1px solid var(--error);
-            background-color: rgba(229, 62, 62, 0.05);
+            border: 1px solid var(--error) !important;
+            background-color: rgba(229, 62, 62, 0.05) !important;
         }
         
         /* Disabled button styling */
@@ -810,13 +808,8 @@
                 <div class="form-section">
                     <h3>Building</h3>
                     <div class="form-group">
-                        <label for="addressInput" class="required-field">Address</label>
-                        <div class="address-field-container">
-                            <gmp-place-autocomplete class="gmp-place-field" id="addressAutocomplete">
-                                <input id="addressInput" placeholder="Enter an address" required>
-                            </gmp-place-autocomplete>
-                            <input type="hidden" name="address" id="addressValue" required>
-                        </div>
+                        <label for="address" class="required-field">Address</label>
+                        <input type="text" id="address" name="address" required placeholder="Enter an address">
                     </div>
                     <div class="form-group">
                         <label for="buildingType" class="required-field">Type</label>
@@ -1210,7 +1203,7 @@
                     if (targetStep === 3) {
                         const hvacCompleted = areHvacQuestionsCompleted();
                         if (!hvacCompleted) {
-                            showStatus('Please complete the HVAC System questions first.', 'error');
+                            showStatus('Please complete the Scoping Questions first.', 'error');
                             console.log("Failed to navigate: HVAC questions not completed");
                             return false;
                         }
@@ -1293,46 +1286,29 @@
             }
 
             // Setup Google Maps Place Autocomplete
-            function setupAddressField() {
-                // Wait for the components to be fully loaded
-                const checkForComponents = setInterval(function() {
-                    const autocomplete = document.getElementById('addressAutocomplete');
-                    const addressInput = document.getElementById('addressInput');
-                    
-                    if (autocomplete && addressInput && typeof google !== 'undefined' && google.maps && google.maps.places) {
-                        clearInterval(checkForComponents);
-                        
-                        // Set restrictions to limit to US and Canada
-                        autocomplete.countries = ["us", "ca"];
-                        
-                        // Add event listener for place selection
-                        autocomplete.addEventListener('gmp-placeselect', function() {
-                            const place = autocomplete.getPlace();
-                            if (place && place.formattedAddress) {
-                                // Update the hidden field with the formatted address
-                                document.getElementById('addressValue').value = place.formattedAddress;
-                                
-                                // Clear validation error if present
-                                addressInput.classList.remove('validation-error');
-                                autocomplete.classList.remove('validation-error');
-                                
-                                // Validate form
-                                updateButtonStates();
-                            }
-                        });
-                        
-                        // Allow manual entry
-                        addressInput.addEventListener('input', function() {
-                            document.getElementById('addressValue').value = this.value;
-                            updateButtonStates();
-                        });
-                        
-                        // Fix any initial styling issues
-                        if (addressInput) {
-                            addressInput.style.height = '52px';
+            // Initialize Google Maps Places Autocomplete for address field
+            function initAutocomplete() {
+                const input = document.getElementById('address');
+                if (input && window.google && window.google.maps && google.maps.places) {
+                    const autocomplete = new google.maps.places.Autocomplete(input, {
+                        types: ['address'],
+                        componentRestrictions: { country: ['us', 'ca'] }
+                    });
+                    autocomplete.addListener('place_changed', function() {
+                        const place = autocomplete.getPlace();
+                        if (place && place.formatted_address) {
+                            input.value = place.formatted_address;
                         }
-                    }
-                }, 500);
+                        // Trigger change event to update validation
+                        input.dispatchEvent(new Event('change'));
+                    });
+                }
+            }
+
+            // Setup initial functions
+            function setupAddressField() {
+                // Initialize Google Places Autocomplete
+                initAutocomplete();
             }
 
             function setupNavigation() {
@@ -1393,7 +1369,7 @@
                             if (targetStep === 3) {
                                 const hvacCompleted = areHvacQuestionsCompleted();
                                 if (!hvacCompleted) {
-                                    showStatus('Please complete the HVAC System questions first.', 'error');
+                                    showStatus('Please complete the Scoping Questions first.', 'error');
                                     return false;
                                 }
                             }
@@ -1457,7 +1433,7 @@
                         if (formState.completedSteps[1] && hvacCompleted) {
                             navigateTo(stepFromHash, { skipValidation: true, updateHash: false });
                         } else {
-                            showStatus('Please complete the HVAC System questions first.', 'error');
+                            showStatus('Please complete the Scoping Questions first.', 'error');
                             updateUrlHash(formState.currentStep); // Revert hash change
                         }
                         return;
@@ -1765,23 +1741,6 @@
                 if (field.disabled || field.closest('.conditional-section')?.style.display === 'none' ||
                     (field.closest('.conditional-section') && !field.closest('.conditional-section').classList.contains('show'))) {
                     return true;
-                }
-
-                // For address field (the hidden field)
-                if (field.id === 'addressValue' && field.hasAttribute('required')) {
-                    const isEmpty = !field.value.trim();
-                    if (isEmpty && highlightErrors) {
-                        // Find the visible address input and highlight it
-                        const visibleAddressField = document.getElementById('addressInput');
-                        const autocomplete = document.getElementById('addressAutocomplete');
-                        if (visibleAddressField) {
-                            visibleAddressField.classList.add('validation-error');
-                        }
-                        if (autocomplete) {
-                            autocomplete.classList.add('validation-error');
-                        }
-                    }
-                    return !isEmpty;
                 }
 
                 // Check if field is required and empty
@@ -2107,13 +2066,15 @@
             }
 
             function submitForm() {
-                // Get address from the address input
-                const addressValueField = document.getElementById('addressValue');
-                const addressInput = document.getElementById('addressInput');
+                // Get address from the input
+                const addressField = document.getElementById('address');
                 
                 // Ensure we have the latest address value
-                if (addressInput && addressInput.value && !addressValueField.value) {
-                    addressValueField.value = addressInput.value;
+                if (addressField && addressField.value.trim()) {
+                    // Keep the existing value
+                } else {
+                    showStatus('Please enter an address.', 'error');
+                    return;
                 }
 
                 // Strip commas from squareFootage before submission
@@ -2240,14 +2201,11 @@
                     ).map(cb => cb.value);
                     data.bmsDataPoints = checkboxValues;
                     
-                    // Add address from hidden field and input
-                    const addressValueField = document.getElementById('addressValue');
-                    const addressInput = document.getElementById('addressInput');
+                // Get address from hidden field and input
+                    const addressField = document.getElementById('address');
                     
-                    if (addressValueField && addressValueField.value) {
-                        data.address = addressValueField.value;
-                    } else if (addressInput && addressInput.value) {
-                        data.address = addressInput.value;
+                    if (addressField && addressField.value) {
+                        data.address = addressField.value;
                     }
                     
                     data.currentStep = formState.currentStep;
@@ -2269,7 +2227,7 @@
                 });
                 
                 // Special handling for address input
-                const addressInput = document.getElementById('addressInput');
+                const addressInput = document.getElementById('address');
                 if (addressInput) {
                     addressInput.addEventListener('input', function() {
                         const formData = JSON.parse(localStorage.getItem('odcvFormData') || '{}');
@@ -2331,16 +2289,11 @@
                                     }
                                 });
                             } else if (key === 'address') {
-                                // For address field, set both the hidden field and visible input
-                                const addressValueField = document.getElementById('addressValue');
-                                const addressInput = document.getElementById('addressInput');
+                                // For address field
+                                const addressField = document.getElementById('address');
                                 
-                                if (addressValueField) {
-                                    addressValueField.value = value;
-                                }
-                                
-                                if (addressInput) {
-                                    addressInput.value = value;
+                                if (addressField) {
+                                    addressField.value = value;
                                 }
                             } else {
                                 const field = form.querySelector(`[name="${key}"]`);
@@ -2497,8 +2450,7 @@
                     });
 
                     // Set address field separately
-                    document.getElementById('addressInput').value = '123 Main St, San Francisco, CA 94105';
-                    document.getElementById('addressValue').value = '123 Main St, San Francisco, CA 94105';
+                    document.getElementById('address').value = '123 Main St, San Francisco, CA 94105';
 
                     // Initialize cascading dropdowns with demo values
                     initCascadingValues();
