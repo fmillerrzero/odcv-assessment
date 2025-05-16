@@ -9,6 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDvGee7gI4jQO3OjGXhtkMmWRP865F2kAU&libraries=places"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@googlemaps/extended-component-library"></script>
     <style>
         :root {
             --primary: #00769d;
@@ -725,6 +726,27 @@
             position: relative;
             width: 100%;
         }
+
+        /* Added CSS for the Google Maps Place Autocomplete */
+        gmp-place-autocomplete {
+            width: 100% !important;
+            z-index: 1;
+            position: relative;
+            min-height: 52px;
+            display: block;
+        }
+
+        gmp-place-autocomplete input {
+            width: 100%;
+            padding: 0.85rem 1rem;
+            box-sizing: border-box;
+            border: 1px solid #e0e5ec;
+            border-radius: var(--radius-sm);
+            font-size: 1rem;
+            font-family: var(--font-family);
+            background-color: #fafbfc;
+            color: var(--text);
+        }
     </style>
 </head>
 
@@ -808,8 +830,13 @@
                 <div class="form-section">
                     <h3>Building</h3>
                     <div class="form-group">
-                        <label for="address" class="required-field">Address</label>
-                        <input type="text" id="address" name="address" required placeholder="Enter an address">
+                        <label for="addressInput" class="required-field">Address</label>
+                        <div class="address-field-container">
+                            <gmp-place-autocomplete class="gmp-place-field" id="addressAutocomplete">
+                                <input id="addressInput" placeholder="Enter an address" required>
+                            </gmp-place-autocomplete>
+                            <input type="hidden" name="address" id="addressValue" required>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="buildingType" class="required-field">Type</label>
@@ -1286,29 +1313,46 @@
             }
 
             // Setup Google Maps Place Autocomplete
-            // Initialize Google Maps Places Autocomplete for address field
-            function initAutocomplete() {
-                const input = document.getElementById('address');
-                if (input && window.google && window.google.maps && google.maps.places) {
-                    const autocomplete = new google.maps.places.Autocomplete(input, {
-                        types: ['address'],
-                        componentRestrictions: { country: ['us', 'ca'] }
-                    });
-                    autocomplete.addListener('place_changed', function() {
-                        const place = autocomplete.getPlace();
-                        if (place && place.formatted_address) {
-                            input.value = place.formatted_address;
-                        }
-                        // Trigger change event to update validation
-                        input.dispatchEvent(new Event('change'));
-                    });
-                }
-            }
-
-            // Setup initial functions
             function setupAddressField() {
-                // Initialize Google Places Autocomplete
-                initAutocomplete();
+                // Wait for the components to be fully loaded
+                const checkForComponents = setInterval(function() {
+                    const autocomplete = document.getElementById('addressAutocomplete');
+                    const addressInput = document.getElementById('addressInput');
+                    
+                    if (autocomplete && addressInput && typeof google !== 'undefined' && google.maps && google.maps.places) {
+                        clearInterval(checkForComponents);
+                        
+                        // Set restrictions to limit to US and Canada
+                        autocomplete.countries = ["us", "ca"];
+                        
+                        // Add event listener for place selection
+                        autocomplete.addEventListener('gmp-placeselect', function() {
+                            const place = autocomplete.getPlace();
+                            if (place && place.formattedAddress) {
+                                // Update the hidden field with the formatted address
+                                document.getElementById('addressValue').value = place.formattedAddress;
+                                
+                                // Clear validation error if present
+                                addressInput.classList.remove('validation-error');
+                                autocomplete.classList.remove('validation-error');
+                                
+                                // Validate form
+                                updateButtonStates();
+                            }
+                        });
+                        
+                        // Allow manual entry
+                        addressInput.addEventListener('input', function() {
+                            document.getElementById('addressValue').value = this.value;
+                            updateButtonStates();
+                        });
+                        
+                        // Fix any initial styling issues
+                        if (addressInput) {
+                            addressInput.style.height = '52px';
+                        }
+                    }
+                }, 500);
             }
 
             function setupNavigation() {
@@ -1759,6 +1803,23 @@
                     return false;
                 }
 
+                // Address field validation
+                if (field.id === 'addressValue' && field.hasAttribute('required')) {
+                    const isEmpty = !field.value.trim();
+                    if (isEmpty && highlightErrors) {
+                        // Find the visible address input and highlight it
+                        const visibleAddressField = document.getElementById('addressInput');
+                        const autocomplete = document.getElementById('addressAutocomplete');
+                        if (visibleAddressField) {
+                            visibleAddressField.classList.add('validation-error');
+                        }
+                        if (autocomplete) {
+                            autocomplete.classList.add('validation-error');
+                        }
+                    }
+                    return !isEmpty;
+                }
+
                 return true;
             }
 
@@ -2066,13 +2127,17 @@
             }
 
             function submitForm() {
-                // Get address from the input
-                const addressField = document.getElementById('address');
-                
+                // Get address from input fields
+                const addressValueField = document.getElementById('addressValue');
+                const addressInput = document.getElementById('addressInput');
+
                 // Ensure we have the latest address value
-                if (addressField && addressField.value.trim()) {
-                    // Keep the existing value
-                } else {
+                if (addressInput && addressInput.value && !addressValueField.value) {
+                    addressValueField.value = addressInput.value;
+                }
+                
+                // Verify we have an address
+                if (!addressValueField.value.trim()) {
                     showStatus('Please enter an address.', 'error');
                     return;
                 }
@@ -2201,11 +2266,14 @@
                     ).map(cb => cb.value);
                     data.bmsDataPoints = checkboxValues;
                     
-                // Get address from hidden field and input
-                    const addressField = document.getElementById('address');
+                    // Get address from the fields
+                    const addressValueField = document.getElementById('addressValue');
+                    const addressInput = document.getElementById('addressInput');
                     
-                    if (addressField && addressField.value) {
-                        data.address = addressField.value;
+                    if (addressValueField && addressValueField.value) {
+                        data.address = addressValueField.value;
+                    } else if (addressInput && addressInput.value) {
+                        data.address = addressInput.value;
                     }
                     
                     data.currentStep = formState.currentStep;
@@ -2226,12 +2294,13 @@
                     });
                 });
                 
-                // Special handling for address input
-                const addressInput = document.getElementById('address');
+                // Special handling for address fields
+                const addressInput = document.getElementById('addressInput');
                 if (addressInput) {
                     addressInput.addEventListener('input', function() {
                         const formData = JSON.parse(localStorage.getItem('odcvFormData') || '{}');
                         formData.address = this.value;
+                        document.getElementById('addressValue').value = this.value;
                         localStorage.setItem('odcvFormData', JSON.stringify(formData));
                     });
                 }
@@ -2289,11 +2358,16 @@
                                     }
                                 });
                             } else if (key === 'address') {
-                                // For address field
-                                const addressField = document.getElementById('address');
+                                // For address field, set both the hidden field and visible input
+                                const addressValueField = document.getElementById('addressValue');
+                                const addressInput = document.getElementById('addressInput');
                                 
-                                if (addressField) {
-                                    addressField.value = value;
+                                if (addressValueField) {
+                                    addressValueField.value = value;
+                                }
+                                
+                                if (addressInput) {
+                                    addressInput.value = value;
                                 }
                             } else {
                                 const field = form.querySelector(`[name="${key}"]`);
@@ -2449,8 +2523,9 @@
                         }
                     });
 
-                    // Set address field separately
-                    document.getElementById('address').value = '123 Main St, San Francisco, CA 94105';
+                    // Set address fields
+                    document.getElementById('addressInput').value = '123 Main St, San Francisco, CA 94105';
+                    document.getElementById('addressValue').value = '123 Main St, San Francisco, CA 94105';
 
                     // Initialize cascading dropdowns with demo values
                     initCascadingValues();
