@@ -116,8 +116,11 @@
         }
         
         .form-progress .step.disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
+            opacity: 0.5 !important;
+            cursor: not-allowed !important;
+            pointer-events: none !important;
+            background-color: #9aa3ac !important;
+            color: #e2e2e2 !important;
         }
 
         .form-step {
@@ -918,7 +921,7 @@
                 </div>
             </fieldset>
 
-            <!-- STEP 3: Implementation Details & Goals -->
+            <!-- STEP 3: Implementation Details -->
             <fieldset id="implementationStep" class="form-step" style="display: none;">
                 <!-- BMS Details Section (only shown if "Yes" to BMS question) -->
                 <div id="BMSInformationDiv" class="form-section conditional-section">
@@ -1042,29 +1045,6 @@
                         <label for="mechanicalDrawings">Mechanical Drawings <span class="info-tooltip"
                                 data-tooltip="Maximum file size: 10MB. Accepted formats: PDF, JPG, PNG">i</span></label>
                         <input type="file" id="mechanicalDrawings" name="mechanicalDrawings">
-                    </div>
-                </div>
-            </fieldset>
-
-            <fieldset id="goals" class="form-step" style="display: none;">
-                <div class="form-section">
-                    <div class="skip-message">
-                        It's optional — you may skip it and submit directly.
-                    </div>
-
-                    <div class="form-group">
-                        <label for="primaryGoal">Primary Goal</label>
-                        <select id="primaryGoal" name="primaryGoal">
-                            <option value="">Select an option...</option>
-                            <option value="costReduction">Cost reduction</option>
-                            <option value="carbonReduction">Carbon reduction</option>
-                            <option value="buildingCertification">Building certification</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="expectedBenefits">Expected Benefits</label>
-                        <textarea id="expectedBenefits" name="expectedBenefits"></textarea>
                     </div>
                 </div>
             </fieldset>
@@ -1289,13 +1269,24 @@
                     
                     p.classList.toggle('active', isActive);
                     p.classList.toggle('completed', isCompleted && !isActive);
-                    p.classList.toggle('disabled', shouldDisableStep3);
+                    p.classList.toggle('disabled', shouldDisableStep3 || (stepNum > step && !isCompleted));
+                    
+                    // Add stronger visual disabled state
+                    if (shouldDisableStep3 || (stepNum > step && !isCompleted)) {
+                        p.style.pointerEvents = 'none';
+                        p.style.opacity = '0.5';
+                        p.style.cursor = 'not-allowed';
+                    } else {
+                        p.style.pointerEvents = 'auto';
+                        p.style.opacity = '1';
+                        p.style.cursor = 'pointer';
+                    }
                     
                     // Update text/icon
                     if (isActive) {
                         p.innerHTML = `${stepNum}. ${getStepName(stepNum)}`;
                     } else if (isCompleted) {
-                        p.innerHTML = '<i class="fas fa-check"></i>';
+                        p.innerHTML = '<i class="fas fa-check"></i> ' + getStepName(stepNum);
                     } else {
                         p.innerHTML = `${stepNum}. ${getStepName(stepNum)}`;
                     }
@@ -1384,8 +1375,37 @@
 
             // Set up clickable progress steps with restrictions
             function setupProgressClicks() {
+                // First, update the visual state of progress steps
+                function updateProgressState() {
+                    progressSteps.forEach((p, i) => {
+                        const stepNum = i + 1;
+                        
+                        // Disable steps that shouldn't be accessible yet
+                        if (stepNum > formState.currentStep && !formState.completedSteps[formState.currentStep - 1]) {
+                            p.classList.add('disabled');
+                            p.style.pointerEvents = 'none'; // Prevent clicking entirely
+                            p.style.opacity = '0.5';
+                            p.style.cursor = 'not-allowed';
+                        } else if (stepNum === 3 && !areHvacQuestionsCompleted()) {
+                            p.classList.add('disabled');
+                            p.style.pointerEvents = 'none'; // Prevent clicking entirely
+                            p.style.opacity = '0.5';
+                            p.style.cursor = 'not-allowed';
+                        } else {
+                            p.classList.remove('disabled');
+                            p.style.pointerEvents = 'auto';
+                            p.style.opacity = '1';
+                            p.style.cursor = 'pointer';
+                        }
+                    });
+                }
+                
+                // Update progress state initially
+                updateProgressState();
+                
+                // Add click event listeners
                 progressSteps.forEach((step) => {
-                    step.addEventListener('click', () => {
+                    step.addEventListener('click', (event) => {
                         const targetStep = parseInt(step.dataset.step);
                         
                         // Clear any previous status messages
@@ -1402,33 +1422,64 @@
                         
                         // For forward navigation, always require validation
                         if (targetStep > formState.currentStep) {
-                            // Validate the current step first
-                            if (!validateStep(formState.currentStep)) {
-                                highlightIncompleteFields(formState.currentStep);
-                                showStatus('Please complete all required fields on this step first.', 'error');
+                            // Check if the step is disabled (visual check as backup)
+                            if (step.classList.contains('disabled')) {
+                                event.preventDefault();
+                                event.stopPropagation();
+                                showStatus('Please complete the current step first.', 'error');
                                 return false;
                             }
                             
-                            // If moving to step 3, check HVAC questions are answered
+                            // Validate the current step first
+                            if (!validateStep(formState.currentStep)) {
+                                event.preventDefault();
+                                event.stopPropagation();
+                                highlightIncompleteFields(formState.currentStep);
+                                showStatus('Please complete all required fields on this step first.', 'error');
+                                
+                                // Scroll to the first error
+                                const firstError = document.querySelector('.validation-error');
+                                if (firstError) {
+                                    firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                }
+                                
+                                return false;
+                            }
+                            
+                            // If moving to step 3, double check HVAC questions are answered
                             if (targetStep === 3) {
                                 const hvacCompleted = areHvacQuestionsCompleted();
                                 if (!hvacCompleted) {
+                                    event.preventDefault();
+                                    event.stopPropagation();
                                     showStatus('Please complete the Scoping Questions first.', 'error');
                                     return false;
                                 }
                             }
                             
                             formState.completedSteps[formState.currentStep - 1] = true;
-                            navigateTo(targetStep, { skipValidation: false });
-                            return;
-                        }
-                        
-                        // If it's the current step, just refresh it
-                        if (targetStep === formState.currentStep) {
+                            const success = navigateTo(targetStep, { skipValidation: false });
+                            
+                            // Update the progress state after navigation
+                            if (success) {
+                                updateProgressState();
+                            }
+                            
                             return;
                         }
                     });
                 });
+                
+                // Also update progress state whenever step validation status changes
+                form.addEventListener('change', updateProgressState);
+                
+                // Also update after each navigation
+                const originalNavigateTo = navigateTo;
+                navigateTo = function(targetStep, options = {}) {
+                    const result = originalNavigateTo.call(this, targetStep, options);
+                    updateProgressState();
+                    return result;
+                };
             }
 
             // Function to check if all required HVAC System questions are answered
@@ -2017,12 +2068,16 @@
                 hiddenInput.name = 'bmsDataPointsList';
                 hiddenInput.value = bmsDataPoints;
                 form.appendChild(hiddenInput);
-                formValues['bmsDataPointsList'] = bmsDataPoints;
+                
+                // Only add to formValues if there are actually selected checkboxes
+                if (bmsDataPoints.trim() !== '') {
+                    formValues['bmsDataPointsList'] = bmsDataPoints;
+                }
 
                 // Get address from the hidden field
                 formValues['address'] = document.getElementById('addressValue').value;
 
-                // Collect all values first
+                // Collect all values first - only include non-empty values
                 for (let [key, value] of formData) {
                     if (value && value !== '' && !key.includes('file')) {
                         formValues[key] = value;
@@ -2061,21 +2116,17 @@
                     ];
                 }
 
-                // Only include Project Goals if there are values
-                if (formValues['primaryGoal'] || formValues['otherPrimaryGoal'] || formValues['expectedBenefits']) {
-                    sections['Project Goals'] = [
-                        'primaryGoal', 'otherPrimaryGoal', 'expectedBenefits'
-                    ];
-                }
-
-                // Helper function to get section HTML
+                // Helper function to get section HTML - updated to only show non-empty fields
                 function getSectionHTML(sectionName, fieldNames) {
                     let hasValues = false;
                     let sectionHTML = `<h3>${sectionName}</h3><div class="review-section">`;
+                    let fieldsAdded = 0;
 
                     fieldNames.forEach(fieldName => {
                         if (formValues[fieldName]) {
                             hasValues = true;
+                            fieldsAdded++;
+                            
                             const field = document.querySelector(`[name="${fieldName}"]`);
                             let displayValue = formValues[fieldName];
                             let fieldLabel = fieldName;
@@ -2114,7 +2165,8 @@
 
                     sectionHTML += '</div>';
 
-                    return { html: sectionHTML, hasValues };
+                    // Only return the section if it has at least one field with a value
+                    return { html: sectionHTML, hasValues: fieldsAdded > 0 };
                 }
 
                 // Create section headers and add fields in order
@@ -2459,8 +2511,7 @@
                 // Check each select that might have an "Other" option
                 const selectsWithOther = [
                     'jobTitle', 'orgType', 'buildingType', 'buildingOperatingHours',
-                    'bmsManufacturer', 'bmsProtocol', 'ahuManufacturer',
-                    'primaryGoal'
+                    'bmsManufacturer', 'bmsProtocol', 'ahuManufacturer'
                 ];
 
                 selectsWithOther.forEach(fieldName => {
@@ -2501,9 +2552,7 @@
                         ahuManufacturer: 'Trane',
                         bmsManufacturer: 'Johnson Controls',
                         bmsPlatform: 'Metasys',
-                        bmsProtocol: 'BACnet/IP',
-                        primaryGoal: 'costReduction',
-                        expectedBenefits: 'Reduce energy costs by 20% while maintaining comfort.'
+                        bmsProtocol: 'BACnet/IP'
                     };
 
                     // Apply demo data to form fields
