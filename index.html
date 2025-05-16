@@ -934,6 +934,7 @@
                             <option value="Johnson Controls">Johnson Controls</option>
                             <option value="Siemens">Siemens</option>
                             <option value="Honeywell">Honeywell</option>
+                            <option value="Tridium">Tridium</option>
                             <option value="Schneider Electric">Schneider Electric</option>
                             <option value="Trane">Trane</option>
                             <option value="Alerton">Alerton</option>
@@ -950,6 +951,7 @@
                         <label for="bmsPlatform">Platform</label>
                         <select id="bmsPlatform" name="bmsPlatform" disabled>
                             <option value="">Select manufacturer first...</option>
+                            <option value="Other">Other</option>
                             <option value="dontKnow">Don't know</option>
                         </select>
                     </div>
@@ -976,7 +978,7 @@
                     <h3>BMS Data Points</h3>
                     
                     <div class="form-group">
-                        <label>Which data points are available in your BMS? <span class="info-tooltip" data-tooltip="These data points are critical for the virtual metering approach, which allows us to measure energy savings without installing additional hardware.">i</span></label>
+                        <label>Which data points are available in your BMS?</label>
                         <div class="checkbox-group">
                             <div class="checkbox-option">
                                 <input type="checkbox" id="bmsDataSupplyAirflow" name="bmsDataPoints" value="Supply Airflow">
@@ -1037,13 +1039,14 @@
                         <label for="ahuModel">AHU Model</label>
                         <select id="ahuModel" name="ahuModel" disabled>
                             <option value="">Select manufacturer first...</option>
+                            <option value="Other">Other</option>
                             <option value="dontKnow">Don't know</option>
                         </select>
                     </div>
                     
                     <div class="form-group">
                         <label for="mechanicalDrawings">Mechanical Drawings <span class="info-tooltip"
-                                data-tooltip="Maximum file size: 10MB. Accepted formats: PDF, JPG, PNG">i</span></label>
+                                data-tooltip="Maximum file size: 100MB. All file types accepted.">i</span></label>
                         <input type="file" id="mechanicalDrawings" name="mechanicalDrawings">
                     </div>
                 </div>
@@ -1101,65 +1104,82 @@
             const reviewStep = document.getElementById('reviewStep');
             const progressTracker = document.getElementById('progress-tracker');
 
+            // File size validation for mechanical drawings - 100MB limit
+            document.getElementById('mechanicalDrawings').addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                const maxSize = 100 * 1024 * 1024; // 100MB in bytes
+                
+                if (file && file.size > maxSize) {
+                    alert('File size exceeds 100MB limit.');
+                    e.target.value = ''; // Clear the input
+                }
+            });
+
             // Define hierarchical data structure for BMS relationships
             const bmsHierarchy = {
                 "Johnson Controls": {
-                    platforms: ["Metasys", "Facility Explorer", "Verasys", "Other JCI"],
+                    platforms: ["Metasys", "Facility Explorer", "Verasys", "Other JCI", "Other"],
                     versions: {
                         "Metasys": ["ADX", "SMP", "NAE", "NCE", "N4", "v12.0", "v11.0", "v10.0", "Legacy"]
                     }
                 },
                 "Siemens": {
-                    platforms: ["Desigo CC", "APOGEE", "Desigo PX", "Other Siemens"],
+                    platforms: ["Desigo CC", "APOGEE", "Desigo PX", "Other Siemens", "Other"],
                     versions: {
                         "Desigo CC": ["v6.0", "v5.x", "v4.x", "v3.x", "v2.x", "v1.x", "Other"]
                     }
                 },
                 "Honeywell": {
-                    platforms: ["Niagara", "EBI", "Other Honeywell"],
+                    platforms: ["EBI", "ComfortPoint Open", "WEBs-N4", "Other Honeywell", "Other"],
                     versions: {
-                        "Niagara": ["v4.x", "v3.x", "v2.x", "Legacy"]
+                        "EBI": ["v4.x", "v3.x", "v2.x", "Legacy"]
+                    }
+                },
+                "Tridium": {
+                    platforms: ["Niagara 4", "Niagara AX", "Other Tridium", "Other"],
+                    versions: {
+                        "Niagara 4": ["v4.x", "v3.x", "v2.x", "Legacy"]
                     }
                 },
                 "Schneider Electric": {
-                    platforms: ["EcoStruxure", "SmartStruxure", "Other Schneider"],
+                    platforms: ["EcoStruxure Building Operation", "SmartStruxure", "Other Schneider", "Other"],
                     versions: {
-                        "EcoStruxure": ["v2.x", "v1.x", "Other"]
+                        "EcoStruxure Building Operation": ["v2.x", "v1.x", "Other"]
                     }
                 },
                 "Trane": {
-                    platforms: ["Tracer SC", "Tracer Ensemble", "Other Trane"],
+                    platforms: ["Tracer SC+", "Tracer Ensemble", "Other Trane", "Other"],
                     versions: {
-                        "Tracer SC": ["v2.x", "v1.x", "Other"]
+                        "Tracer SC+": ["v2.x", "v1.x", "Other"]
                     }
                 },
                 "Alerton": {
-                    platforms: ["Ascent", "BACtalk", "Compass", "VisualLogic", "Other Alerton"],
+                    platforms: ["Compass", "Ascent", "BACtalk", "Other Alerton", "Other"],
                     versions: {
                         "Ascent": ["ACM", "Microset 4", "Compass", "Current", "Legacy", "Other"],
                         "BACtalk": ["VLC-1188", "VLC-853", "VLC-550", "VLC-444", "Current", "Legacy", "Other"]
                     }
                 },
                 "Automated Logic": {
-                    platforms: ["WebCTRL", "Other ALC"],
+                    platforms: ["WebCTRL", "Other ALC", "Other"],
                     versions: {
                         "WebCTRL": ["v8.x", "v7.x", "v6.x", "Other"]
                     }
                 },
                 "Distech Controls": {
-                    platforms: ["ECLYPSE", "Other Distech"],
+                    platforms: ["ECLYPSE", "Other Distech", "Other"],
                     versions: {
                         "ECLYPSE": ["Current", "Legacy", "Other"]
                     }
                 },
                 "Delta Controls": {
-                    platforms: ["enteliWEB", "Other Delta"],
+                    platforms: ["enteliWEB", "Other Delta", "Other"],
                     versions: {
                         "enteliWEB": ["Current", "Legacy", "Other"]
                     }
                 },
                 "KMC Controls": {
-                    platforms: ["KMC Commander", "Other KMC"],
+                    platforms: ["KMC Commander", "Other KMC", "Other"],
                     versions: {
                         "KMC Commander": ["Current", "Legacy", "Other"]
                     }
@@ -1174,14 +1194,14 @@
 
             // Define AHU manufacturer → model relationships
             const ahuModels = {
-                "Trane": ["Performance Climate Changer™", "IntelliPak™ I", "IntelliPak™ II", "CSAA Custom", "M-Series Climate Changer™", "Other Trane"],
-                "Carrier": ["39M Aero®", "39S Series", "AquaEdge®", "Custom AHU", "Other Carrier"],
-                "Lennox": ["Predator™ series", "Landmark", "Energence", "Other Lennox"],
-                "AAON": ["Custom Packaged AHUs", "RN Series", "RL Series", "Other AAON"],
-                "Daikin": ["Vision®", "Skyline®", "Pathfinder®", "Magnitude®", "Other Daikin"],
-                "York": ["Solution™ Series", "York Custom AHU", "YK", "YZ", "Other York"],
-                "Goodman": ["Commercial Series", "Other Goodman"],
-                "McQuay": ["Vision", "Skyline", "Other McQuay"],
+                "Trane": ["Performance Climate Changer™", "IntelliPak™ I", "IntelliPak™ II", "CSAA Custom", "M-Series Climate Changer™", "Other Trane", "Other"],
+                "Carrier": ["39M Aero®", "39S Series", "Custom AHU", "Other Carrier", "Other"],
+                "Lennox": ["Predator™ Series", "Landmark", "Energence", "Other Lennox", "Other"],
+                "AAON": ["Custom Packaged AHUs", "RN Series", "RL Series", "Other AAON", "Other"],
+                "Daikin": ["Vision®", "Skyline®", "Other Daikin", "Other"],
+                "York": ["Solution™ Series", "York Custom AHU", "Other York", "Other"],
+                "Goodman": ["Commercial Series", "Other Goodman", "Other"],
+                "McQuay": ["Vision", "Skyline", "Other McQuay", "Other"],
                 "Other": ["Other"]
             };
 
