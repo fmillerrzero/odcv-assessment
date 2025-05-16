@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Occupancy-Driven Demand-Controlled Ventilation (O-DCV) Assessment Form for R-Zero">
     <meta name="author" content="R-Zero">
-    <title>O-DCV Assessment Form | R-Zero</title>
+    <title>O-DCV Building Assessment | R-Zero</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <!-- Add Google Maps Web Components library -->
@@ -677,14 +677,27 @@
         /* Style for the place autocomplete input inside the component */
         gmp-place-autocomplete input {
             width: 100%;
-            padding: 0.85rem 1rem;
+            max-width: 100%;
             box-sizing: border-box;
+            padding: 0.85rem 1rem;
             border: 1px solid #e0e5ec;
             border-radius: var(--radius-sm);
             font-size: 1rem;
             font-family: var(--font-family);
             background-color: #fafbfc;
             color: var(--text);
+            transition: all 0.2s ease;
+        }
+        
+        gmp-place-autocomplete input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(0, 118, 157, 0.25);
+        }
+        
+        gmp-place-autocomplete input.validation-error {
+            border: 1px solid var(--error);
+            background-color: rgba(229, 62, 62, 0.05);
         }
         
         /* Disabled button styling */
@@ -722,11 +735,11 @@
         <header class="form-header">
             <img src="https://rzero.com/wp-content/uploads/2021/10/rzero-logo-pad.svg" alt="R-Zero Logo"
                 class="rzero-logo">
-            <h1 id="form-title">O-DCV Assessment Form</h1>
+            <h1 id="form-title">O-DCV Building Assessment</h1>
         </header>
         <div class="form-progress" id="progress-tracker">
             <span class="step active" data-step="1">1. Basic Information</span>
-            <span class="step" data-step="2">2. HVAC System</span>
+            <span class="step" data-step="2">2. Scoping Questions</span>
             <span class="step" data-step="3">3. Implementation Details</span>
         </div>
         <form id="assessmentForm"
@@ -758,11 +771,9 @@
                         <select id="jobTitle" name="jobTitle" required>
                             <option value="">Select an option...</option>
                             <optgroup label="Engineering">
-                                <option value="automation_technician">Automation Technician</option>
                                 <option value="building_engineer">Building Engineer</option>
                                 <option value="controls_engineer">Controls Engineer</option>
                                 <option value="hvac_engineer">HVAC Engineer</option>
-                                <option value="systems_integrator">Systems Integrator</option>
                             </optgroup>
                             <optgroup label="Operations">
                                 <option value="building_manager">Building Manager</option>
@@ -843,7 +854,7 @@
                 </div>
             </fieldset>
 
-            <!-- STEP 2: HVAC System -->
+            <!-- STEP 2: Scoping Questions -->
             <fieldset id="techSpecsStep" class="form-step" style="display: none;">
                 <div class="form-section">
                     <div class="form-group">
@@ -881,27 +892,6 @@
                             <div class="radio-option">
                                 <input type="radio" id="hasAHUDontKnow" name="hasAHU" value="Don't know">
                                 <label for="hasAHUDontKnow">Don't know</label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="required-field">Does your building have Terminal Units? <span class="info-tooltip"
-                                data-tooltip="Devices that regulate airflow to specific zones in a building">i</span></label>
-                        <div class="radio-group" role="radiogroup">
-                            <div class="radio-option">
-                                <input type="radio" id="hasTerminalUnitsYes" name="hasTerminalUnits" value="Yes"
-                                    required>
-                                <label for="hasTerminalUnitsYes">Yes</label>
-                            </div>
-                            <div class="radio-option">
-                                <input type="radio" id="hasTerminalUnitsNo" name="hasTerminalUnits" value="No">
-                                <label for="hasTerminalUnitsNo">No</label>
-                            </div>
-                            <div class="radio-option">
-                                <input type="radio" id="hasTerminalUnitsDontKnow" name="hasTerminalUnits"
-                                    value="Don't know">
-                                <label for="hasTerminalUnitsDontKnow">Don't know</label>
                             </div>
                         </div>
                     </div>
@@ -1029,147 +1019,9 @@
                     </div>
                     
                     <div class="form-group">
-                        <label class="required-field">Which of your supply air fans use a Variable Frequency Drive? <span class="info-tooltip" data-tooltip="VFDs allow fans to operate at variable speeds, which is critical for ODCV implementation. A 20% reduction in fan speed can result in approximately 50% energy savings due to the cube law relationship.">i</span></label>
-                        <div class="radio-group" role="radiogroup">
-                            <div class="radio-option">
-                                <input type="radio" id="hasVfdAll" name="hasVfd" value="All" required>
-                                <label for="hasVfdAll">All</label>
-                            </div>
-                            <div class="radio-option">
-                                <input type="radio" id="hasVfdSome" name="hasVfd" value="Some">
-                                <label for="hasVfdSome">Some</label>
-                            </div>
-                            <div class="radio-option">
-                                <input type="radio" id="hasVfdNone" name="hasVfd" value="None">
-                                <label for="hasVfdNone">None</label>
-                            </div>
-                            <div class="radio-option">
-                                <input type="radio" id="hasVfdDontKnow" name="hasVfd" value="Don't know">
-                                <label for="hasVfdDontKnow">Don't know</label>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="required-field">Does your system have central outdoor air dampers? <span class="info-tooltip" data-tooltip="Dampers that control the amount of fresh air entering the HVAC system. These are essential for implementing demand-controlled ventilation.">i</span></label>
-                        <div class="radio-group" role="radiogroup">
-                            <div class="radio-option">
-                                <input type="radio" id="hasCentralOADamperYes" name="hasCentralOADamper" value="Yes" required>
-                                <label for="hasCentralOADamperYes">Yes</label>
-                            </div>
-                            <div class="radio-option">
-                                <input type="radio" id="hasCentralOADamperNo" name="hasCentralOADamper" value="No">
-                                <label for="hasCentralOADamperNo">No</label>
-                            </div>
-                            <div class="radio-option">
-                                <input type="radio" id="hasCentralOADamperDontKnow" name="hasCentralOADamper" value="Don't know">
-                                <label for="hasCentralOADamperDontKnow">Don't know</label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Terminal Units Details Section (only shown if "Yes" to Terminal Units question) -->
-                <div id="terminalUnitDetailsSection" class="form-section conditional-section">
-                    <h3>Terminal Units</h3>
-
-                    <div class="form-group">
-                        <label for="terminalUnitCount">Number of terminal units</label>
-                        <input type="number" id="terminalUnitCount" name="terminalUnitCount" min="0" autocomplete="off">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="terminalUnitType">What type of terminal units are installed? <span
-                                class="info-tooltip"
-                                data-tooltip="The specific type of devices that regulate airflow to zones in your building">i</span></label>
-                        <select id="terminalUnitType" name="terminalUnitType">
-                            <option value="">Select an option...</option>
-                            <option value="VAV">VAV (Variable Air Volume)</option>
-                            <option value="CAV">CAV (Constant Air Volume)</option>
-                            <option value="FanPowered">Fan-Powered Boxes</option>
-                            <option value="ChilledBeams">Chilled Beams</option>
-                            <option value="Other">Other</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="terminalUnitManufacturer">Terminal Unit Manufacturer</label>
-                        <select id="terminalUnitManufacturer" name="terminalUnitManufacturer">
-                            <option value="">Select an option...</option>
-                            <option value="Trane">Trane</option>
-                            <option value="Johnson Controls">Johnson Controls</option>
-                            <option value="Carrier">Carrier</option>
-                            <option value="Siemens">Siemens</option>
-                            <option value="Honeywell">Honeywell</option>
-                            <option value="Price Industries">Price Industries</option>
-                            <option value="Nailor">Nailor</option>
-                            <option value="Other">Other</option>
-                            <option value="dontKnow">Don't know</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="terminalUnitModel">Terminal Unit Model</label>
-                        <select id="terminalUnitModel" name="terminalUnitModel" disabled>
-                            <option value="">Select manufacturer first...</option>
-                            <option value="dontKnow">Don't know</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- Implementation Area Section -->
-                <div class="form-section implementation-area">
-                    <h3>Pilot Area</h3>
-                    <div class="form-group">
-                        <label>Have Specific Area in Mind for O-DCV Implementation? <span class="info-tooltip"
-                                data-tooltip="A specific floor or zone where you'd like to implement this solution">i</span></label>
-                        <div class="radio-group" role="radiogroup">
-                            <div class="radio-option">
-                                <input type="radio" id="knowPilotFloorYes" name="knowPilotFloor" value="Yes">
-                                <label for="knowPilotFloorYes">Yes</label>
-                            </div>
-                            <div class="radio-option">
-                                <input type="radio" id="knowPilotFloorNo" name="knowPilotFloor" value="No">
-                                <label for="knowPilotFloorNo">No</label>
-                            </div>
-                            <div class="radio-option">
-                                <input type="radio" id="knowPilotFloorDontKnow" name="knowPilotFloor"
-                                    value="Don't know">
-                                <label for="knowPilotFloorDontKnow">Don't know</label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Specific Area Details (only shown if "Yes" to Implementation Area question) -->
-                    <div id="knowPilotFloorYesDiv" class="conditional-section">
-                        <div class="form-group">
-                            <label for="pilotFloors">Pilot Floor(s)</label>
-                            <input type="text" id="pilotFloors" name="pilotFloors" autocomplete="off">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="pilotAreaSquareFootage">Pilot Area Square Footage</label>
-                            <input type="number" id="pilotAreaSquareFootage" name="pilotAreaSquareFootage" min="0" autocomplete="off">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="typicalOccupancyPattern">Typical Occupancy Pattern</label>
-                            <select id="typicalOccupancyPattern" name="typicalOccupancyPattern">
-                                <option value="">Select an option...</option>
-                                <option value="Regular">Regular (weekday, 9am-5pm)</option>
-                                <option value="Extended">Extended (weekday, 7am-7pm)</option>
-                                <option value="Continuous">Continuous (24/7)</option>
-                                <option value="Seasonal">Seasonal</option>
-                                <option value="Event-driven">Event-driven</option>
-                                <option value="Other">Other</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="mechanicalDrawings">Mechanical Drawings <span class="info-tooltip"
-                                    data-tooltip="Maximum file size: 10MB. Accepted formats: PDF, JPG, PNG">i</span></label>
-                            <input type="file" id="mechanicalDrawings" name="mechanicalDrawings">
-                        </div>
+                        <label for="mechanicalDrawings">Mechanical Drawings <span class="info-tooltip"
+                                data-tooltip="Maximum file size: 10MB. Accepted formats: PDF, JPG, PNG">i</span></label>
+                        <input type="file" id="mechanicalDrawings" name="mechanicalDrawings">
                     </div>
                 </div>
             </fieldset>
@@ -1229,7 +1081,7 @@
                 logoUrl: "download.png",       // R-Zero logo path
                 contactEmail: "support@rzerosystems.com",
                 website: "https://www.rzerosystems.com",
-                formTitle: "O-DCV Assessment Form | R-Zero",
+                formTitle: "O-DCV Building Assessment | R-Zero",
                 copyrightYear: new Date().getFullYear()
             };
 
@@ -1330,18 +1182,6 @@
                 "York": ["Solution™ Series", "York Custom AHU", "YK", "YZ", "Other York"],
                 "Goodman": ["Commercial Series", "Other Goodman"],
                 "McQuay": ["Vision", "Skyline", "Other McQuay"],
-                "Other": ["Other"]
-            };
-
-            // Define Terminal Unit manufacturer → model relationships
-            const terminalUnitModels = {
-                "Trane": ["VariTrane", "VariTrane VAV", "Other Trane"],
-                "Johnson Controls": ["VMA Series", "VAV Series", "Other JCI"],
-                "Carrier": ["Aero VAV", "VVT Series", "Other Carrier"],
-                "Siemens": ["VAV Series", "Other Siemens"],
-                "Honeywell": ["Spyder Series", "Other Honeywell"],
-                "Price Industries": ["SDV Series", "SDVQ Series", "MCV Series", "FDV Series", "Other Price"],
-                "Nailor": ["Series 3000", "Series 3500", "Series 3600", "Series 3800", "Other Nailor"],
                 "Other": ["Other"]
             };
 
@@ -1446,7 +1286,7 @@
             function getStepName(step) {
                 const names = [
                     "Basic Information",
-                    "HVAC System",
+                    "Scoping Questions",
                     "Implementation Details"
                 ];
                 return names[step-1] || "";
@@ -1540,32 +1380,33 @@
                             return;
                         }
                         
-                        // Allow clicking current step (effectively refreshing it)
+                        // For forward navigation, always require validation
+                        if (targetStep > formState.currentStep) {
+                            // Validate the current step first
+                            if (!validateStep(formState.currentStep)) {
+                                highlightIncompleteFields(formState.currentStep);
+                                showStatus('Please complete all required fields on this step first.', 'error');
+                                return false;
+                            }
+                            
+                            // If moving to step 3, check HVAC questions are answered
+                            if (targetStep === 3) {
+                                const hvacCompleted = areHvacQuestionsCompleted();
+                                if (!hvacCompleted) {
+                                    showStatus('Please complete the HVAC System questions first.', 'error');
+                                    return false;
+                                }
+                            }
+                            
+                            formState.completedSteps[formState.currentStep - 1] = true;
+                            navigateTo(targetStep, { skipValidation: false });
+                            return;
+                        }
+                        
+                        // If it's the current step, just refresh it
                         if (targetStep === formState.currentStep) {
                             return;
                         }
-                        
-                        // For step 2, just check if step 1 is completed
-                        if (targetStep === 2 && formState.completedSteps[0]) {
-                            navigateTo(targetStep, { skipValidation: true });
-                            return;
-                        }
-                        
-                        // For step 3, check if step 2 is complete AND HVAC questions answered
-                        if (targetStep === 3) {
-                            const hvacCompleted = areHvacQuestionsCompleted();
-                            console.log("HVAC Completed Check:", hvacCompleted);
-                            
-                            if (formState.completedSteps[1] && hvacCompleted) {
-                                navigateTo(targetStep, { skipValidation: true });
-                            } else {
-                                showStatus('Please complete the HVAC System questions first.', 'error');
-                            }
-                            return;
-                        }
-                        
-                        // Default: require validation of current step
-                        navigateTo(targetStep);
                     });
                 });
             }
@@ -1574,16 +1415,14 @@
             function areHvacQuestionsCompleted() {
                 const hasBMS = document.querySelector('input[name="hasBMS"]:checked');
                 const hasAHU = document.querySelector('input[name="hasAHU"]:checked');
-                const hasTerminalUnits = document.querySelector('input[name="hasTerminalUnits"]:checked');
                 
                 // Debug to console to help diagnose the issue
                 console.log("HVAC Validation:", {
                     hasBMS: hasBMS ? hasBMS.value : null,
-                    hasAHU: hasAHU ? hasAHU.value : null,
-                    hasTerminalUnits: hasTerminalUnits ? hasTerminalUnits.value : null
+                    hasAHU: hasAHU ? hasAHU.value : null
                 });
                 
-                return hasBMS !== null && hasAHU !== null && hasTerminalUnits !== null;
+                return hasBMS !== null && hasAHU !== null;
             }
 
             // Hash-based navigation setup 
@@ -1690,9 +1529,8 @@
                 if (formState.currentStep === 2) {
                     const hasBMS = document.querySelector('input[name="hasBMS"]:checked');
                     const hasAHU = document.querySelector('input[name="hasAHU"]:checked');
-                    const hasTerminalUnits = document.querySelector('input[name="hasTerminalUnits"]:checked');
                     
-                    return hasBMS !== null && hasAHU !== null && hasTerminalUnits !== null;
+                    return hasBMS !== null && hasAHU !== null;
                 }
                 
                 // Check required fields
@@ -1721,22 +1559,6 @@
                     }
                 });
                 
-                // Additional step-specific validations
-                if (formState.currentStep === 3) {
-                    // Check VFD question if AHUs are present
-                    const hasAHU = document.querySelector('input[name="hasAHU"]:checked')?.value;
-                    if (hasAHU === 'Yes') {
-                        if (!document.querySelector('input[name="hasVfd"]:checked')) {
-                            isValid = false;
-                        }
-                        
-                        // Check OA damper question
-                        if (!document.querySelector('input[name="hasCentralOADamper"]:checked')) {
-                            isValid = false;
-                        }
-                    }
-                }
-                
                 return isValid;
             }
 
@@ -1759,24 +1581,6 @@
                         const ahuDetailsSection = document.getElementById('ahuDetailsSection');
                         
                         toggleConditionalSection(ahuDetailsSection, this.value === 'Yes');
-                        updateButtonStates();
-                    });
-                });
-
-                // Terminal Units conditional visibility
-                document.querySelectorAll('input[name="hasTerminalUnits"]').forEach(radio => {
-                    radio.addEventListener('change', function () {
-                        const terminalUnitDetailsSection = document.getElementById('terminalUnitDetailsSection');
-                        toggleConditionalSection(terminalUnitDetailsSection, this.value === 'Yes');
-                        updateButtonStates();
-                    });
-                });
-
-                // Pilot Area conditional visibility
-                document.querySelectorAll('input[name="knowPilotFloor"]').forEach(radio => {
-                    radio.addEventListener('change', function () {
-                        const pilotDetailsYesSection = document.getElementById('knowPilotFloorYesDiv');
-                        toggleConditionalSection(pilotDetailsYesSection, this.value === 'Yes');
                         updateButtonStates();
                     });
                 });
@@ -1826,17 +1630,6 @@
                 if (ahuManufacturer && ahuModel) {
                     ahuManufacturer.addEventListener('change', function () {
                         updateAHUModels(this.value);
-                        updateButtonStates();
-                    });
-                }
-
-                // Terminal Unit Manufacturer -> Model
-                const terminalUnitManufacturer = document.getElementById('terminalUnitManufacturer');
-                const terminalUnitModel = document.getElementById('terminalUnitModel');
-
-                if (terminalUnitManufacturer && terminalUnitModel) {
-                    terminalUnitManufacturer.addEventListener('change', function () {
-                        updateTerminalUnitModels(this.value);
                         updateButtonStates();
                     });
                 }
@@ -1895,43 +1688,6 @@
 
                 modelSelect.disabled = false;
                 const models = ahuModels[manufacturer] || [];
-
-                models.forEach(model => {
-                    const option = document.createElement('option');
-                    option.value = model;
-                    option.textContent = model;
-                    modelSelect.appendChild(option);
-                });
-
-                // Add Don't know option
-                const dontKnowOption = document.createElement('option');
-                dontKnowOption.value = 'dontKnow';
-                dontKnowOption.textContent = 'Don\'t know';
-                modelSelect.appendChild(dontKnowOption);
-
-                // Restore previous value if it exists in the new options
-                if (currentValue) {
-                    const exists = Array.from(modelSelect.options).some(opt => opt.value === currentValue);
-                    if (exists) {
-                        modelSelect.value = currentValue;
-                    }
-                }
-            }
-
-            // Update Terminal Unit models based on manufacturer
-            function updateTerminalUnitModels(manufacturer) {
-                const modelSelect = document.getElementById('terminalUnitModel');
-                const currentValue = modelSelect.value; // Store current value
-
-                modelSelect.innerHTML = '<option value="">Select an option...</option>';
-
-                if (!manufacturer || manufacturer === '') {
-                    modelSelect.disabled = true;
-                    return;
-                }
-
-                modelSelect.disabled = false;
-                const models = terminalUnitModels[manufacturer] || [];
 
                 models.forEach(model => {
                     const option = document.createElement('option');
@@ -2059,9 +1815,8 @@
                 if (step === 2) {
                     const hasBMS = document.querySelector('input[name="hasBMS"]:checked');
                     const hasAHU = document.querySelector('input[name="hasAHU"]:checked');
-                    const hasTerminalUnits = document.querySelector('input[name="hasTerminalUnits"]:checked');
                     
-                    const hvacValid = hasBMS !== null && hasAHU !== null && hasTerminalUnits !== null;
+                    const hvacValid = hasBMS !== null && hasAHU !== null;
                     
                     if (!hvacValid && highlightErrors) {
                         // Highlight any missing radio groups
@@ -2073,12 +1828,6 @@
                         
                         if (!hasAHU) {
                             document.querySelectorAll('input[name="hasAHU"]').forEach(radio => {
-                                radio.closest('.radio-option')?.classList.add('validation-error');
-                            });
-                        }
-                        
-                        if (!hasTerminalUnits) {
-                            document.querySelectorAll('input[name="hasTerminalUnits"]').forEach(radio => {
                                 radio.closest('.radio-option')?.classList.add('validation-error');
                             });
                         }
@@ -2121,45 +1870,6 @@
                         isValid = false;
                     }
                 });
-                
-                // Additional step-specific validation
-                if (step === 3) {
-                    const hasAHU = document.querySelector('input[name="hasAHU"]:checked')?.value;
-                    
-                    // Validate VFD question if AHUs are present
-                    if (hasAHU === 'Yes') {
-                        const hasVfd = document.querySelector('input[name="hasVfd"]:checked');
-                        if (!hasVfd) {
-                            isValid = false;
-                            
-                            if (highlightErrors) {
-                                // Highlight all VFD radio options
-                                document.querySelectorAll('input[name="hasVfd"]').forEach(radio => {
-                                    const radioOption = radio.closest('.radio-option');
-                                    if (radioOption) {
-                                        radioOption.classList.add('validation-error');
-                                    }
-                                });
-                            }
-                        }
-                        
-                        // Check OA damper question
-                        const hasOADamper = document.querySelector('input[name="hasCentralOADamper"]:checked');
-                        if (!hasOADamper) {
-                            isValid = false;
-                            
-                            if (highlightErrors) {
-                                // Highlight all OA damper radio options
-                                document.querySelectorAll('input[name="hasCentralOADamper"]').forEach(radio => {
-                                    const radioOption = radio.closest('.radio-option');
-                                    if (radioOption) {
-                                        radioOption.classList.add('validation-error');
-                                    }
-                                });
-                            }
-                        }
-                    }
-                }
                 
                 // Check square footage per floor ratio
                 if (step === 1) {
@@ -2289,7 +1999,17 @@
                 form.appendChild(hiddenInput);
                 formValues['bmsDataPointsList'] = bmsDataPoints;
 
-                // Enhanced sections for review to include "Other" fields
+                // Get address from the hidden field
+                formValues['address'] = document.getElementById('addressValue').value;
+
+                // Collect all values first
+                for (let [key, value] of formData) {
+                    if (value && value !== '' && !key.includes('file')) {
+                        formValues[key] = value;
+                    }
+                }
+
+                // Enhanced sections for review with conditional visibility
                 const sections = {
                     'Contact Information': [
                         'name', 'email', 'phone', 'jobTitle', 'otherJobTitle',
@@ -2301,42 +2021,31 @@
                         'squareFootage', 'floors'
                     ],
                     'HVAC System Overview': [
-                        'hasBMS', 'hasAHU', 'hasTerminalUnits'
-                    ],
-                    'BMS Details': [
-                        'bmsManufacturer', 'otherBmsManufacturer', 'bmsPlatform', 'otherBmsPlatform',
-                        'bmsProtocol', 'otherBmsProtocol'
-                    ],
-                    'AHU Details': [
-                        'ahuCount', 'floorsPerAHU', 'ahuManufacturer',
-                        'otherAhuManufacturer', 'ahuModel', 'otherAhuModel',
-                        'hasVfd', 'hasCentralOADamper'
-                    ],
-                    'Terminal Units': [
-                        'terminalUnitCount', 'terminalUnitType',
-                        'terminalUnitManufacturer', 'otherTerminalUnitManufacturer',
-                        'terminalUnitModel', 'otherTerminalUnitModel'
-                    ],
-                    'Implementation Area': [
-                        'knowPilotFloor', 'pilotFloors', 'pilotAreaSquareFootage',
-                        'typicalOccupancyPattern', 'otherTypicalOccupancyPattern'
-                    ],
-                    'BMS Data Points': [
-                        'bmsDataPointsList'
-                    ],
-                    'Project Goals': [
-                        'primaryGoal', 'otherPrimaryGoal', 'expectedBenefits'
+                        'hasBMS', 'hasAHU'
                     ]
                 };
 
-                // Get address from the hidden field
-                formValues['address'] = document.getElementById('addressValue').value;
+                // Add conditional sections based on user's answers
+                if (formValues['hasBMS'] === 'Yes') {
+                    sections['BMS Details'] = [
+                        'bmsManufacturer', 'otherBmsManufacturer', 'bmsPlatform', 'otherBmsPlatform',
+                        'bmsProtocol', 'otherBmsProtocol', 'bmsDataPointsList'
+                    ];
+                }
 
-                // Collect all values first
-                for (let [key, value] of formData) {
-                    if (value && value !== '' && !key.includes('file')) {
-                        formValues[key] = value;
-                    }
+                if (formValues['hasAHU'] === 'Yes') {
+                    sections['AHU Details'] = [
+                        'ahuCount', 'floorsPerAHU', 'ahuManufacturer',
+                        'otherAhuManufacturer', 'ahuModel', 'otherAhuModel'
+                        // Note: 'mechanicalDrawings' file won't be included because we're not including file fields
+                    ];
+                }
+
+                // Only include Project Goals if there are values
+                if (formValues['primaryGoal'] || formValues['otherPrimaryGoal'] || formValues['expectedBenefits']) {
+                    sections['Project Goals'] = [
+                        'primaryGoal', 'otherPrimaryGoal', 'expectedBenefits'
+                    ];
                 }
 
                 // Helper function to get section HTML
@@ -2680,12 +2389,6 @@
                     updateAHUModels(ahuManufacturer.value);
                 }
 
-                // Terminal Unit values
-                const terminalUnitManufacturer = document.getElementById('terminalUnitManufacturer');
-                if (terminalUnitManufacturer && terminalUnitManufacturer.value) {
-                    updateTerminalUnitModels(terminalUnitManufacturer.value);
-                }
-
                 // Show/hide conditional sections based on radio values
                 const hasBMS = document.querySelector('input[name="hasBMS"]:checked');
                 if (hasBMS) {
@@ -2722,28 +2425,6 @@
                         }
                     }
                 }
-
-                const hasTerminalUnits = document.querySelector('input[name="hasTerminalUnits"]:checked');
-                if (hasTerminalUnits) {
-                    const terminalUnitDetailsSection = document.getElementById('terminalUnitDetailsSection');
-                    if (hasTerminalUnits.value === 'Yes') {
-                        terminalUnitDetailsSection.classList.add('show');
-                        terminalUnitDetailsSection.querySelectorAll('input, select, textarea').forEach(field => {
-                            field.disabled = false;
-                        });
-                    }
-                }
-
-                const knowPilotFloor = document.querySelector('input[name="knowPilotFloor"]:checked');
-                if (knowPilotFloor) {
-                    const pilotDetailsYesSection = document.getElementById('knowPilotFloorYesDiv');
-                    if (knowPilotFloor.value === 'Yes') {
-                        pilotDetailsYesSection.classList.add('show');
-                        pilotDetailsYesSection.querySelectorAll('input, select, textarea').forEach(field => {
-                            field.disabled = false;
-                        });
-                    }
-                }
             }
 
             // Function to check and handle "Other" fields visibility properly during restore
@@ -2751,8 +2432,8 @@
                 // Check each select that might have an "Other" option
                 const selectsWithOther = [
                     'jobTitle', 'orgType', 'buildingType', 'buildingOperatingHours',
-                    'bmsManufacturer', 'bmsProtocol', 'ahuManufacturer', 'terminalUnitManufacturer',
-                    'typicalOccupancyPattern', 'primaryGoal'
+                    'bmsManufacturer', 'bmsProtocol', 'ahuManufacturer',
+                    'primaryGoal'
                 ];
 
                 selectsWithOther.forEach(fieldName => {
@@ -2788,22 +2469,12 @@
                         floors: '2',
                         hasBMS: 'Yes',
                         hasAHU: 'Yes',
-                        hasTerminalUnits: 'Yes',
                         ahuCount: '2',
                         floorsPerAHU: '1',
                         ahuManufacturer: 'Trane',
-                        terminalUnitCount: '20',
-                        terminalUnitType: 'VAV',
-                        terminalUnitManufacturer: 'Trane',
                         bmsManufacturer: 'Johnson Controls',
                         bmsPlatform: 'Metasys',
                         bmsProtocol: 'BACnet/IP',
-                        hasVfd: 'All',
-                        hasCentralOADamper: 'Yes',
-                        knowPilotFloor: 'Yes',
-                        pilotFloors: '1',
-                        pilotAreaSquareFootage: '5000',
-                        typicalOccupancyPattern: 'Regular',
                         primaryGoal: 'costReduction',
                         expectedBenefits: 'Reduce energy costs by 20% while maintaining comfort.'
                     };
