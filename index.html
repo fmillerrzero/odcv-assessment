@@ -881,8 +881,7 @@
             <fieldset id="techSpecsStep" class="form-step" style="display: none;">
                 <div class="form-section">
                     <div class="form-group">
-                        <label class="required-field">Does your building have a BMS? <span class="info-tooltip"
-                                data-tooltip="Building Management System - computerized control system that monitors and manages mechanical and electrical equipment">i</span></label>
+                        <label class="required-field">Does your building have a BMS?</label>
                         <div class="radio-group" role="radiogroup">
                             <div class="radio-option">
                                 <input type="radio" id="hasBMSYes" name="hasBMS" value="Yes" required>
@@ -900,9 +899,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label class="required-field">Does your building have Air Handling Units (AHUs)? <span
-                                class="info-tooltip"
-                                data-tooltip="Equipment that regulates and circulates air as part of the HVAC system">i</span></label>
+                        <label class="required-field">Does your building have AHUs?</label>
                         <div class="radio-group" role="radiogroup">
                             <div class="radio-option">
                                 <input type="radio" id="hasAHUYes" name="hasAHU" value="Yes" required>
@@ -1118,68 +1115,68 @@
             // Define hierarchical data structure for BMS relationships
             const bmsHierarchy = {
                 "Johnson Controls": {
-                    platforms: ["Metasys", "Facility Explorer", "Verasys", "Other JCI", "Other"],
+                    platforms: ["Metasys", "Facility Explorer", "Verasys", "Other"],
                     versions: {
                         "Metasys": ["ADX", "SMP", "NAE", "NCE", "N4", "v12.0", "v11.0", "v10.0", "Legacy"]
                     }
                 },
                 "Siemens": {
-                    platforms: ["Desigo CC", "APOGEE", "Desigo PX", "Other Siemens", "Other"],
+                    platforms: ["Desigo CC", "APOGEE", "Desigo PX", "Other"],
                     versions: {
                         "Desigo CC": ["v6.0", "v5.x", "v4.x", "v3.x", "v2.x", "v1.x", "Other"]
                     }
                 },
                 "Honeywell": {
-                    platforms: ["EBI", "ComfortPoint Open", "WEBs-N4", "Other Honeywell", "Other"],
+                    platforms: ["EBI", "ComfortPoint Open", "WEBs-N4", "Other"],
                     versions: {
                         "EBI": ["v4.x", "v3.x", "v2.x", "Legacy"]
                     }
                 },
                 "Tridium": {
-                    platforms: ["Niagara 4", "Niagara AX", "Other Tridium", "Other"],
+                    platforms: ["Niagara 4", "Niagara AX", "Other"],
                     versions: {
                         "Niagara 4": ["v4.x", "v3.x", "v2.x", "Legacy"]
                     }
                 },
                 "Schneider Electric": {
-                    platforms: ["EcoStruxure Building Operation", "SmartStruxure", "Other Schneider", "Other"],
+                    platforms: ["EcoStruxure Building Operation", "SmartStruxure", "Other"],
                     versions: {
                         "EcoStruxure Building Operation": ["v2.x", "v1.x", "Other"]
                     }
                 },
                 "Trane": {
-                    platforms: ["Tracer SC+", "Tracer Ensemble", "Other Trane", "Other"],
+                    platforms: ["Tracer SC+", "Tracer Ensemble", "Other"],
                     versions: {
                         "Tracer SC+": ["v2.x", "v1.x", "Other"]
                     }
                 },
                 "Alerton": {
-                    platforms: ["Compass", "Ascent", "BACtalk", "Other Alerton", "Other"],
+                    platforms: ["Compass", "Ascent", "BACtalk", "Other"],
                     versions: {
                         "Ascent": ["ACM", "Microset 4", "Compass", "Current", "Legacy", "Other"],
                         "BACtalk": ["VLC-1188", "VLC-853", "VLC-550", "VLC-444", "Current", "Legacy", "Other"]
                     }
                 },
                 "Automated Logic": {
-                    platforms: ["WebCTRL", "Other ALC", "Other"],
+                    platforms: ["WebCTRL", "Other"],
                     versions: {
                         "WebCTRL": ["v8.x", "v7.x", "v6.x", "Other"]
                     }
                 },
                 "Distech Controls": {
-                    platforms: ["ECLYPSE", "Other Distech", "Other"],
+                    platforms: ["ECLYPSE", "Other"],
                     versions: {
                         "ECLYPSE": ["Current", "Legacy", "Other"]
                     }
                 },
                 "Delta Controls": {
-                    platforms: ["enteliWEB", "Other Delta", "Other"],
+                    platforms: ["enteliWEB", "Other"],
                     versions: {
                         "enteliWEB": ["Current", "Legacy", "Other"]
                     }
                 },
                 "KMC Controls": {
-                    platforms: ["KMC Commander", "Other KMC", "Other"],
+                    platforms: ["KMC Commander", "Other"],
                     versions: {
                         "KMC Commander": ["Current", "Legacy", "Other"]
                     }
@@ -1194,14 +1191,14 @@
 
             // Define AHU manufacturer → model relationships
             const ahuModels = {
-                "Trane": ["Performance Climate Changer™", "IntelliPak™ I", "IntelliPak™ II", "CSAA Custom", "M-Series Climate Changer™", "Other Trane", "Other"],
-                "Carrier": ["39M Aero®", "39S Series", "Custom AHU", "Other Carrier", "Other"],
-                "Lennox": ["Predator™ Series", "Landmark", "Energence", "Other Lennox", "Other"],
-                "AAON": ["Custom Packaged AHUs", "RN Series", "RL Series", "Other AAON", "Other"],
-                "Daikin": ["Vision®", "Skyline®", "Other Daikin", "Other"],
-                "York": ["Solution™ Series", "York Custom AHU", "Other York", "Other"],
-                "Goodman": ["Commercial Series", "Other Goodman", "Other"],
-                "McQuay": ["Vision", "Skyline", "Other McQuay", "Other"],
+                "Trane": ["Performance Climate Changer™", "IntelliPak™ I", "IntelliPak™ II", "CSAA Custom", "M-Series Climate Changer™", "Other"],
+                "Carrier": ["39M Aero®", "39S Series", "Custom AHU", "Other"],
+                "Lennox": ["Predator™ Series", "Landmark", "Energence", "Other"],
+                "AAON": ["Custom Packaged AHUs", "RN Series", "RL Series", "Other"],
+                "Daikin": ["Vision®", "Skyline®", "Other"],
+                "York": ["Solution™ Series", "York Custom AHU", "Other"],
+                "Goodman": ["Commercial Series", "Other"],
+                "McQuay": ["Vision", "Skyline", "Other"],
                 "Other": ["Other"]
             };
 
@@ -2477,15 +2474,20 @@
 
                 if (bmsManufacturer && bmsManufacturer.value) {
                     updateBMSPlatforms(bmsManufacturer.value);
-                    if (bmsPlatform && bmsPlatform.value) {
-                        bmsPlatform.value = bmsPlatform.value;
+                    if (bmsPlatform && formState.formData.bmsPlatform) {
+                        bmsPlatform.value = formState.formData.bmsPlatform;
                     }
                 }
 
                 // AHU values
                 const ahuManufacturer = document.getElementById('ahuManufacturer');
+                const ahuModel = document.getElementById('ahuModel');
+                
                 if (ahuManufacturer && ahuManufacturer.value) {
                     updateAHUModels(ahuManufacturer.value);
+                    if (ahuModel && formState.formData.ahuModel) {
+                        ahuModel.value = formState.formData.ahuModel;
+                    }
                 }
 
                 // Show/hide conditional sections based on radio values
@@ -2554,24 +2556,24 @@
             function setupDemoMode() {
                 demoBtn.addEventListener('click', () => {
                     form.reset();
+                    
+                    // First set the base data
                     const demoData = {
                         name: 'Jane Smith',
                         email: 'jane.smith@example.com',
                         phone: '(123) 456-7890',
-                        jobTitle: 'hvac_engineer',
+                        jobTitle: 'building_engineer',
                         organization: 'Demo Corp',
                         orgType: 'Owner',
                         buildingType: 'office',
                         buildingOperatingHours: 'standard',
-                        squareFootage: '10000',
-                        floors: '2',
+                        squareFootage: '100000',
+                        floors: '20',
                         hasBMS: 'Yes',
                         hasAHU: 'Yes',
-                        ahuCount: '2',
+                        ahuCount: '20',
                         floorsPerAHU: '1',
-                        ahuManufacturer: 'Trane',
                         bmsManufacturer: 'Johnson Controls',
-                        bmsPlatform: 'Metasys',
                         bmsProtocol: 'BACnet/IP'
                     };
 
@@ -2596,8 +2598,20 @@
                     document.getElementById('addressInput').value = '123 Main St, San Francisco, CA 94105';
                     document.getElementById('addressValue').value = '123 Main St, San Francisco, CA 94105';
 
-                    // Initialize cascading dropdowns with demo values
-                    initCascadingValues();
+                    // Setup BMS Platform and AHU Model
+                    updateBMSPlatforms('Johnson Controls');
+                    document.getElementById('bmsPlatform').value = 'Metasys';
+
+                    updateAHUModels('Trane');
+                    document.getElementById('ahuModel').value = 'IntelliPak™ I';
+                    
+                    // Set AHU manufacturer
+                    document.getElementById('ahuManufacturer').value = 'Trane';
+                    
+                    // Check all BMS data points checkboxes
+                    ['bmsDataSupplyAirflow', 'bmsDataFanSpeed', 'bmsDataOADamper', 'bmsDataSupplyTemp', 'bmsDataZoneTempSetpoint'].forEach(id => {
+                        document.getElementById(id).checked = true;
+                    });
                     
                     // Update button state
                     updateButtonStates();
