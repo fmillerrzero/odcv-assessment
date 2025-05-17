@@ -1191,13 +1191,13 @@
 
             // Define AHU manufacturer → model relationships
             const ahuModels = {
-                "Trane": ["Performance Climate Changer™", "IntelliPak™ I", "IntelliPak™ II", "CSAA Custom", "M-Series Climate Changer™", "Other"],
+                "Trane": ["Performance Climate Changer™", "CSAA Custom", "M-Series Climate Changer™", "Other"],
                 "Carrier": ["39M Aero®", "39S Series", "Custom AHU", "Other"],
-                "Lennox": ["Predator™ Series", "Landmark", "Energence", "Other"],
-                "AAON": ["Custom Packaged AHUs", "RN Series", "RL Series", "Other"],
+                "Lennox": ["Other"],
+                "AAON": ["Custom Packaged AHUs", "Other"],
                 "Daikin": ["Vision®", "Skyline®", "Other"],
                 "York": ["Solution™ Series", "York Custom AHU", "Other"],
-                "Goodman": ["Commercial Series", "Other"],
+                "Goodman": ["Other"],
                 "McQuay": ["Vision", "Skyline", "Other"],
                 "Other": ["Other"]
             };
@@ -2603,7 +2603,7 @@
                     document.getElementById('bmsPlatform').value = 'Metasys';
 
                     updateAHUModels('Trane');
-                    document.getElementById('ahuModel').value = 'IntelliPak™ I';
+                    document.getElementById('ahuModel').value = 'Performance Climate Changer™';
                     
                     // Set AHU manufacturer
                     document.getElementById('ahuManufacturer').value = 'Trane';
