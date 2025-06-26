@@ -766,8 +766,7 @@
             <span class="step" data-step="3">3. Implementation Details</span>
         </div>
         <form id="assessmentForm"
-            action="https://script.google.com/macros/s/AKfycby3Xn_RBszotfBU1YLgd-oU9T3ZFLleWq2SpFts0W2AAHjp3WcHudjudzLueVyrdd8m2Q/exec"
-            method="POST" enctype="multipart/form-data">
+             enctype="multipart/form-data" novalidate>
             <div id="form-status" class="status-indicator"></div>
 
             <!-- STEP 1: Basic Information -->
@@ -2249,6 +2248,7 @@
                     showStatus('Submitting form...', 'info');
 
                     fetch(form.action, {
+                        redirect: "follow",
                         method: 'POST',
                         body: formData
                     })
@@ -2639,5 +2639,88 @@
             }
         });
     </script>
+<script>
+console.log("JS is loading and running")
+document.addEventListener('DOMContentLoaded', function () {
+  const form = document.getElementById('assessmentForm');
+  const status = document.getElementById('form-status');
+
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    const formData = new FormData(form);
+    const endpoint = "https://script.google.com/macros/s/AKfycbzMBSUhfVHEA-nLH_IQgAITfMOMqd-KmS7s8NZ5XxorPMkp7bHKN1hudMgBNyO5Cfcz/exec"; // Replace if redeploying
+
+    try {
+      status.textContent = "Submitting...";
+      status.className = 'status-indicator';
+      status.style.display = 'block';
+
+      const response = await fetch(endpoint, {
+        method: "POST",
+        body: formData,
+        mode: "cors"
+      });
+
+      const result = await response.json();
+
+      if (result.result === "success") {
+        status.textContent = `✅ Submitted successfully! Reference #: ${result.referenceNumber}`;
+        status.className = 'status-indicator success';
+      } else {
+        status.textContent = "❌ Submission failed.";
+        status.className = 'status-indicator error';
+      }
+    } catch (err) {
+      console.error(err);
+      status.textContent = "❌ Error submitting form.";
+      status.className = 'status-indicator error';
+    }
+  });
+});
+</script>
+
+<script>
+  console.log("✅ JS script has loaded");
+
+  const form = document.getElementById('assessmentForm');
+  const status = document.getElementById('form-status');
+
+  if (!form) {
+    console.error("❌ Could not find #assessmentForm");
+  } else {
+    console.log("✅ Found #assessmentForm, binding submit listener");
+
+    form.addEventListener('submit', async function (e) {
+      e.preventDefault(); // prevent native form submission
+      console.log("🚀 JS is intercepting the form");
+
+      const formData = new FormData(form);
+      const endpoint = "https://script.google.com/macros/s/AKfycbzMBSUhfVHEA-nLH_IQgAITfMOMqd-KmS7s8NZ5XxorPMkp7bHKN1hudMgBNyO5Cfcz/exec";
+
+      try {
+        status.textContent = "Submitting...";
+        const response = await fetch(endpoint, {
+          method: "POST",
+          body: formData,
+          mode: "cors"
+        });
+
+        const result = await response.json();
+        console.log("✅ Server response:", result);
+
+        if (result.result === "success") {
+          status.textContent = `✅ Submitted! Ref: ${result.referenceNumber}`;
+        } else {
+          status.textContent = "❌ Submission failed.";
+        }
+      } catch (err) {
+        console.error("❌ Form submission error:", err);
+        status.textContent = "❌ Error submitting form. Check console.";
+      }
+    });
+  }
+</script>
+
 </body>
 </html>
