@@ -187,24 +187,6 @@
             padding-right: 2rem;
         }
 
-        /* Consistent styling for required vs optional dropdowns */
-        select.required {
-            border-left: 3px solid var(--danger-color);
-        }
-
-        /* Disabled state for dropdowns */
-        select:disabled {
-            background-color: #e9ecef;
-            cursor: not-allowed;
-            opacity: 0.8;
-        }
-
-        /* Default option styling */
-        select option[value=""] {
-            color: #6c757d;
-            font-style: italic;
-        }
-
         textarea {
             min-height: 100px;
             resize: vertical;
@@ -239,7 +221,6 @@
             cursor: pointer;
             transition: background-color 0.3s;
         }
-
 
         #nextBtn,
         .demo-btn {
@@ -485,81 +466,6 @@
             background-color: #cbd5e0;
         }
 
-        /* Improved Form Progress Steps - Clickable Steps */
-        .form-progress {
-            margin-bottom: 30px;
-        }
-
-        .form-progress .step {
-            position: relative;
-            transition: background-color 0.3s;
-            user-select: none;
-        }
-
-        .form-progress .step:not(:last-child)::after {
-            content: "";
-            position: absolute;
-            top: 50%;
-            right: -0.5rem;
-            transform: translateY(-50%);
-            width: 1rem;
-            height: 2px;
-            background-color: var(--border);
-        }
-
-        /* Form description with highlight */
-        .form-description {
-            text-align: center;
-            color: var(--text-light);
-            margin-top: 0.5rem;
-        }
-
-        .highlight-text {
-            color: var(--primary-color);
-            font-weight: 500;
-        }
-
-        /* Category headers in dropdowns */
-        optgroup {
-            font-weight: 600;
-            color: var(--primary-color);
-        }
-
-        /* Section divider */
-        .section-divider {
-            height: 1px;
-            background-color: var(--border);
-            margin: 2rem 0;
-        }
-
-        @media (max-width: 1024px) {
-            .form-container {
-                padding: 1.5rem;
-            }
-
-            legend {
-                font-size: 1.3rem;
-            }
-
-            .form-progress {
-                flex-direction: column;
-            }
-
-            .form-progress .step {
-                margin: 0.5rem 0;
-            }
-
-            .form-progress .step:not(:last-child)::after {
-                display: none;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .form-container {
-                padding: 1rem;
-            }
-        }
-
         .form-section {
             background-color: var(--surface);
             border-radius: var(--radius-md);
@@ -568,12 +474,6 @@
             border: 1px solid var(--border);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             transition: all 0.2s ease;
-        }
-
-        @media (max-width: 768px) {
-            .form-section {
-                padding: 1rem;
-            }
         }
 
         .required-field::after {
@@ -599,25 +499,6 @@
             transition: all 0.2s ease;
         }
 
-        .skip-message {
-            background-color: var(--rzero-light-blue);
-            border-left: 3px solid var(--primary-color);
-            padding: 8px 12px;
-            margin-bottom: 12px;
-            color: var(--primary-color);
-            font-size: 0.9rem;
-        }
-
-        input[type="number"]::-webkit-inner-spin-button,
-        input[type="number"]::-webkit-outer-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-
-        input[type="number"] {
-            -moz-appearance: textfield;
-        }
-        
         fieldset {
             border: none;
             padding: 0;
@@ -657,30 +538,19 @@
             margin-bottom: 0;
         }
 
-        /* New CSS for active Previous button */
-        #prevBtn.active-nav-btn {
-            background-color: var(--primary-color);
-            color: white;
-        }
-
-        #prevBtn.active-nav-btn:hover {
-            background-color: #025b78;
-        }
-        
-        /* FIX: Address input field styling to ensure it displays properly */
+        /* Address field styling */
         gmp-place-autocomplete {
             display: block;
             width: 100%;
             margin-bottom: 0;
         }
         
-        /* Style for the place autocomplete input inside the component */
         gmp-place-autocomplete input {
             width: 100% !important;
-            height: 50px !important; /* Match the height of other inputs */
+            height: 50px !important;
             padding: 0.85rem 1rem !important;
             border: 1px solid #e0e5ec !important;
-            border-radius: 0.375rem !important; /* Match other fields */
+            border-radius: 0.375rem !important;
             font-size: 1rem !important;
             font-family: 'Inter', sans-serif !important;
             background-color: #fafbfc !important;
@@ -696,59 +566,46 @@
             border-color: #00769d !important;
             box-shadow: 0 0 0 3px rgba(0, 118, 157, 0.15) !important;
         }
-        
-        gmp-place-autocomplete input.validation-error {
+
+        .validation-error {
             border: 1px solid var(--error) !important;
             background-color: rgba(229, 62, 62, 0.05) !important;
         }
         
-        /* Disabled button styling */
-        button:disabled {
-            background-color: var(--secondary-color) !important;
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-        
-        /* Input error highlighting */
-        input.validation-error, 
-        select.validation-error,
-        textarea.validation-error,
-        .radio-option.validation-error,
-        gmp-place-autocomplete.validation-error input {
-            border: 1px solid var(--error);
-            background-color: rgba(229, 62, 62, 0.05);
-        }
-        
-        /* Hidden with display:none */
         .hidden {
             display: none !important;
         }
-        
-        /* Google Place Autocomplete field specific styles */
-        .address-field-container {
-            position: relative;
-            width: 100%;
+
+        @media (max-width: 1024px) {
+            .form-container {
+                padding: 1.5rem;
+            }
+
+            legend {
+                font-size: 1.3rem;
+            }
+
+            .form-progress {
+                flex-direction: column;
+            }
+
+            .form-progress .step {
+                margin: 0.5rem 0;
+            }
+
+            .form-progress .step:not(:last-child)::after {
+                display: none;
+            }
         }
 
-        /* Added CSS for the Google Maps Place Autocomplete */
-        gmp-place-autocomplete {
-            width: 100% !important;
-            z-index: 1;
-            position: relative;
-            min-height: 52px;
-            display: block;
-        }
-
-        gmp-place-autocomplete input {
-            width: 100%;
-            padding: 0.85rem 1rem;
-            box-sizing: border-box;
-            border: 1px solid #e0e5ec;
-            border-radius: var(--radius-sm);
-            font-size: 1rem;
-            font-family: var(--font-family);
-            background-color: #fafbfc;
-            color: var(--text);
+        @media (max-width: 768px) {
+            .form-container {
+                padding: 1rem;
+            }
+            
+            .form-section {
+                padding: 1rem;
+            }
         }
     </style>
 </head>
@@ -765,8 +622,7 @@
             <span class="step" data-step="2">2. Scoping Questions</span>
             <span class="step" data-step="3">3. Implementation Details</span>
         </div>
-        <form id="assessmentForm"
-             enctype="multipart/form-data" novalidate>
+        <form id="assessmentForm" enctype="multipart/form-data" novalidate>
             <div id="form-status" class="status-indicator"></div>
 
             <!-- STEP 1: Basic Information -->
@@ -919,7 +775,7 @@
 
             <!-- STEP 3: Implementation Details -->
             <fieldset id="implementationStep" class="form-step" style="display: none;">
-                <!-- BMS Details Section (only shown if "Yes" to BMS question) -->
+                <!-- BMS Details Section -->
                 <div id="BMSInformationDiv" class="form-section conditional-section">
                     <h3>BMS Details</h3>
 
@@ -1000,7 +856,7 @@
                     </div>
                 </div>
 
-                <!-- AHU Details Section (only shown if "Yes" to AHU question) -->
+                <!-- AHU Details Section -->
                 <div id="ahuDetailsSection" class="form-section conditional-section">
                     <h3>AHUs</h3>
 
@@ -1065,22 +921,6 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // R-Zero Branding Configuration
-            const rZeroBranding = {
-                name: "R-Zero",
-                colors: {
-                    primary: "#00769d",        // R-Zero blue
-                    primaryDark: "#005f7e",    // Darker blue for hover states
-                    success: "#38a169",        // Green for success
-                    lightBlue: "#f0f7fa"       // Lighter blue background
-                },
-                logoUrl: "download.png",       // R-Zero logo path
-                contactEmail: "support@rzerosystems.com",
-                website: "https://www.rzerosystems.com",
-                formTitle: "O-DCV Building Assessment | R-Zero",
-                copyrightYear: new Date().getFullYear()
-            };
-
             const formState = {
                 currentStep: 1,
                 completedSteps: [false, false, false],
@@ -1095,136 +935,54 @@
             const submitBtn = document.getElementById('submitBtn');
             const demoBtn = document.getElementById('demoBtn');
             const reviewStep = document.getElementById('reviewStep');
-            const progressTracker = document.getElementById('progress-tracker');
 
-            // File size validation for mechanical drawings - 100MB limit
-            document.getElementById('mechanicalDrawings').addEventListener('change', function(e) {
-                const file = e.target.files[0];
-                const maxSize = 100 * 1024 * 1024; // 100MB in bytes
-                
-                if (file && file.size > maxSize) {
-                    alert('File size exceeds 100MB limit.');
-                    e.target.value = ''; // Clear the input
-                }
-            });
-
-            // Define hierarchical data structure for BMS relationships
-            const bmsHierarchy = {
-                "Johnson Controls": {
-                    platforms: ["Metasys", "Facility Explorer", "Verasys", "Other"],
-                    versions: {
-                        "Metasys": ["ADX", "SMP", "NAE", "NCE", "N4", "v12.0", "v11.0", "v10.0", "Legacy"]
-                    }
-                },
-                "Siemens": {
-                    platforms: ["Desigo CC", "APOGEE", "Desigo PX", "Other"],
-                    versions: {
-                        "Desigo CC": ["v6.0", "v5.x", "v4.x", "v3.x", "v2.x", "v1.x", "Other"]
-                    }
-                },
-                "Honeywell": {
-                    platforms: ["EBI", "ComfortPoint Open", "WEBs-N4", "Other"],
-                    versions: {
-                        "EBI": ["v4.x", "v3.x", "v2.x", "Legacy"]
-                    }
-                },
-                "Tridium": {
-                    platforms: ["Niagara 4", "Niagara AX", "Other"],
-                    versions: {
-                        "Niagara 4": ["v4.x", "v3.x", "v2.x", "Legacy"]
-                    }
-                },
-                "Schneider Electric": {
-                    platforms: ["EcoStruxure Building Operation", "SmartStruxure", "Other"],
-                    versions: {
-                        "EcoStruxure Building Operation": ["v2.x", "v1.x", "Other"]
-                    }
-                },
-                "Trane": {
-                    platforms: ["Tracer SC+", "Tracer Ensemble", "Other"],
-                    versions: {
-                        "Tracer SC+": ["v2.x", "v1.x", "Other"]
-                    }
-                },
-                "Alerton": {
-                    platforms: ["Compass", "Ascent", "BACtalk", "Other"],
-                    versions: {
-                        "Ascent": ["ACM", "Microset 4", "Compass", "Current", "Legacy", "Other"],
-                        "BACtalk": ["VLC-1188", "VLC-853", "VLC-550", "VLC-444", "Current", "Legacy", "Other"]
-                    }
-                },
-                "Automated Logic": {
-                    platforms: ["WebCTRL", "Other"],
-                    versions: {
-                        "WebCTRL": ["v8.x", "v7.x", "v6.x", "Other"]
-                    }
-                },
-                "Distech Controls": {
-                    platforms: ["ECLYPSE", "Other"],
-                    versions: {
-                        "ECLYPSE": ["Current", "Legacy", "Other"]
-                    }
-                },
-                "Delta Controls": {
-                    platforms: ["enteliWEB", "Other"],
-                    versions: {
-                        "enteliWEB": ["Current", "Legacy", "Other"]
-                    }
-                },
-                "KMC Controls": {
-                    platforms: ["KMC Commander", "Other"],
-                    versions: {
-                        "KMC Commander": ["Current", "Legacy", "Other"]
-                    }
-                },
-                "Other": {
-                    platforms: ["Other"],
-                    versions: {
-                        "Other": ["Other"]
-                    }
-                }
-            };
-
-            // Define AHU manufacturer → model relationships
-            const ahuModels = {
-                "Trane": ["Performance Climate Changer™", "CSAA Custom", "M-Series Climate Changer™", "Other"],
-                "Carrier": ["39M Aero®", "39S Series", "Custom AHU", "Other"],
-                "Lennox": ["Other"],
-                "AAON": ["Custom Packaged AHUs", "Other"],
-                "Daikin": ["Vision®", "Skyline®", "Other"],
-                "York": ["Solution™ Series", "York Custom AHU", "Other"],
-                "Goodman": ["Other"],
-                "McQuay": ["Vision", "Skyline", "Other"],
-                "Other": ["Other"]
-            };
-
-            // Setup Google Maps Place Autocomplete
+            // Google Maps setup
             setupAddressField();
             
-            // Initialize the form
+            // Initialize form
             initializeForm();
 
-            // === CENTRAL NAVIGATION CONTROLLER ===
+            function setupAddressField() {
+                const checkForComponents = setInterval(function() {
+                    const autocomplete = document.getElementById('addressAutocomplete');
+                    const addressInput = document.getElementById('addressInput');
+                    
+                    if (autocomplete && addressInput && typeof google !== 'undefined' && google.maps && google.maps.places) {
+                        clearInterval(checkForComponents);
+                        
+                        autocomplete.countries = ["us", "ca"];
+                        
+                        autocomplete.addEventListener('gmp-placeselect', function() {
+                            const place = autocomplete.getPlace();
+                            if (place && place.formattedAddress) {
+                                document.getElementById('addressValue').value = place.formattedAddress;
+                                addressInput.classList.remove('validation-error');
+                                autocomplete.classList.remove('validation-error');
+                                updateButtonStates();
+                            }
+                        });
+                        
+                        addressInput.addEventListener('input', function() {
+                            document.getElementById('addressValue').value = this.value;
+                            updateButtonStates();
+                        });
+                    }
+                }, 500);
+            }
+
             function navigateTo(targetStep, options = {}) {
                 const { skipValidation = false, updateHash = true } = options;
                 
-                // Debug
-                console.log(`Attempting to navigate from ${formState.currentStep} to ${targetStep}`);
-                
-                // Validate current step if moving forward
                 if (targetStep > formState.currentStep && !skipValidation) {
                     if (!validateStep(formState.currentStep)) {
                         highlightIncompleteFields(formState.currentStep);
-                        console.log(`Validation failed for step ${formState.currentStep}`);
                         return false;
                     }
                     
-                    // If navigating to step 3, make sure HVAC questions are answered
                     if (targetStep === 3) {
                         const hvacCompleted = areHvacQuestionsCompleted();
                         if (!hvacCompleted) {
                             showStatus('Please complete the Scoping Questions first.', 'error');
-                            console.log("Failed to navigate: HVAC questions not completed");
                             return false;
                         }
                     }
@@ -1232,23 +990,17 @@
                     formState.completedSteps[formState.currentStep - 1] = true;
                 }
                 
-                // Update form state
                 formState.currentStep = targetStep;
-                
-                // Update UI
                 updateStepDisplay(targetStep);
                 updateProgressBar(targetStep);
                 updateButtonStates();
                 
-                // Update URL hash if needed
                 if (updateHash) {
                     updateUrlHash(targetStep);
                 }
                 
-                // Scroll to top
                 window.scrollTo({ top: 0, behavior: 'smooth' });
                 
-                // Clear any error messages
                 const statusElement = document.getElementById('form-status');
                 if (statusElement) {
                     statusElement.style.display = 'none';
@@ -1257,20 +1009,16 @@
                 return true;
             }
 
-            // Helper function to display the correct step
             function updateStepDisplay(step) {
-                // Hide all steps
                 steps.forEach(s => s.style.display = 'none');
                 
-                // Show correct step
-                if (step === 5) { // Review step
+                if (step === 5) {
                     reviewStep.style.display = 'block';
                 } else if (step <= 4) {
                     steps[step-1].style.display = 'block';
                 }
             }
 
-            // Helper function to update progress bar
             function updateProgressBar(step) {
                 progressSteps.forEach((p, i) => {
                     const stepNum = i + 1;
@@ -1283,608 +1031,66 @@
                     p.classList.toggle('active', isActive);
                     p.classList.toggle('completed', isCompleted && !isActive);
                     p.classList.toggle('disabled', shouldDisableStep3 || (stepNum > step && !isCompleted));
-                    
-                    // Add stronger visual disabled state
-                    if (shouldDisableStep3 || (stepNum > step && !isCompleted)) {
-                        p.style.pointerEvents = 'none';
-                        p.style.opacity = '0.5';
-                        p.style.cursor = 'not-allowed';
-                    } else {
-                        p.style.pointerEvents = 'auto';
-                        p.style.opacity = '1';
-                        p.style.cursor = 'pointer';
-                    }
-                    
-                    // Update text/icon
-                    if (isActive) {
-                        p.innerHTML = `${stepNum}. ${getStepName(stepNum)}`;
-                    } else if (isCompleted) {
-                        p.innerHTML = '<i class="fas fa-check"></i> ' + getStepName(stepNum);
-                    } else {
-                        p.innerHTML = `${stepNum}. ${getStepName(stepNum)}`;
-                    }
                 });
             }
 
-            // Helper to get step names
-            function getStepName(step) {
-                const names = [
-                    "Basic Information",
-                    "Scoping Questions",
-                    "Implementation Details"
-                ];
-                return names[step-1] || "";
-            }
-
-            // Setup Google Maps Place Autocomplete
-            function setupAddressField() {
-                // Wait for the components to be fully loaded
-                const checkForComponents = setInterval(function() {
-                    const autocomplete = document.getElementById('addressAutocomplete');
-                    const addressInput = document.getElementById('addressInput');
-                    
-                    if (autocomplete && addressInput && typeof google !== 'undefined' && google.maps && google.maps.places) {
-                        clearInterval(checkForComponents);
-                        
-                        // Set restrictions to limit to US and Canada
-                        autocomplete.countries = ["us", "ca"];
-                        
-                        // Add event listener for place selection
-                        autocomplete.addEventListener('gmp-placeselect', function() {
-                            const place = autocomplete.getPlace();
-                            if (place && place.formattedAddress) {
-                                // Update the hidden field with the formatted address
-                                document.getElementById('addressValue').value = place.formattedAddress;
-                                
-                                // Clear validation error if present
-                                addressInput.classList.remove('validation-error');
-                                autocomplete.classList.remove('validation-error');
-                                
-                                // Validate form
-                                updateButtonStates();
-                            }
-                        });
-                        
-                        // Allow manual entry
-                        addressInput.addEventListener('input', function() {
-                            document.getElementById('addressValue').value = this.value;
-                            updateButtonStates();
-                        });
-                        
-                        // Fix any initial styling issues
-                        if (addressInput) {
-                            addressInput.style.height = '52px';
-                        }
-                    }
-                }, 500);
-            }
-
-            function setupNavigation() {
-                // Previous button
-                prevBtn.addEventListener('click', () => {
-                    navigateTo(formState.currentStep - 1, { skipValidation: true });
-                });
-
-                // Next button
-                nextBtn.addEventListener('click', () => {
-                    if (navigateTo(formState.currentStep + 1)) {
-                        // Handle special case for reaching review step
-                        if (formState.currentStep === 4) {
-                            showReviewStep();
-                        }
-                    }
-                });
-
-                // Submit button
-                submitBtn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    if (validateStep(formState.currentStep)) {
-                        submitForm();
-                    } else {
-                        highlightIncompleteFields(formState.currentStep);
-                    }
-                });
-            }
-
-            // Set up clickable progress steps with restrictions
-            function setupProgressClicks() {
-                // First, update the visual state of progress steps
-                function updateProgressState() {
-                    progressSteps.forEach((p, i) => {
-                        const stepNum = i + 1;
-                        
-                        // Disable steps that shouldn't be accessible yet
-                        if (stepNum > formState.currentStep && !formState.completedSteps[formState.currentStep - 1]) {
-                            p.classList.add('disabled');
-                            p.style.pointerEvents = 'none'; // Prevent clicking entirely
-                            p.style.opacity = '0.5';
-                            p.style.cursor = 'not-allowed';
-                        } else if (stepNum === 3 && !areHvacQuestionsCompleted()) {
-                            p.classList.add('disabled');
-                            p.style.pointerEvents = 'none'; // Prevent clicking entirely
-                            p.style.opacity = '0.5';
-                            p.style.cursor = 'not-allowed';
-                        } else {
-                            p.classList.remove('disabled');
-                            p.style.pointerEvents = 'auto';
-                            p.style.opacity = '1';
-                            p.style.cursor = 'pointer';
-                        }
-                    });
-                }
-                
-                // Update progress state initially
-                updateProgressState();
-                
-                // Add click event listeners
-                progressSteps.forEach((step) => {
-                    step.addEventListener('click', (event) => {
-                        const targetStep = parseInt(step.dataset.step);
-                        
-                        // Clear any previous status messages
-                        const statusElement = document.getElementById('form-status');
-                        if (statusElement) {
-                            statusElement.style.display = 'none';
-                        }
-                        
-                        // Allow backward navigation freely
-                        if (targetStep < formState.currentStep) {
-                            navigateTo(targetStep, { skipValidation: true });
-                            return;
-                        }
-                        
-                        // For forward navigation, always require validation
-                        if (targetStep > formState.currentStep) {
-                            // Check if the step is disabled (visual check as backup)
-                            if (step.classList.contains('disabled')) {
-                                event.preventDefault();
-                                event.stopPropagation();
-                                showStatus('Please complete the current step first.', 'error');
-                                return false;
-                            }
-                            
-                            // Validate the current step first
-                            if (!validateStep(formState.currentStep)) {
-                                event.preventDefault();
-                                event.stopPropagation();
-                                highlightIncompleteFields(formState.currentStep);
-                                showStatus('Please complete all required fields on this step first.', 'error');
-                                
-                                // Scroll to the first error
-                                const firstError = document.querySelector('.validation-error');
-                                if (firstError) {
-                                    firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                                }
-                                
-                                return false;
-                            }
-                            
-                            // If moving to step 3, double check HVAC questions are answered
-                            if (targetStep === 3) {
-                                const hvacCompleted = areHvacQuestionsCompleted();
-                                if (!hvacCompleted) {
-                                    event.preventDefault();
-                                    event.stopPropagation();
-                                    showStatus('Please complete the Scoping Questions first.', 'error');
-                                    return false;
-                                }
-                            }
-                            
-                            formState.completedSteps[formState.currentStep - 1] = true;
-                            const success = navigateTo(targetStep, { skipValidation: false });
-                            
-                            // Update the progress state after navigation
-                            if (success) {
-                                updateProgressState();
-                            }
-                            
-                            return;
-                        }
-                    });
-                });
-                
-                // Also update progress state whenever step validation status changes
-                form.addEventListener('change', updateProgressState);
-                
-                // Also update after each navigation
-                const originalNavigateTo = navigateTo;
-                navigateTo = function(targetStep, options = {}) {
-                    const result = originalNavigateTo.call(this, targetStep, options);
-                    updateProgressState();
-                    return result;
-                };
-            }
-
-            // Function to check if all required HVAC System questions are answered
             function areHvacQuestionsCompleted() {
                 const hasBMS = document.querySelector('input[name="hasBMS"]:checked');
                 const hasAHU = document.querySelector('input[name="hasAHU"]:checked');
-                
-                // Debug to console to help diagnose the issue
-                console.log("HVAC Validation:", {
-                    hasBMS: hasBMS ? hasBMS.value : null,
-                    hasAHU: hasAHU ? hasAHU.value : null
-                });
-                
                 return hasBMS !== null && hasAHU !== null;
             }
 
-            // Hash-based navigation setup 
-            function setupHashNavigation() {
-                window.addEventListener('hashchange', () => {
-                    const stepFromHash = getStepFromHash();
-                    if (!stepFromHash || stepFromHash === formState.currentStep) return;
-                    
-                    // Clear any previous status messages
-                    const statusElement = document.getElementById('form-status');
-                    if (statusElement) {
-                        statusElement.style.display = 'none';
-                    }
-                    
-                    // Allow backward navigation without validation
-                    if (stepFromHash < formState.currentStep) {
-                        navigateTo(stepFromHash, { skipValidation: true, updateHash: false });
-                        return;
-                    }
-                    
-                    // For step 2, allow if step 1 is completed
-                    if (stepFromHash === 2 && formState.completedSteps[0]) {
-                        navigateTo(stepFromHash, { skipValidation: true, updateHash: false });
-                        return;
-                    }
-                    
-                    // For step 3, require HVAC questions to be completed
-                    if (stepFromHash === 3) {
-                        const hvacCompleted = areHvacQuestionsCompleted();
-                        console.log("Hash Navigation - HVAC Completed:", hvacCompleted);
-                        
-                        if (formState.completedSteps[1] && hvacCompleted) {
-                            navigateTo(stepFromHash, { skipValidation: true, updateHash: false });
-                        } else {
-                            showStatus('Please complete the Scoping Questions first.', 'error');
-                            updateUrlHash(formState.currentStep); // Revert hash change
-                        }
-                        return;
-                    }
-                    
-                    // Try to navigate with validation
-                    if (!navigateTo(stepFromHash, { updateHash: false })) {
-                        // If validation fails, revert the hash
-                        updateUrlHash(formState.currentStep);
-                    }
-                });
-            }
-
-            // Get step number from URL hash
-            function getStepFromHash() {
-                const hash = window.location.hash.substring(1);
-                if (hash === 'review') {
-                    return 5; // Review step
-                }
-                const step = parseInt(hash);
-                if (step >= 1 && step <= 4) {
-                    return step;
-                }
-                return null;
-            }
-
-            // Update URL hash without triggering scroll
-            function updateUrlHash(step) {
-                const hashValue = step === 5 ? 'review' : step.toString();
-                history.replaceState(null, null, `#${hashValue}`);
-            }
-
             function updateButtonStates() {
-                // Debug logging
-                console.log("Current step:", formState.currentStep);
-                console.log("Completed steps:", formState.completedSteps);
-                console.log("HVAC completed:", areHvacQuestionsCompleted());
-                
                 const step = formState.currentStep;
                 
-                // Previous button
                 prevBtn.style.display = step === 1 ? 'none' : 'inline-block';
-                
-                // Next button
                 nextBtn.style.display = step < 4 ? 'inline-block' : 'none';
                 
-                // Enable next button only if step is valid
                 const isValid = isCurrentStepValid();
                 nextBtn.disabled = !isValid;
                 nextBtn.classList.toggle('btn-custom', isValid);
                 
-                // Submit button
                 submitBtn.style.display = step === 4 ? 'inline-block' : 'none';
                 submitBtn.disabled = !isValid;
                 submitBtn.classList.toggle('btn-custom', isValid);
                 
-                // Demo button
                 demoBtn.style.display = step === 1 ? 'inline-block' : 'none';
             }
             
-            // Helper function to check if current step is valid
             function isCurrentStepValid() {
                 const currentStepElem = document.querySelector(`.form-step:not([style*="display: none"])`);
                 if (!currentStepElem) return true;
                 
                 let isValid = true;
                 
-                // For step 2 (HVAC), we just need to ensure all radio buttons are selected
                 if (formState.currentStep === 2) {
                     const hasBMS = document.querySelector('input[name="hasBMS"]:checked');
                     const hasAHU = document.querySelector('input[name="hasAHU"]:checked');
-                    
                     return hasBMS !== null && hasAHU !== null;
                 }
                 
-                // Check required fields
                 const requiredFields = currentStepElem.querySelectorAll('[required]');
                 requiredFields.forEach(field => {
-                    // Skip fields in hidden conditional sections
                     if (field.disabled || 
                         field.closest('.conditional-section')?.style.display === 'none' ||
                         (field.closest('.conditional-section') && !field.closest('.conditional-section').classList.contains('show'))) {
                         return;
                     }
                     
-                    // For radio groups, check if any option is selected
                     if (field.type === 'radio') {
                         const name = field.name;
                         const isChecked = currentStepElem.querySelector(`input[name="${name}"]:checked`) !== null;
                         if (!isChecked) isValid = false;
                     } 
-                    // For address field (special case)
                     else if (field.id === 'addressValue') {
                         if (!field.value.trim()) isValid = false;
                     }
-                    // For all other fields
                     else if (!field.value.trim()) {
                         isValid = false;
                     }
                 });
                 
                 return isValid;
-            }
-
-            function setupConditionalFields() {
-                // BMS conditional visibility
-                document.querySelectorAll('input[name="hasBMS"]').forEach(radio => {
-                    radio.addEventListener('change', function () {
-                        const bmsDetailsSection = document.getElementById('BMSInformationDiv');
-                        const bmsDataPointsSection = document.getElementById('bmsDataPointsSection');
-                        
-                        toggleConditionalSection(bmsDetailsSection, this.value === 'Yes');
-                        toggleConditionalSection(bmsDataPointsSection, this.value === 'Yes');
-                        updateButtonStates();
-                    });
-                });
-
-                // AHU conditional visibility
-                document.querySelectorAll('input[name="hasAHU"]').forEach(radio => {
-                    radio.addEventListener('change', function () {
-                        const ahuDetailsSection = document.getElementById('ahuDetailsSection');
-                        
-                        toggleConditionalSection(ahuDetailsSection, this.value === 'Yes');
-                        updateButtonStates();
-                    });
-                });
-
-                // Improved toggle function that preserves field values
-                function toggleConditionalSection(section, show) {
-                    if (!section) return; // Safety check
-
-                    if (show) {
-                        // Show the section
-                        section.classList.add('show');
-
-                        // Enable all fields but preserve their values
-                        section.querySelectorAll('input, select, textarea').forEach(field => {
-                            field.disabled = false;
-                        });
-                    } else {
-                        // Hide the section
-                        section.classList.remove('show');
-
-                        // Disable all fields but don't clear their values
-                        section.querySelectorAll('input, select, textarea').forEach(field => {
-                            field.disabled = true;
-                        });
-                    }
-                }
-            }
-
-            function setupCascadingSelects() {
-                // BMS Manufacturer -> Platform -> Version
-                const bmsManufacturer = document.getElementById('bmsManufacturer');
-                const bmsPlatform = document.getElementById('bmsPlatform');
-
-                if (bmsManufacturer && bmsPlatform) {
-                    bmsManufacturer.addEventListener('change', function () {
-                        updateBMSPlatforms(this.value);
-                        updateButtonStates();
-                    });
-
-                    bmsPlatform.addEventListener('change', updateButtonStates);
-                }
-
-                // AHU Manufacturer -> Model
-                const ahuManufacturer = document.getElementById('ahuManufacturer');
-                const ahuModel = document.getElementById('ahuModel');
-
-                if (ahuManufacturer && ahuModel) {
-                    ahuManufacturer.addEventListener('change', function () {
-                        updateAHUModels(this.value);
-                        updateButtonStates();
-                    });
-                }
-            }
-
-            // Update BMS platforms based on manufacturer selection
-            function updateBMSPlatforms(manufacturer) {
-                const platformSelect = document.getElementById('bmsPlatform');
-                const currentValue = platformSelect.value; // Store current value
-
-                platformSelect.innerHTML = '<option value="">Select an option...</option>';
-
-                if (!manufacturer || manufacturer === '') {
-                    platformSelect.disabled = true;
-                    return;
-                }
-
-                platformSelect.disabled = false;
-                const platforms = bmsHierarchy[manufacturer]?.platforms || [];
-
-                platforms.forEach(platform => {
-                    const option = document.createElement('option');
-                    option.value = platform;
-                    option.textContent = platform;
-                    platformSelect.appendChild(option);
-                });
-
-                // Add Don't know option
-                const dontKnowOption = document.createElement('option');
-                dontKnowOption.value = 'dontKnow';
-                dontKnowOption.textContent = 'Don\'t know';
-                platformSelect.appendChild(dontKnowOption);
-
-                // Restore previous value if it exists in the new options
-                if (currentValue) {
-                    const exists = Array.from(platformSelect.options).some(opt => opt.value === currentValue);
-                    if (exists) {
-                        platformSelect.value = currentValue;
-                        // Trigger change event to update dependent dropdowns
-                        platformSelect.dispatchEvent(new Event('change'));
-                    }
-                }
-            }
-
-            // Update AHU models based on manufacturer
-            function updateAHUModels(manufacturer) {
-                const modelSelect = document.getElementById('ahuModel');
-                const currentValue = modelSelect.value; // Store current value
-
-                modelSelect.innerHTML = '<option value="">Select an option...</option>';
-
-                if (!manufacturer || manufacturer === '') {
-                    modelSelect.disabled = true;
-                    return;
-                }
-
-                modelSelect.disabled = false;
-                const models = ahuModels[manufacturer] || [];
-
-                models.forEach(model => {
-                    const option = document.createElement('option');
-                    option.value = model;
-                    option.textContent = model;
-                    modelSelect.appendChild(option);
-                });
-
-                // Add Don't know option
-                const dontKnowOption = document.createElement('option');
-                dontKnowOption.value = 'dontKnow';
-                dontKnowOption.textContent = 'Don\'t know';
-                modelSelect.appendChild(dontKnowOption);
-
-                // Restore previous value if it exists in the new options
-                if (currentValue) {
-                    const exists = Array.from(modelSelect.options).some(opt => opt.value === currentValue);
-                    if (exists) {
-                        modelSelect.value = currentValue;
-                    }
-                }
-            }
-
-            // Setup form validation
-            function setupValidation() {
-                // Listen for all field changes
-                form.querySelectorAll('input, select, textarea').forEach(field => {
-                    field.addEventListener('input', updateButtonStates);
-                    field.addEventListener('change', updateButtonStates);
-                    
-                    // Clear validation errors on user input
-                    field.addEventListener('input', function() {
-                        this.classList.remove('validation-error');
-                        // Clear error messages
-                        const statusElement = document.getElementById('form-status');
-                        if (statusElement && statusElement.style.display === 'block') {
-                            statusElement.style.display = 'none';
-                        }
-                    });
-                });
-                
-                // Special case for Google Places address field
-                const addressAutoComplete = document.getElementById('addressAutocomplete');
-                if (addressAutoComplete) {
-                    addressAutoComplete.addEventListener('gmp-placeselect', function() {
-                        updateButtonStates();
-                        // Clear error messages
-                        const statusElement = document.getElementById('form-status');
-                        if (statusElement && statusElement.style.display === 'block') {
-                            statusElement.style.display = 'none';
-                        }
-                    });
-                }
-                
-                // Special handling for radio buttons
-                form.querySelectorAll('input[type="radio"]').forEach(radio => {
-                    radio.addEventListener('change', function() {
-                        // Remove validation-error class from all radio options in the same group
-                        const name = this.name;
-                        document.querySelectorAll(`.radio-option input[name="${name}"]`).forEach(r => {
-                            r.closest('.radio-option').classList.remove('validation-error');
-                        });
-                        updateButtonStates();
-                        // Clear error messages
-                        const statusElement = document.getElementById('form-status');
-                        if (statusElement && statusElement.style.display === 'block') {
-                            statusElement.style.display = 'none';
-                        }
-                    });
-                });
-            }
-
-            function validateField(field, highlightErrors = false) {
-                // Only validate if required and not disabled or hidden
-                if (field.disabled || field.closest('.conditional-section')?.style.display === 'none' ||
-                    (field.closest('.conditional-section') && !field.closest('.conditional-section').classList.contains('show'))) {
-                    return true;
-                }
-
-                // Check if field is required and empty
-                if (field.required && !field.value.trim()) {
-                    if (highlightErrors) {
-                        field.classList.add('validation-error');
-                    }
-                    return false;
-                }
-
-                // Check email format if it's an email field
-                if (field.type === "email" && field.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(field.value)) {
-                    if (highlightErrors) {
-                        field.classList.add('validation-error');
-                    }
-                    return false;
-                }
-
-                // Address field validation
-                if (field.id === 'addressValue' && field.hasAttribute('required')) {
-                    const isEmpty = !field.value.trim();
-                    if (isEmpty && highlightErrors) {
-                        // Find the visible address input and highlight it
-                        const visibleAddressField = document.getElementById('addressInput');
-                        const autocomplete = document.getElementById('addressAutocomplete');
-                        if (visibleAddressField) {
-                            visibleAddressField.classList.add('validation-error');
-                        }
-                        if (autocomplete) {
-                            autocomplete.classList.add('validation-error');
-                        }
-                    }
-                    return !isEmpty;
-                }
-
-                return true;
             }
 
             function validateStep(step, highlightErrors = false) {
@@ -1895,7 +1101,6 @@
                     return true;
                 }
                 
-                // Special case for HVAC System step
                 if (step === 2) {
                     const hasBMS = document.querySelector('input[name="hasBMS"]:checked');
                     const hasAHU = document.querySelector('input[name="hasAHU"]:checked');
@@ -1903,7 +1108,6 @@
                     const hvacValid = hasBMS !== null && hasAHU !== null;
                     
                     if (!hvacValid && highlightErrors) {
-                        // Highlight any missing radio groups
                         if (!hasBMS) {
                             document.querySelectorAll('input[name="hasBMS"]').forEach(radio => {
                                 radio.closest('.radio-option')?.classList.add('validation-error');
@@ -1920,19 +1124,15 @@
                     return hvacValid;
                 }
                 
-                // Validate all visible required fields in the current step
                 const requiredFields = currentStep.querySelectorAll('[required]');
                 requiredFields.forEach(field => {
-                    // Skip disabled fields or fields in hidden conditional sections
                     if (field.disabled || 
                         field.closest('.conditional-section')?.style.display === 'none' ||
                         (field.closest('.conditional-section') && !field.closest('.conditional-section').classList.contains('show'))) {
                         return;
                     }
                     
-                    // Different validation based on field type
                     if (field.type === 'radio') {
-                        // For radio buttons, check if any in the group is checked
                         const name = field.name;
                         const radioGroup = currentStep.querySelectorAll(`input[type="radio"][name="${name}"]`);
                         const isChecked = Array.from(radioGroup).some(radio => radio.checked);
@@ -1941,7 +1141,6 @@
                             isValid = false;
                             
                             if (highlightErrors) {
-                                // Highlight all radio options in this group
                                 radioGroup.forEach(radio => {
                                     const radioOption = radio.closest('.radio-option');
                                     if (radioOption) {
@@ -1955,23 +1154,45 @@
                     }
                 });
                 
-                // Check square footage per floor ratio
-                if (step === 1) {
-                    const squareFootage = document.getElementById('squareFootage');
-                    const floors = document.getElementById('floors');
-                    
-                    if (squareFootage && floors && 
-                        squareFootage.value && floors.value && 
-                        squareFootage.value / floors.value < 100) {
-                        isValid = false;
-                        
-                        if (highlightErrors) {
-                            squareFootage.classList.add('validation-error');
+                return isValid;
+            }
+
+            function validateField(field, highlightErrors = false) {
+                if (field.disabled || field.closest('.conditional-section')?.style.display === 'none' ||
+                    (field.closest('.conditional-section') && !field.closest('.conditional-section').classList.contains('show'))) {
+                    return true;
+                }
+
+                if (field.required && !field.value.trim()) {
+                    if (highlightErrors) {
+                        field.classList.add('validation-error');
+                    }
+                    return false;
+                }
+
+                if (field.type === "email" && field.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(field.value)) {
+                    if (highlightErrors) {
+                        field.classList.add('validation-error');
+                    }
+                    return false;
+                }
+
+                if (field.id === 'addressValue' && field.hasAttribute('required')) {
+                    const isEmpty = !field.value.trim();
+                    if (isEmpty && highlightErrors) {
+                        const visibleAddressField = document.getElementById('addressInput');
+                        const autocomplete = document.getElementById('addressAutocomplete');
+                        if (visibleAddressField) {
+                            visibleAddressField.classList.add('validation-error');
+                        }
+                        if (autocomplete) {
+                            autocomplete.classList.add('validation-error');
                         }
                     }
+                    return !isEmpty;
                 }
-                
-                return isValid;
+
+                return true;
             }
 
             function highlightIncompleteFields(step) {
@@ -1985,10 +1206,8 @@
                     statusElement.className = `status-indicator ${type}`;
                     statusElement.style.display = 'block';
 
-                    // Scroll to status message
                     statusElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     
-                    // Auto-hide error messages after 5 seconds
                     if (type === 'error') {
                         setTimeout(() => {
                             statusElement.style.display = 'none';
@@ -1997,70 +1216,126 @@
                 }
             }
 
-            // Function to show success message with reference number and R-Zero branding
-            function showSuccessWithReference(referenceNumber) {
-                // Create reference number display
-                const referenceElement = document.createElement('div');
-                referenceElement.className = 'reference-number';
-                referenceElement.textContent = `Reference Number: ${referenceNumber}`;
+            function setupNavigation() {
+                prevBtn.addEventListener('click', () => {
+                    navigateTo(formState.currentStep - 1, { skipValidation: true });
+                });
 
-                // Style reference number with R-Zero branding
-                referenceElement.style.backgroundColor = 'var(--rzero-light-blue)';
-                referenceElement.style.border = '1px solid var(--primary-color)';
-                referenceElement.style.borderRadius = 'var(--radius-sm)';
-                referenceElement.style.padding = '8px 16px';
-                referenceElement.style.margin = '16px 0';
-                referenceElement.style.fontWeight = '600';
-                referenceElement.style.color = 'var(--primary-color)';
-                referenceElement.style.display = 'inline-block';
+                nextBtn.addEventListener('click', () => {
+                    if (navigateTo(formState.currentStep + 1)) {
+                        if (formState.currentStep === 4) {
+                            showReviewStep();
+                        }
+                    }
+                });
 
-                // Add to status area
-                const statusElement = document.getElementById('form-status');
-                if (statusElement) {
-                    statusElement.innerHTML = '';
-                    statusElement.appendChild(document.createTextNode('Form submitted successfully to R-Zero! '));
-                    statusElement.appendChild(referenceElement);
-                    statusElement.appendChild(document.createElement('br'));
-                    statusElement.appendChild(document.createTextNode('A R-Zero representative will contact you shortly to discuss next steps.'));
-                    statusElement.className = 'status-indicator success';
-                    statusElement.style.display = 'block';
-
-                    // Scroll to status message
-                    statusElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }
-
-                // Log success with R-Zero branding
-                console.log(`%cR-Zero O-DCV Assessment: Form submitted successfully! Reference: ${referenceNumber}`, 'color: #00769d; font-weight: bold; font-size: 14px;');
+                submitBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    if (validateStep(formState.currentStep)) {
+                        submitForm();
+                    } else {
+                        highlightIncompleteFields(formState.currentStep);
+                    }
+                });
             }
 
-            // Function to handle checkbox data for the review step and form submission
-            function getBMSDataPointsValues() {
-                const checkboxes = document.querySelectorAll('input[name="bmsDataPoints"]:checked');
-                const values = Array.from(checkboxes).map(cb => cb.value);
-                return values.join(', ');
+            function setupConditionalFields() {
+                document.querySelectorAll('input[name="hasBMS"]').forEach(radio => {
+                    radio.addEventListener('change', function () {
+                        const bmsDetailsSection = document.getElementById('BMSInformationDiv');
+                        const bmsDataPointsSection = document.getElementById('bmsDataPointsSection');
+                        
+                        toggleConditionalSection(bmsDetailsSection, this.value === 'Yes');
+                        toggleConditionalSection(bmsDataPointsSection, this.value === 'Yes');
+                        updateButtonStates();
+                    });
+                });
+
+                document.querySelectorAll('input[name="hasAHU"]').forEach(radio => {
+                    radio.addEventListener('change', function () {
+                        const ahuDetailsSection = document.getElementById('ahuDetailsSection');
+                        
+                        toggleConditionalSection(ahuDetailsSection, this.value === 'Yes');
+                        updateButtonStates();
+                    });
+                });
+
+                function toggleConditionalSection(section, show) {
+                    if (!section) return;
+
+                    if (show) {
+                        section.classList.add('show');
+                        section.querySelectorAll('input, select, textarea').forEach(field => {
+                            field.disabled = false;
+                        });
+                    } else {
+                        section.classList.remove('show');
+                        section.querySelectorAll('input, select, textarea').forEach(field => {
+                            field.disabled = true;
+                        });
+                    }
+                }
+            }
+
+            function setupValidation() {
+                form.querySelectorAll('input, select, textarea').forEach(field => {
+                    field.addEventListener('input', updateButtonStates);
+                    field.addEventListener('change', updateButtonStates);
+                    
+                    field.addEventListener('input', function() {
+                        this.classList.remove('validation-error');
+                        const statusElement = document.getElementById('form-status');
+                        if (statusElement && statusElement.style.display === 'block') {
+                            statusElement.style.display = 'none';
+                        }
+                    });
+                });
+                
+                const addressAutoComplete = document.getElementById('addressAutocomplete');
+                if (addressAutoComplete) {
+                    addressAutoComplete.addEventListener('gmp-placeselect', function() {
+                        updateButtonStates();
+                        const statusElement = document.getElementById('form-status');
+                        if (statusElement && statusElement.style.display === 'block') {
+                            statusElement.style.display = 'none';
+                        }
+                    });
+                }
+                
+                form.querySelectorAll('input[type="radio"]').forEach(radio => {
+                    radio.addEventListener('change', function() {
+                        const name = this.name;
+                        document.querySelectorAll(`.radio-option input[name="${name}"]`).forEach(r => {
+                            r.closest('.radio-option').classList.remove('validation-error');
+                        });
+                        updateButtonStates();
+                        const statusElement = document.getElementById('form-status');
+                        if (statusElement && statusElement.style.display === 'block') {
+                            statusElement.style.display = 'none';
+                        }
+                    });
+                });
+            }
+
+            function updateUrlHash(step) {
+                const hashValue = step === 5 ? 'review' : step.toString();
+                history.replaceState(null, null, `#${hashValue}`);
             }
 
             function showReviewStep() {
-                // Hide all steps
                 steps.forEach(s => s.style.display = 'none');
-
-                // Show review step
                 reviewStep.style.display = 'block';
 
-                // Generate summary
                 const summary = reviewStep.querySelector('.review-summary');
                 summary.innerHTML = '';
 
-                // Function to get readable label from field
                 function getFieldLabel(field) {
-                    // Find the associated label
                     let label;
                     if (field.id) {
                         label = document.querySelector(`label[for="${field.id}"]`);
                     }
 
                     if (label) {
-                        // Remove any spans (like required markers)
                         return label.cloneNode(true).textContent.trim().replace('*', '');
                     } else if (field.name) {
                         return field.name.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
@@ -2068,36 +1343,29 @@
                     return '';
                 }
 
-                // Get all form values
                 const formData = new FormData(form);
                 const formValues = {};
 
-                // Get checkbox values for BMS data points
                 const bmsDataPoints = getBMSDataPointsValues();
                 
-                // Create a hidden input to store the combined values
                 const hiddenInput = document.createElement('input');
                 hiddenInput.type = 'hidden';
                 hiddenInput.name = 'bmsDataPointsList';
                 hiddenInput.value = bmsDataPoints;
                 form.appendChild(hiddenInput);
                 
-                // Only add to formValues if there are actually selected checkboxes
                 if (bmsDataPoints.trim() !== '') {
                     formValues['bmsDataPointsList'] = bmsDataPoints;
                 }
 
-                // Get address from the hidden field
                 formValues['address'] = document.getElementById('addressValue').value;
 
-                // Collect all values first - only include non-empty values
                 for (let [key, value] of formData) {
                     if (value && value !== '' && !key.includes('file')) {
                         formValues[key] = value;
                     }
                 }
 
-                // Enhanced sections for review with conditional visibility
                 const sections = {
                     'Contact Information': [
                         'name', 'email', 'phone', 'jobTitle', 'otherJobTitle',
@@ -2113,7 +1381,6 @@
                     ]
                 };
 
-                // Add conditional sections based on user's answers
                 if (formValues['hasBMS'] === 'Yes') {
                     sections['BMS Details'] = [
                         'bmsManufacturer', 'otherBmsManufacturer', 'bmsPlatform', 'otherBmsPlatform',
@@ -2125,11 +1392,9 @@
                     sections['AHU Details'] = [
                         'ahuCount', 'floorsPerAHU', 'ahuManufacturer',
                         'otherAhuManufacturer', 'ahuModel', 'otherAhuModel'
-                        // Note: 'mechanicalDrawings' file won't be included because we're not including file fields
                     ];
                 }
 
-                // Helper function to get section HTML - updated to only show non-empty fields
                 function getSectionHTML(sectionName, fieldNames) {
                     let hasValues = false;
                     let sectionHTML = `<h3>${sectionName}</h3><div class="review-section">`;
@@ -2144,16 +1409,13 @@
                             let displayValue = formValues[fieldName];
                             let fieldLabel = fieldName;
 
-                            // Special handling for "Other" fields to show appropriate labels
                             if (fieldName.startsWith('other') && field) {
-                                // Find the related main field
                                 const mainFieldName = fieldName.replace('other', '').charAt(0).toLowerCase() + fieldName.replace('other', '').slice(1);
                                 fieldLabel = `${mainFieldName} (Other)`;
                             } else if (field) {
                                 fieldLabel = getFieldLabel(field);
                             }
 
-                            // Special handling for select fields to show text instead of value
                             if (field && field.tagName === 'SELECT') {
                                 const selectedOption = field.options[field.selectedIndex];
                                 if (selectedOption) {
@@ -2161,7 +1423,6 @@
                                 }
                             }
 
-                            // Special handling for radio buttons
                             if (field && field.type === 'radio') {
                                 const radioGroup = field.closest('.radio-group');
                                 if (radioGroup) {
@@ -2177,12 +1438,9 @@
                     });
 
                     sectionHTML += '</div>';
-
-                    // Only return the section if it has at least one field with a value
                     return { html: sectionHTML, hasValues: fieldsAdded > 0 };
                 }
 
-                // Create section headers and add fields in order
                 for (const [sectionName, fieldNames] of Object.entries(sections)) {
                     const { html, hasValues } = getSectionHTML(sectionName, fieldNames);
                     if (hasValues) {
@@ -2191,29 +1449,31 @@
                 }
             }
 
+            function getBMSDataPointsValues() {
+                const checkboxes = document.querySelectorAll('input[name="bmsDataPoints"]:checked');
+                const values = Array.from(checkboxes).map(cb => cb.value);
+                return values.join(', ');
+            }
+
+            // FIXED SUBMIT FUNCTION
             function submitForm() {
-                // Get address from input fields
                 const addressValueField = document.getElementById('addressValue');
                 const addressInput = document.getElementById('addressInput');
 
-                // Ensure we have the latest address value
                 if (addressInput && addressInput.value && !addressValueField.value) {
                     addressValueField.value = addressInput.value;
                 }
                 
-                // Verify we have an address
                 if (!addressValueField.value.trim()) {
                     showStatus('Please enter an address.', 'error');
                     return;
                 }
 
-                // Strip commas from squareFootage before submission
                 const squareFootageField = document.getElementById('squareFootage');
                 if (squareFootageField) {
                     squareFootageField.value = squareFootageField.value.replace(/,/g, '');
                 }
 
-                // Get checkbox values for BMS data points and add as hidden field
                 const bmsDataPoints = getBMSDataPointsValues();
                 let hiddenInput = form.querySelector('input[name="bmsDataPointsList"]');
                 if (!hiddenInput) {
@@ -2224,22 +1484,17 @@
                 }
                 hiddenInput.value = bmsDataPoints;
 
-                // Show loading state with R-Zero branding
                 submitBtn.innerHTML = '<span class="loading-indicator"></span> Submitting...';
                 submitBtn.disabled = true;
 
-                // Show status message
                 showStatus('Submitting assessment form...', 'info');
 
-                // Get form data
                 const formData = new FormData(form);
 
-                // Add R-Zero form metadata
                 formData.append('FormSource', 'R-Zero O-DCV Assessment');
                 formData.append('FormVersion', '1.0.0');
                 formData.append('SubmissionDate', new Date().toISOString());
 
-                // Process submission with retry capability
                 let retries = 0;
                 const maxRetries = 2;
 
@@ -2247,50 +1502,97 @@
                     retries++;
                     showStatus('Submitting form...', 'info');
 
-                    fetch(form.action, {
+                    const endpoint = "https://script.google.com/macros/s/AKfycbx4WWW5_6X_iACRBWAtRRCJItTwaH-XCZxxwiQZm-rwsyyIWAJm2MjPTiwIhgsOm-z4/exec";
+
+                    fetch(endpoint, {
                         redirect: "follow",
                         method: 'POST',
                         body: formData
                     })
-                        .then(response => {
-                            if (!response.ok) {
-                                if (retries <= maxRetries && (response.status === 413 || response.status >= 500)) {
-                                    // Server error or payload too large, retry after delay
-                                    const delay = Math.min(2000 * Math.pow(2, retries - 1), 10000);
-                                    setTimeout(attemptSubmit, delay);
-                                    return null;
-                                }
-                                throw new Error(`Server error: ${response.status}`);
+                    .then(response => {
+                        console.log('Response status:', response.status);
+                        console.log('Response headers:', response.headers);
+                        
+                        if (!response.ok) {
+                            if (retries <= maxRetries && (response.status === 413 || response.status >= 500)) {
+                                const delay = Math.min(2000 * Math.pow(2, retries - 1), 10000);
+                                setTimeout(attemptSubmit, delay);
+                                return null;
                             }
-                            return response.json();
-                        })
-                        .then(data => {
-                            if (data) {
-                                // Show success message with reference number
-                                showSuccessWithReference(data.referenceNumber || 'ODCV-' + Date.now());
-
-                                // Update button
-                                submitBtn.innerHTML = 'Submitted Successfully';
-
-                                // Disable form after submission
-                                form.querySelectorAll('input, select, textarea, button').forEach(el => el.disabled = true);
-
-                                // Clear saved form data
-                                localStorage.removeItem('odcvFormData');
-
-                                // Add print option
-                                addPrintOption();
+                            throw new Error(`Server error: ${response.status}`);
+                        }
+                        
+                        // Check if response has content before trying to parse JSON
+                        return response.text().then(text => {
+                            console.log('Raw response text:', text);
+                            
+                            if (!text || text.trim() === '') {
+                                throw new Error('Empty response from server');
                             }
-                        })
-                        .catch(error => {
-                            submitBtn.innerHTML = 'Submit Assessment';
-                            submitBtn.disabled = false;
-                            showStatus('Submission failed. Please try again.', 'error');
-                            console.error('Form submission error:', error);
+                            
+                            try {
+                                return JSON.parse(text);
+                            } catch (parseError) {
+                                console.error('JSON parse error:', parseError);
+                                console.error('Response text that failed to parse:', text);
+                                throw new Error('Invalid JSON response from server');
+                            }
                         });
+                    })
+                    .then(data => {
+                        if (data) {
+                            console.log('Parsed response data:', data);
+                            showSuccessWithReference(data.referenceNumber || 'ODCV-' + Date.now());
+                            submitBtn.innerHTML = 'Submitted Successfully';
+                            form.querySelectorAll('input, select, textarea, button').forEach(el => el.disabled = true);
+                            localStorage.removeItem('odcvFormData');
+                            addPrintOption();
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Form submission error:', error);
+                        submitBtn.innerHTML = 'Submit Assessment';
+                        submitBtn.disabled = false;
+                        
+                        if (error.message.includes('JSON') || error.message.includes('Empty response')) {
+                            showStatus('Server response error. Please try again or contact support if the problem persists.', 'error');
+                        } else {
+                            showStatus('Submission failed. Please try again.', 'error');
+                        }
+                    });
                 }
 
                 attemptSubmit();
+            }
+
+            function showSuccessWithReference(referenceNumber) {
+                const referenceElement = document.createElement('div');
+                referenceElement.className = 'reference-number';
+                referenceElement.textContent = `Reference Number: ${referenceNumber}`;
+
+                referenceElement.style.backgroundColor = 'var(--rzero-light-blue)';
+                referenceElement.style.border = '1px solid var(--primary-color)';
+                referenceElement.style.borderRadius = 'var(--radius-sm)';
+                referenceElement.style.padding = '8px 16px';
+                referenceElement.style.margin = '16px 0';
+                referenceElement.style.fontWeight = '600';
+                referenceElement.style.color = 'var(--primary-color)';
+                referenceElement.style.display = 'inline-block';
+
+                const statusElement = document.getElementById('form-status');
+                if (statusElement) {
+                    statusElement.innerHTML = '';
+                    statusElement.appendChild(document.createTextNode('Form submitted successfully to R-Zero! '));
+                    statusElement.appendChild(referenceElement);
+                    statusElement.appendChild(document.createElement('br'));
+                    statusElement.appendChild(document.createTextNode('A R-Zero representative will contact you shortly to discuss next steps.'));
+                    statusElement.className = 'status-indicator success';
+                    statusElement.style.display = 'block';
+
+                    statusElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+
+                console.log(`%cR-Zero O-DCV Assessment: Form submitted successfully! Reference: ${referenceNumber}`, 'color: #00769d; font-weight: bold; font-size: 14px;');
             }
 
             function addPrintOption() {
@@ -2313,248 +1615,10 @@
                 submitBtn.parentNode.appendChild(printBtn);
             }
 
-            function setupAutosave() {
-                form.addEventListener('change', () => {
-                    const formData = new FormData(form);
-                    const data = {};
-                    
-                    for (let [key, value] of formData) {
-                        // Strip commas from squareFootage before saving to localStorage
-                        if (key === 'squareFootage' && value) {
-                            value = value.replace(/,/g, '');
-                        }
-                        data[key] = value;
-                    }
-                    
-                    // Special handling for checkboxes
-                    const checkboxValues = Array.from(
-                        document.querySelectorAll('input[name="bmsDataPoints"]:checked')
-                    ).map(cb => cb.value);
-                    data.bmsDataPoints = checkboxValues;
-                    
-                    // Get address from the fields
-                    const addressValueField = document.getElementById('addressValue');
-                    const addressInput = document.getElementById('addressInput');
-                    
-                    if (addressValueField && addressValueField.value) {
-                        data.address = addressValueField.value;
-                    } else if (addressInput && addressInput.value) {
-                        data.address = addressInput.value;
-                    }
-                    
-                    data.currentStep = formState.currentStep;
-                    data.completedSteps = formState.completedSteps;
-                    localStorage.setItem('odcvFormData', JSON.stringify(data));
-                });
-                
-                // Add special handling for checkbox changes
-                document.querySelectorAll('input[name="bmsDataPoints"]').forEach(checkbox => {
-                    checkbox.addEventListener('change', function() {
-                        const checkboxValues = Array.from(
-                            document.querySelectorAll('input[name="bmsDataPoints"]:checked')
-                        ).map(cb => cb.value);
-                        
-                        const formData = JSON.parse(localStorage.getItem('odcvFormData') || '{}');
-                        formData.bmsDataPoints = checkboxValues;
-                        localStorage.setItem('odcvFormData', JSON.stringify(formData));
-                    });
-                });
-                
-                // Special handling for address fields
-                const addressInput = document.getElementById('addressInput');
-                if (addressInput) {
-                    addressInput.addEventListener('input', function() {
-                        const formData = JSON.parse(localStorage.getItem('odcvFormData') || '{}');
-                        formData.address = this.value;
-                        document.getElementById('addressValue').value = this.value;
-                        localStorage.setItem('odcvFormData', JSON.stringify(formData));
-                    });
-                }
-            }
-
-            function setupThousandsSeparator() {
-                const squareFootage = document.getElementById('squareFootage');
-                if (squareFootage) {
-                    squareFootage.addEventListener('input', function () {
-                        // Store cursor position
-                        const start = this.selectionStart;
-                        const end = this.selectionEnd;
-
-                        // Get value without commas
-                        const value = this.value.replace(/,/g, '');
-
-                        // Add commas for display purposes only
-                        if (value) {
-                            const formattedValue = Number(value).toLocaleString('en-US');
-
-                            // Only update if it actually changed
-                            if (formattedValue !== this.value) {
-                                // Update with commas
-                                this.value = formattedValue;
-
-                                // Adjust cursor position for added commas
-                                const addedChars = this.value.length - value.length;
-                                this.setSelectionRange(start + addedChars, end + addedChars);
-                            }
-                        }
-                    });
-                }
-            }
-
-            function restoreFormData() {
-                if (formState.formData && Object.keys(formState.formData).length > 0) {
-                    // Check if we have any meaningful data before showing restore prompt
-                    const hasData = Object.entries(formState.formData).some(([key, value]) => {
-                        return value && typeof value === 'string' && value.trim() !== '' && !key.startsWith('current');
-                    });
-
-                    if (hasData && confirm('We found your previously saved information. Would you like to restore it?')) {
-                        // Restore form data
-                        Object.entries(formState.formData).forEach(([key, value]) => {
-                            if (key === 'currentStep') {
-                                formState.currentStep = parseInt(value) || 1;
-                            } else if (key === 'completedSteps' && Array.isArray(value)) {
-                                formState.completedSteps = value;
-                            } else if (key === 'bmsDataPoints' && Array.isArray(value)) {
-                                // Handle checkbox restoration
-                                value.forEach(dataPoint => {
-                                    const checkbox = document.querySelector(`input[name="bmsDataPoints"][value="${dataPoint}"]`);
-                                    if (checkbox) {
-                                        checkbox.checked = true;
-                                    }
-                                });
-                            } else if (key === 'address') {
-                                // For address field, set both the hidden field and visible input
-                                const addressValueField = document.getElementById('addressValue');
-                                const addressInput = document.getElementById('addressInput');
-                                
-                                if (addressValueField) {
-                                    addressValueField.value = value;
-                                }
-                                
-                                if (addressInput) {
-                                    addressInput.value = value;
-                                }
-                            } else {
-                                const field = form.querySelector(`[name="${key}"]`);
-                                if (field) {
-                                    if (field.type === 'radio') {
-                                        const radio = form.querySelector(`input[name="${key}"][value="${value}"]`);
-                                        if (radio) {
-                                            radio.checked = true;
-                                            // Trigger change event to update conditional fields
-                                            radio.dispatchEvent(new Event('change'));
-                                        }
-                                    } else {
-                                        field.value = value;
-                                        // Trigger change event to update cascading dropdowns
-                                        field.dispatchEvent(new Event('change'));
-                                    }
-                                }
-                            }
-                        });
-
-                        // Initialize cascading dropdowns based on restored values
-                        initCascadingValues();
-
-                        // Handle other fields visibility correctly
-                        checkAndHandleOtherFields();
-                    }
-                }
-            }
-
-            // Initialize cascading dropdowns with saved values
-            function initCascadingValues() {
-                // BMS values
-                const bmsManufacturer = document.getElementById('bmsManufacturer');
-                const bmsPlatform = document.getElementById('bmsPlatform');
-
-                if (bmsManufacturer && bmsManufacturer.value) {
-                    updateBMSPlatforms(bmsManufacturer.value);
-                    if (bmsPlatform && formState.formData.bmsPlatform) {
-                        bmsPlatform.value = formState.formData.bmsPlatform;
-                    }
-                }
-
-                // AHU values
-                const ahuManufacturer = document.getElementById('ahuManufacturer');
-                const ahuModel = document.getElementById('ahuModel');
-                
-                if (ahuManufacturer && ahuManufacturer.value) {
-                    updateAHUModels(ahuManufacturer.value);
-                    if (ahuModel && formState.formData.ahuModel) {
-                        ahuModel.value = formState.formData.ahuModel;
-                    }
-                }
-
-                // Show/hide conditional sections based on radio values
-                const hasBMS = document.querySelector('input[name="hasBMS"]:checked');
-                if (hasBMS) {
-                    const bmsDetailsSection = document.getElementById('BMSInformationDiv');
-                    const bmsDataPointsSection = document.getElementById('bmsDataPointsSection');
-                    
-                    if (hasBMS.value === 'Yes') {
-                        if (bmsDetailsSection) {
-                            bmsDetailsSection.classList.add('show');
-                            bmsDetailsSection.querySelectorAll('input, select, textarea').forEach(field => {
-                                field.disabled = false;
-                            });
-                        }
-                        
-                        if (bmsDataPointsSection) {
-                            bmsDataPointsSection.classList.add('show');
-                            bmsDataPointsSection.querySelectorAll('input, select, textarea').forEach(field => {
-                                field.disabled = false;
-                            });
-                        }
-                    }
-                }
-
-                const hasAHU = document.querySelector('input[name="hasAHU"]:checked');
-                if (hasAHU) {
-                    const ahuDetailsSection = document.getElementById('ahuDetailsSection');
-                    
-                    if (hasAHU.value === 'Yes') {
-                        if (ahuDetailsSection) {
-                            ahuDetailsSection.classList.add('show');
-                            ahuDetailsSection.querySelectorAll('input, select, textarea').forEach(field => {
-                                field.disabled = false;
-                            });
-                        }
-                    }
-                }
-            }
-
-            // Function to check and handle "Other" fields visibility properly during restore
-            function checkAndHandleOtherFields() {
-                // Check each select that might have an "Other" option
-                const selectsWithOther = [
-                    'jobTitle', 'orgType', 'buildingType', 'buildingOperatingHours',
-                    'bmsManufacturer', 'bmsProtocol', 'ahuManufacturer'
-                ];
-
-                selectsWithOther.forEach(fieldName => {
-                    const select = document.getElementById(fieldName);
-                    const otherField = document.getElementById('other' + fieldName.charAt(0).toUpperCase() + fieldName.slice(1));
-
-                    if (select && otherField) {
-                        // Only show other field if "Other" is selected
-                        if (select.value && select.value.toLowerCase() === 'other') {
-                            otherField.style.display = 'block';
-                            otherField.disabled = false;
-                        } else {
-                            otherField.style.display = 'none';
-                            otherField.disabled = true;
-                        }
-                    }
-                });
-            }
-
             function setupDemoMode() {
                 demoBtn.addEventListener('click', () => {
                     form.reset();
                     
-                    // First set the base data
                     const demoData = {
                         name: 'Jane Smith',
                         email: 'jane.smith@example.com',
@@ -2574,7 +1638,6 @@
                         bmsProtocol: 'BACnet/IP'
                     };
 
-                    // Apply demo data to form fields
                     Object.entries(demoData).forEach(([key, value]) => {
                         const field = form.querySelector(`[name="${key}"]`);
                         if (field) {
@@ -2591,136 +1654,21 @@
                         }
                     });
 
-                    // Set address fields
                     document.getElementById('addressInput').value = '123 Main St, San Francisco, CA 94105';
                     document.getElementById('addressValue').value = '123 Main St, San Francisco, CA 94105';
 
-                    // Setup BMS Platform and AHU Model
-                    updateBMSPlatforms('Johnson Controls');
-                    document.getElementById('bmsPlatform').value = 'Metasys';
-
-                    updateAHUModels('Trane');
-                    document.getElementById('ahuModel').value = 'Performance Climate Changer™';
-                    
-                    // Set AHU manufacturer
-                    document.getElementById('ahuManufacturer').value = 'Trane';
-                    
-                    // Check all BMS data points checkboxes
-                    ['bmsDataSupplyAirflow', 'bmsDataFanSpeed', 'bmsDataOADamper', 'bmsDataSupplyTemp', 'bmsDataZoneTempSetpoint'].forEach(id => {
-                        document.getElementById(id).checked = true;
-                    });
-                    
-                    // Update button state
                     updateButtonStates();
                 });
             }
 
-            // Initialize the form
             function initializeForm() {
                 setupNavigation();
                 setupConditionalFields();
-                setupCascadingSelects();
                 setupValidation();
                 setupDemoMode();
-                setupAutosave();
-                setupProgressClicks();
-                setupHashNavigation();
-                setupThousandsSeparator();
-                
-                // Restore saved data if available
-                restoreFormData();
-                
-                // Initial state update based on URL or defaults
-                const initialStep = getStepFromHash() || formState.currentStep;
-                navigateTo(initialStep, { skipValidation: true, updateHash: false });
-                
-                // Update button states on initial load
                 updateButtonStates();
             }
         });
     </script>
-<script>
-console.log("JS is loading and running")
-document.addEventListener('DOMContentLoaded', function () {
-  const form = document.getElementById('assessmentForm');
-  const status = document.getElementById('form-status');
-
-  form.addEventListener('submit', async function (e) {
-    e.preventDefault();
-
-    const formData = new FormData(form);
-    const endpoint = "https://script.google.com/macros/s/AKfycbzMBSUhfVHEA-nLH_IQgAITfMOMqd-KmS7s8NZ5XxorPMkp7bHKN1hudMgBNyO5Cfcz/exec"; // Replace if redeploying
-
-    try {
-      status.textContent = "Submitting...";
-      status.className = 'status-indicator';
-      status.style.display = 'block';
-
-      const response = await fetch(endpoint, {
-        method: "POST",
-        body: formData,
-        mode: "cors"
-      });
-
-      const result = await response.json();
-
-      if (result.result === "success") {
-        status.textContent = `✅ Submitted successfully! Reference #: ${result.referenceNumber}`;
-        status.className = 'status-indicator success';
-      } else {
-        status.textContent = "❌ Submission failed.";
-        status.className = 'status-indicator error';
-      }
-    } catch (err) {
-      console.error(err);
-      status.textContent = "❌ Error submitting form.";
-      status.className = 'status-indicator error';
-    }
-  });
-});
-</script>
-
-<script>
-  console.log("✅ JS script has loaded");
-
-  const form = document.getElementById('assessmentForm');
-  const status = document.getElementById('form-status');
-
-  if (!form) {
-    console.error("❌ Could not find #assessmentForm");
-  } else {
-    console.log("✅ Found #assessmentForm, binding submit listener");
-
-    form.addEventListener('submit', async function (e) {
-      e.preventDefault(); // prevent native form submission
-      console.log("🚀 JS is intercepting the form");
-
-      const formData = new FormData(form);
-      const endpoint = "https://script.google.com/macros/s/AKfycbzMBSUhfVHEA-nLH_IQgAITfMOMqd-KmS7s8NZ5XxorPMkp7bHKN1hudMgBNyO5Cfcz/exec";
-
-      try {
-        status.textContent = "Submitting...";
-        const response = await fetch(endpoint, {
-          method: "POST",
-          body: formData,
-          mode: "cors"
-        });
-
-        const result = await response.json();
-        console.log("✅ Server response:", result);
-
-        if (result.result === "success") {
-          status.textContent = `✅ Submitted! Ref: ${result.referenceNumber}`;
-        } else {
-          status.textContent = "❌ Submission failed.";
-        }
-      } catch (err) {
-        console.error("❌ Form submission error:", err);
-        status.textContent = "❌ Error submitting form. Check console.";
-      }
-    });
-  }
-</script>
-
 </body>
 </html>
