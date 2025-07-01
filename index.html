@@ -222,8 +222,7 @@
             transition: background-color 0.3s;
         }
 
-        #nextBtn,
-        .demo-btn {
+        #nextBtn {
             background-color: var(--secondary-color);
             color: white;
             font-weight: 600;
@@ -236,8 +235,7 @@
         }
 
         #prevBtn:hover,
-        #nextBtn:hover,
-        .demo-btn:hover {
+        #nextBtn:hover {
             background-color: #5a6268;
         }
 
@@ -453,17 +451,6 @@
             to {
                 transform: rotate(360deg);
             }
-        }
-
-        /* Demo button styling to make it less prominent */
-        .demo-btn {
-            background-color: #e2e8f0;
-            color: #4a5568;
-            font-size: 0.9rem;
-        }
-
-        .demo-btn:hover {
-            background-color: #cbd5e0;
         }
 
         .form-section {
@@ -911,7 +898,6 @@
             <div class="form-navigation">
                 <div>
                     <button type="button" id="prevBtn">Previous</button>
-                    <button type="button" id="demoBtn" class="demo-btn">Load Demo Data</button>
                 </div>
                 <button type="button" id="nextBtn" disabled>Next</button>
                 <button type="submit" id="submitBtn" style="display: none;" disabled>Submit</button>
@@ -933,7 +919,6 @@
             const prevBtn = document.getElementById('prevBtn');
             const nextBtn = document.getElementById('nextBtn');
             const submitBtn = document.getElementById('submitBtn');
-            const demoBtn = document.getElementById('demoBtn');
             const reviewStep = document.getElementById('reviewStep');
 
             // Define hierarchical data structure for BMS relationships
@@ -1143,8 +1128,6 @@
                 submitBtn.style.display = step === 4 ? 'inline-block' : 'none';
                 submitBtn.disabled = !isValid;
                 submitBtn.classList.toggle('btn-custom', isValid);
-                
-                demoBtn.style.display = step === 1 ? 'inline-block' : 'none';
             }
             
             function isCurrentStepValid() {
@@ -1729,7 +1712,7 @@
                     }
                 }
 
-                const endpoint = "https://script.google.com/macros/s/AKfycbwRk-dL55BBmQvQ2YYU8Wu9UUxhmj3wgxryFQQCWVdeqlx0ELN3YkiYf46pK_e9WF2g/exec";
+                const endpoint = "https://script.google.com/macros/s/AKfycbwcPXs27PEj5lHtHXL_WmLO0HvMXgPVSYDPNBDd2JFLVBxIAx5gMJdR1Bzn61iy7cqi/exec";
 
                 console.log('📤 Submitting form to Apps Script...');
                 
@@ -1829,76 +1812,12 @@
                 submitBtn.parentNode.appendChild(printBtn);
             }
 
-            function setupDemoMode() {
-                demoBtn.addEventListener('click', () => {
-                    form.reset();
-                    
-                    const demoData = {
-                        name: 'Jane Smith',
-                        email: 'jane.smith@example.com',
-                        phone: '(123) 456-7890',
-                        jobTitle: 'building_engineer',
-                        organization: 'Demo Corp',
-                        orgType: 'Owner',
-                        buildingType: 'office',
-                        buildingOperatingHours: 'standard',
-                        squareFootage: '100000',
-                        floors: '20',
-                        hasBMS: 'Yes',
-                        hasAHU: 'Yes',
-                        ahuCount: '20',
-                        floorsPerAHU: '1',
-                        bmsManufacturer: 'Johnson Controls',
-                        bmsProtocol: 'BACnet/IP'
-                    };
-
-                    Object.entries(demoData).forEach(([key, value]) => {
-                        const field = form.querySelector(`[name="${key}"]`);
-                        if (field) {
-                            if (field.type === 'radio') {
-                                const radio = form.querySelector(`input[name="${key}"][value="${value}"]`);
-                                if (radio) {
-                                    radio.checked = true;
-                                    radio.dispatchEvent(new Event('change'));
-                                }
-                            } else {
-                                field.value = value;
-                                field.dispatchEvent(new Event('change'));
-                            }
-                        }
-                    });
-
-                    document.getElementById('addressInput').value = '123 Main St, San Francisco, CA 94105';
-                    document.getElementById('addressValue').value = '123 Main St, San Francisco, CA 94105';
-
-                    // Setup BMS Platform and AHU Model
-                    updateBMSPlatforms('Johnson Controls');
-                    document.getElementById('bmsPlatform').value = 'Metasys';
-
-                    updateAHUModels('Trane');
-                    document.getElementById('ahuModel').value = 'Performance Climate Changer™';
-                    
-                    // Set AHU manufacturer
-                    document.getElementById('ahuManufacturer').value = 'Trane';
-                    
-                    // Check all BMS data points checkboxes
-                    ['bmsDataSupplyAirflow', 'bmsDataFanSpeed', 'bmsDataOADamper', 'bmsDataSupplyTemp', 'bmsDataZoneTempSetpoint'].forEach(id => {
-                        const checkbox = document.getElementById(id);
-                        if (checkbox) {
-                            checkbox.checked = true;
-                        }
-                    });
-
-                    updateButtonStates();
-                });
-            }
 
             function initializeForm() {
                 setupNavigation();
                 setupConditionalFields();
                 setupCascadingSelects();
                 setupValidation();
-                setupDemoMode();
                 updateButtonStates();
             }
         });
