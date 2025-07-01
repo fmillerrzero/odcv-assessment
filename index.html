@@ -1134,13 +1134,13 @@
                 prevBtn.style.display = step === 1 ? 'none' : 'inline-block';
                 nextBtn.style.display = step < 4 ? 'inline-block' : 'none';
                 
-                const isValid = isCurrentStepValid();
-                nextBtn.disabled = !isValid;
-                nextBtn.classList.toggle('btn-custom', isValid);
+                // ALWAYS ENABLE NEXT BUTTON
+                nextBtn.disabled = false;
+                nextBtn.classList.add('btn-custom');
                 
                 submitBtn.style.display = step === 4 ? 'inline-block' : 'none';
-                submitBtn.disabled = !isValid;
-                submitBtn.classList.toggle('btn-custom', isValid);
+                submitBtn.disabled = false;
+                submitBtn.classList.add('btn-custom');
             }
             
             function isCurrentStepValid() {
