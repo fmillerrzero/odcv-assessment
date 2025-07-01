@@ -1023,10 +1023,17 @@
                 
                 // IMMEDIATELY attach input listener - don't wait for Google Maps!
                 if (addressInput && addressValue) {
-                    addressInput.addEventListener('input', function() {
-                        addressValue.value = this.value;
+                    // Use arrow function to ensure proper context
+                    const syncAddress = () => {
+                        addressValue.value = addressInput.value;
                         updateButtonStates();
-                    });
+                    };
+                    
+                    // Listen to multiple events to ensure it always syncs
+                    addressInput.addEventListener('input', syncAddress);
+                    addressInput.addEventListener('change', syncAddress);
+                    addressInput.addEventListener('keyup', syncAddress);
+                    addressInput.addEventListener('paste', syncAddress);
                 }
                 
                 // Then set up Google Maps separately
@@ -1161,8 +1168,8 @@
                         const isChecked = currentStepElem.querySelector(`input[name="${name}"]:checked`) !== null;
                         if (!isChecked) isValid = false;
                     } 
-                    // Skip the addressInput field inside gmp-place-autocomplete
-                    if (field.id === 'addressInput') {
+                    else if (field.id === 'addressInput') {
+                        // Skip the addressInput field inside gmp-place-autocomplete
                         return;
                     }
                     else if (field.id === 'addressValue') {
