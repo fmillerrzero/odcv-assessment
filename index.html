@@ -8,8 +8,12 @@
     <title>O-DCV Building Assessment | R-Zero</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDvGee7gI4jQO3OjGXhtkMmWRP865F2kAU&libraries=places"></script>
-    <script type="module" src="https://cdn.jsdelivr.net/npm/@googlemaps/extended-component-library"></script>
+    <script>
+function initMap() {
+    // This will be called when Google Maps is ready
+}
+</script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDvGee7gI4jQO3OjGXhtkMmWRP865F2kAU&libraries=places&callback=initMap" async defer></script>
     <style>
         :root {
             --primary: #00769d;
@@ -1006,32 +1010,35 @@
                 "Other": ["Other"]
             };
 
-            // Google Maps setup
-            setupAddressField();
             
             // Initialize form
             initializeForm();
 
             function setupAddressField() {
-                // Standard Google Places Autocomplete
-                const input = document.getElementById('addressValue'); // Changed from 'address' back to 'addressValue'
+                const input = document.getElementById('addressValue');
+                if (!input) return;
                 
-                if (input && google && google.maps && google.maps.places) {
+                // Only setup if Google Maps is loaded
+                if (typeof google !== 'undefined' && google.maps && google.maps.places) {
                     const autocomplete = new google.maps.places.Autocomplete(input, {
                         types: ['address'],
                         componentRestrictions: { country: ['us', 'ca'] }
                     });
                     
-                    // When user selects an address
                     autocomplete.addListener('place_changed', function() {
-                        const place = autocomplete.getPlace();
                         updateButtonStates();
                     });
-                    
-                    // Also update on regular typing
-                    input.addEventListener('input', updateButtonStates);
                 }
+                
+                // Always allow manual typing
+                input.addEventListener('input', updateButtonStates);
+                input.addEventListener('change', updateButtonStates);
             }
+
+            // Call it when Google Maps loads
+            window.initMap = function() {
+                setupAddressField();
+            };
 
             function navigateTo(targetStep, options = {}) {
                 const { skipValidation = false, updateHash = true } = options;
