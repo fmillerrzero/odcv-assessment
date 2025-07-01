@@ -678,7 +678,7 @@
                         <label for="addressInput" class="required-field">Address</label>
                         <div class="address-field-container">
                             <gmp-place-autocomplete class="gmp-place-field" id="addressAutocomplete">
-                                <input id="addressInput" placeholder="Enter an address" required>
+                                <input id="addressInput" placeholder="Enter an address">
                             </gmp-place-autocomplete>
                             <input type="hidden" name="address" id="addressValue" required>
                         </div>
@@ -1018,9 +1018,20 @@
             initializeForm();
 
             function setupAddressField() {
+                const addressInput = document.getElementById('addressInput');
+                const addressValue = document.getElementById('addressValue');
+                
+                // IMMEDIATELY attach input listener - don't wait for Google Maps!
+                if (addressInput && addressValue) {
+                    addressInput.addEventListener('input', function() {
+                        addressValue.value = this.value;
+                        updateButtonStates();
+                    });
+                }
+                
+                // Then set up Google Maps separately
                 const checkForComponents = setInterval(function() {
                     const autocomplete = document.getElementById('addressAutocomplete');
-                    const addressInput = document.getElementById('addressInput');
                     
                     if (autocomplete && addressInput && typeof google !== 'undefined' && google.maps && google.maps.places) {
                         clearInterval(checkForComponents);
@@ -1030,16 +1041,11 @@
                         autocomplete.addEventListener('gmp-placeselect', function() {
                             const place = autocomplete.getPlace();
                             if (place && place.formattedAddress) {
-                                document.getElementById('addressValue').value = place.formattedAddress;
+                                addressValue.value = place.formattedAddress;
                                 addressInput.classList.remove('validation-error');
                                 autocomplete.classList.remove('validation-error');
                                 updateButtonStates();
                             }
-                        });
-                        
-                        addressInput.addEventListener('input', function() {
-                            document.getElementById('addressValue').value = this.value;
-                            updateButtonStates();
                         });
                     }
                 }, 500);
@@ -1155,6 +1161,10 @@
                         const isChecked = currentStepElem.querySelector(`input[name="${name}"]:checked`) !== null;
                         if (!isChecked) isValid = false;
                     } 
+                    // Skip the addressInput field inside gmp-place-autocomplete
+                    if (field.id === 'addressInput') {
+                        return;
+                    }
                     else if (field.id === 'addressValue') {
                         if (!field.value.trim()) isValid = false;
                     }
