@@ -8,6 +8,7 @@
     <title>O-DCV Building Assessment | R-Zero</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
 function initMap() {
     // This will be called when Google Maps is ready
@@ -1622,123 +1623,90 @@ function initMap() {
                 return values.join(', ');
             }
 
-            // Working submitForm with proper file handling
+            // Supabase configuration
+            const SUPABASE_URL = "https://qjhdlovothbzhcuglnoc.supabase.co";
+            const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFqaGRsb3ZvdGhiemhjdWdsbm9jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAzNzU2MTAsImV4cCI6MjA3NTk1MTYxMH0.LiHtZNzdIYWy6fkMpD-EnZZzvfEmvtUrFFgGec_ryg8";
+            const STORAGE_BUCKET = "odcv-uploads";
+            const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+            // helper getters
+            const valRadio = (name)=>document.querySelector(`[name="${name}"]:checked`)?.value ?? null;
+            const txt = (id)=>document.getElementById(id)?.value?.trim() || null;
+
             async function submitForm() {
-                const addressValueField = document.getElementById('addressValue');
-                const addressInput = document.getElementById('addressInput');
+              const submitBtn = document.getElementById('submitBtn');
+              const status = document.getElementById('form-status');
+              status.className = 'status-indicator'; status.style.display='block'; status.textContent='Submitting…';
+              submitBtn.disabled = true; submitBtn.innerHTML = '<span class="loading-indicator"></span> Submitting…';
 
-                if (addressInput && addressInput.value && !addressValueField.value) {
-                    addressValueField.value = addressInput.value;
-                }
-                
-                if (!addressValueField.value.trim()) {
-                    showStatus('Please enter an address.', 'error');
-                    return;
-                }
+              // 1) Optional file upload
+              let file_url=null, file_name=null, file_type=null;
+              const fileInput = document.getElementById('mechanicalDrawings');
+              if (fileInput?.files?.length) {
+                const f = fileInput.files[0];
+                file_name = f.name; file_type = f.type || 'application/octet-stream';
+                const safe = f.name.replace(/[^a-zA-Z0-9._-]/g,'_');
+                const path = `drawings/${Date.now()}_${Math.random().toString(36).slice(2)}_${safe}`;
+                const { error:upErr } = await sb.storage.from(STORAGE_BUCKET).upload(path, f, { contentType:file_type });
+                if (upErr) { status.className='status-indicator error'; status.textContent=`Upload failed: ${upErr.message}`; submitBtn.disabled=false; submitBtn.textContent='Submit'; return; }
+                file_url = sb.storage.from(STORAGE_BUCKET).getPublicUrl(path).data.publicUrl;
+              }
 
-                const squareFootageField = document.getElementById('squareFootage');
-                if (squareFootageField) {
-                    squareFootageField.value = squareFootageField.value.replace(/,/g, '');
-                }
+              // 2) Collect fields
+              const bms_points = Array.from(document.querySelectorAll('input[name="bmsDataPoints"]:checked'))
+                                      .map(c=>c.value).join(', ') || null;
+              const ref_no = 'ODCV-' + new Date().toISOString().replace(/[-:TZ]/g,'').slice(0,14);
 
-                const bmsDataPoints = getBMSDataPointsValues();
-                let hiddenInput = form.querySelector('input[name="bmsDataPointsList"]');
-                if (!hiddenInput) {
-                    hiddenInput = document.createElement('input');
-                    hiddenInput.type = 'hidden';
-                    hiddenInput.name = 'bmsDataPointsList';
-                    form.appendChild(hiddenInput);
-                }
-                hiddenInput.value = bmsDataPoints;
+              // 3) Insert row
+              const { error:insErr } = await sb.from('assessments').insert({
+                ref_no,
+                // Contact
+                name: txt('name'),
+                email: txt('email'),
+                phone: txt('phone'),
+                // Org
+                job_title: document.getElementById('jobTitle')?.value || null,
+                organization: txt('organization'),
+                org_type: document.getElementById('orgType')?.value || null,
+                // Building
+                address: txt('addressValue') || document.querySelector('[name="address"]')?.value || null,
+                building_type: document.getElementById('buildingType')?.value || null,
+                operating_hours: document.getElementById('buildingOperatingHours')?.value || null,
+                square_footage: Number((document.getElementById('squareFootage')?.value || '').replace(/,/g,'')) || null,
+                floors: Number(document.getElementById('floors')?.value) || null,
+                // Scoping
+                has_bms: valRadio('hasBMS'),
+                has_ahu: valRadio('hasAHU'),
+                // BMS
+                bms_manufacturer: document.getElementById('bmsManufacturer')?.value || null,
+                bms_platform: document.getElementById('bmsPlatform')?.value || null,
+                bms_protocol: document.getElementById('bmsProtocol')?.value || null,
+                bms_data_points: bms_points,
+                // AHU
+                ahu_count: Number(document.getElementById('ahuCount')?.value) || null,
+                floors_per_ahu: txt('floorsPerAHU'),
+                ahu_manufacturer: document.getElementById('ahuManufacturer')?.value || null,
+                ahu_model: document.getElementById('ahuModel')?.value || null,
+                // File meta
+                file_url, file_name, file_type,
+                // Diagnostics
+                user_agent: navigator.userAgent
+              });
 
-                submitBtn.innerHTML = '<span class="loading-indicator"></span> Submitting...';
-                submitBtn.disabled = true;
+              if (insErr) {
+                status.className='status-indicator error';
+                status.textContent = `Submit failed: ${insErr.message}`;
+                submitBtn.disabled=false; submitBtn.textContent='Submit';
+                return;
+              }
 
-                showStatus('Submitting assessment form...', 'info');
-
-                // Create FormData to send all fields
-                const formData = new FormData();
-                
-                // Add all form fields manually to ensure they match spreadsheet headers
-                const fields = [
-                    'name', 'email', 'phone', 'jobTitle', 'organization', 'orgType', 'address',
-                    'buildingType', 'buildingOperatingHours', 'squareFootage', 'floors',
-                    'hasBMS', 'hasAHU', 'bmsManufacturer', 'bmsPlatform', 'bmsProtocol',
-                    'bmsDataPointsList', 'ahuCount', 'floorsPerAHU', 'ahuManufacturer', 'ahuModel'
-                ];
-                
-                fields.forEach(fieldName => {
-                    const field = form.elements[fieldName];
-                    if (field) {
-                        if (field.type === 'radio') {
-                            const checked = form.querySelector(`input[name="${fieldName}"]:checked`);
-                            if (checked) {
-                                formData.append(fieldName, checked.value);
-                            }
-                        } else {
-                            formData.append(fieldName, field.value || '');
-                        }
-                    }
-                });
-                
-                // Special handling for address (from hidden field)
-                formData.set('address', addressValueField.value);
-                
-                // Add metadata
-                formData.append('SubmissionDate', new Date().toISOString());
-
-                // Handle file upload with base64
-                const fileInput = document.getElementById('mechanicalDrawings');
-                if (fileInput && fileInput.files && fileInput.files.length > 0) {
-                    const file = fileInput.files[0];
-                    console.log('📎 File attached:', file.name, file.size, 'bytes');
-                    
-                    try {
-                        const base64 = await fileToBase64(file);
-                        formData.append('fileData', base64);
-                        formData.append('fileName', file.name);
-                        formData.append('fileType', file.type || 'application/pdf');
-                        console.log('✅ File converted to base64');
-                    } catch (error) {
-                        console.error('Error converting file to base64:', error);
-                    }
-                }
-
-                const endpoint = "https://script.google.com/macros/s/AKfycbwcPXs27PEj5lHtHXL_WmLO0HvMXgPVSYDPNBDd2JFLVBxIAx5gMJdR1Bzn61iy7cqi/exec";
-
-                console.log('📤 Submitting form to Apps Script...');
-                
-                // Submit without headers to avoid CORS preflight
-                fetch(endpoint, {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(response => {
-                    console.log('📥 Response status:', response.status);
-                    return response.text();
-                })
-                .then(text => {
-                    console.log('📥 Response body:', text);
-                    handleSubmissionSuccess();
-                })
-                .catch(error => {
-                    console.log('⚠️ Fetch error (expected with CORS):', error.message);
-                    // Even with CORS error, the data usually gets through
-                    handleSubmissionSuccess();
-                });
-                
-                function handleSubmissionSuccess() {
-                    const referenceNumber = 'ODCV-' + 
-                        new Date().toISOString().replace(/[-:]/g, '').replace(/\..+/, '') + 
-                        '-' + Math.floor(Math.random() * 10000);
-                    
-                    console.log('✅ Form submitted - Reference:', referenceNumber);
-                    showSuccessWithReference(referenceNumber);
-                    submitBtn.innerHTML = 'Submitted Successfully';
-                    form.querySelectorAll('input, select, textarea, button').forEach(el => el.disabled = true);
-                    localStorage.removeItem('odcvFormData');
-                    addPrintOption();
-                }
+              // 4) Success UI
+              status.className='status-indicator success';
+              status.textContent = `Form submitted successfully. Ref: ${ref_no}`;
+              localStorage.removeItem('odcvFormData');
+              document.querySelectorAll('#assessmentForm input, #assessmentForm select, #assessmentForm textarea, #assessmentForm button')
+                .forEach(el => el.disabled = true);
+              submitBtn.textContent = 'Submitted Successfully';
             }
 
             // Helper function to convert file to base64
